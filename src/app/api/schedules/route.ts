@@ -5,18 +5,33 @@ const prisma = new PrismaClient();
 
 export async function GET() {
   try {
-    const schedules = await prisma.schedule.findMany({
-      include: {
-        school: true, // Include school details
-      },
-      orderBy: {
-        date: 'asc',
-      },
-    });
-    return NextResponse.json(schedules);
+    // 데이터베이스 연결 확인
+    try {
+      await prisma.$connect();
+    } catch (dbError) {
+      console.error('Database connection failed:', dbError);
+      // 데이터베이스 연결 실패 시 빈 배열 반환
+      return NextResponse.json([]);
+    }
+
+    try {
+      const schedules = await prisma.schedule.findMany({
+        include: {
+          school: true, // Include school details
+        },
+        orderBy: {
+          date: 'asc',
+        },
+      });
+      return NextResponse.json(schedules);
+    } catch (queryError) {
+      console.error('Database query failed:', queryError);
+      // 쿼리 실패 시 빈 배열 반환
+      return NextResponse.json([]);
+    }
   } catch (error) {
     console.error('Error fetching schedules:', error);
-    return NextResponse.json({ error: 'Failed to fetch schedules' }, { status: 500 });
+    return NextResponse.json([]);
   }
 }
 
