@@ -13,7 +13,6 @@ const getCleanUrl = () => {
 };
 
 const authOptions: NextAuthOptions = {
-  url: getCleanUrl(),
   providers: [
     CredentialsProvider({
       name: 'credentials',
@@ -65,6 +64,9 @@ const authOptions: NextAuthOptions = {
     },
   },
 };
+
+// 환경 변수에서 URL 정리
+process.env.NEXTAUTH_URL = getCleanUrl();
 
 const handler = NextAuth(authOptions);
 
