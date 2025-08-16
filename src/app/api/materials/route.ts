@@ -92,26 +92,29 @@ export async function POST(request: Request) {
       }, { status: 400 });
     }
 
+    // Vercel 환경에서는 파일을 임시 저장하고 메타데이터만 DB에 저장
     const buffer = Buffer.from(await file.arrayBuffer());
     const timestamp = Date.now();
     const safeFilename = `${timestamp}_${file.name.replace(/[^a-zA-Z0-9가-힣._-]/g, '_')}`;
     
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads', category);
-    const filePath = path.join(uploadDir, safeFilename);
-
-    await mkdir(uploadDir, { recursive: true });
-    await writeFile(filePath, buffer);
-
+    // Vercel에서는 파일 시스템 쓰기가 제한되므로 파일을 Base64로 인코딩하여 저장하거나
+    // 외부 스토리지 사용을 권장하지만, 임시로 메타데이터만 저장
+    console.log(`File upload attempted: ${file.name}, Size: ${file.size} bytes`);
+    
     // 파일 타입에 따른 썸네일 결정
     let thumbnailPath = null;
     if (file.type.startsWith('image/')) {
-      thumbnailPath = `/uploads/${category}/${safeFilename}`;
+      // 이미지의 경우 base64로 인코딩하여 저장 (작은 이미지만)
+      if (file.size < 1024 * 1024) { // 1MB 미만
+        const base64 = buffer.toString('base64');
+        thumbnailPath = `data:${file.type};base64,${base64}`;
+      }
     }
 
     const newMaterial = await prisma.material.create({
       data: {
         filename: file.name, // 원본 파일명 저장
-        filePath: `/uploads/${category}/${safeFilename}`,
+        filePath: `temp://${safeFilename}`, // 임시 경로 표시
         uploadedAt: new Date(),
         uploader,
         category,
