@@ -34,17 +34,31 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    // 데이터베이스 연결 확인
+    try {
+      await prisma.$connect();
+    } catch (dbError) {
+      console.error('Database connection failed:', dbError);
+      return NextResponse.json({ error: 'Database connection failed' }, { status: 503 });
+    }
+
     const { name, phoneNumber, contactPerson } = await request.json();
     console.log('Received school data for creation:', { name, phoneNumber, contactPerson });
 
     if (!name) {
       return NextResponse.json({ error: 'School name is required' }, { status: 400 });
     }
-    const newSchool = await prisma.school.create({
-      data: { name, phoneNumber, contactPerson },
-    });
-    console.log('School created successfully:', newSchool);
-    return NextResponse.json(newSchool, { status: 201 });
+
+    try {
+      const newSchool = await prisma.school.create({
+        data: { name, phoneNumber, contactPerson },
+      });
+      console.log('School created successfully:', newSchool);
+      return NextResponse.json(newSchool, { status: 201 });
+    } catch (queryError) {
+      console.error('Database query failed:', queryError);
+      return NextResponse.json({ error: 'Database not ready. Tables may not exist yet.' }, { status: 503 });
+    }
   } catch (error: unknown) {
     console.error('Error creating school:', error);
     if (error instanceof Error) {
