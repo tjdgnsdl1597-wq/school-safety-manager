@@ -163,6 +163,39 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
   // Memoized pagination calculation
   const totalPages = useMemo(() => Math.ceil(totalCount / ITEMS_PER_PAGE), [totalCount]);
 
+  // Handle file download
+  const handleDownload = (material: Material) => {
+    // Vercel 환경에서는 실제 파일이 저장되지 않으므로 대안 제공
+    if (material.filePath.startsWith('temp://')) {
+      alert(`파일 "${material.filename}"은 임시 저장된 상태입니다.\n실제 파일 다운로드 기능은 외부 스토리지 연동 후 제공될 예정입니다.`);
+      return;
+    }
+    
+    // 실제 파일 경로가 있는 경우 다운로드
+    const link = document.createElement('a');
+    link.href = material.filePath;
+    link.download = material.filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  // Handle file preview
+  const handlePreview = (material: Material) => {
+    if (material.filePath.startsWith('temp://')) {
+      alert(`파일 "${material.filename}"의 미리보기는 현재 지원되지 않습니다.\n실제 파일 미리보기 기능은 외부 스토리지 연동 후 제공될 예정입니다.`);
+      return;
+    }
+    
+    // PDF나 이미지 파일의 경우 새 창에서 열기
+    const fileExt = material.filename.toLowerCase().split('.').pop() || '';
+    if (['pdf', 'jpg', 'jpeg', 'png', 'gif', 'webp'].includes(fileExt)) {
+      window.open(material.filePath, '_blank');
+    } else {
+      alert(`"${material.filename}" 파일의 미리보기는 지원되지 않습니다.\n다운로드 후 확인해주세요.`);
+    }
+  };
+
   // Placeholder for Excel download
   const handleExcelDownload = () => {
     alert('엑셀 다운로드 기능은 현재 구현 중입니다.');
@@ -211,54 +244,103 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
         <button onClick={handleExcelDownload} className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">엑셀 다운로드</button>
       </div>
 
-      {/* Table Area */}
+      {/* Grid Area */}
       {isLoading ? (
         <div className="text-center p-8">로딩 중...</div>
       ) : (
-        <div className="bg-white shadow-md rounded-lg overflow-hidden">
-          <table className="min-w-full leading-normal">
-            <thead>
-              <tr>
-                <th className="p-3 w-12 text-center"><input type="checkbox" onChange={handleSelectAll} checked={selectedItems.length === materials.length && materials.length > 0} /></th>
-                <th className="p-3 text-center">번호</th>
-                <th className="p-3 text-left">제목</th>
-                <th className="p-3 text-center">작성자</th>
-                <th className="p-3 text-center">작성일</th>
-              </tr>
-            </thead>
-            <tbody>
-              {materials.map((material, index) => (
-                <tr key={material.id} className="border-b hover:bg-gray-50">
-                  <td className="p-3 text-center"><input type="checkbox" checked={selectedItems.includes(material.id)} onChange={() => handleSelectItem(material.id)} /></td>
-                  <td className="p-3 text-center">{totalCount - (currentPage - 1) * ITEMS_PER_PAGE - index}</td>
-                  <td className="p-3">
-                    <div className="flex items-center space-x-2">
-                      <span className="text-lg">{getFileIcon(material.filename)}</span>
-                      <Link 
-                        href={material.filePath} 
-                        target="_blank" 
-                        className="text-blue-600 hover:underline truncate max-w-xs"
-                        title={material.filename}
-                      >
-                        {material.filename}
-                      </Link>
-                      <a
-                        href={material.filePath}
-                        download={material.filename}
-                        className="text-green-600 hover:text-green-800 ml-2"
-                        title="다운로드"
-                      >
-                        ⬇️
-                      </a>
+        <>
+          {/* Selection Controls */}
+          <div className="mb-4 flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <label className="flex items-center space-x-2">
+                <input 
+                  type="checkbox" 
+                  onChange={handleSelectAll} 
+                  checked={selectedItems.length === materials.length && materials.length > 0}
+                  className="rounded"
+                />
+                <span className="text-sm text-gray-700">전체 선택</span>
+              </label>
+              {selectedItems.length > 0 && (
+                <span className="text-sm text-blue-600">{selectedItems.length}개 선택됨</span>
+              )}
+            </div>
+          </div>
+
+          {/* 4-Column Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {materials.map((material, index) => (
+              <div 
+                key={material.id} 
+                className={`bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-200 ${
+                  selectedItems.includes(material.id) ? 'ring-2 ring-blue-500' : ''
+                }`}
+              >
+                {/* Thumbnail Area */}
+                <div className="h-48 bg-gray-100 flex items-center justify-center relative">
+                  <div className="absolute top-2 left-2">
+                    <input 
+                      type="checkbox" 
+                      checked={selectedItems.includes(material.id)} 
+                      onChange={() => handleSelectItem(material.id)}
+                      className="rounded"
+                    />
+                  </div>
+                  <div className="text-center">
+                    <div className="text-6xl mb-2">{getFileIcon(material.filename)}</div>
+                    <div className="text-xs text-gray-500 px-2">
+                      {material.filename.split('.').pop()?.toUpperCase()}
                     </div>
-                  </td>
-                  <td className="p-3 text-center">{material.uploader}</td>
-                  <td className="p-3 text-center">{new Date(material.uploadedAt).toLocaleDateString()}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                  </div>
+                </div>
+
+                {/* Content Area */}
+                <div className="p-4">
+                  <h3 
+                    className="font-semibold text-sm text-gray-900 mb-2 overflow-hidden" 
+                    style={{
+                      display: '-webkit-box',
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: 'vertical',
+                      maxHeight: '2.5rem'
+                    }}
+                    title={material.filename}
+                  >
+                    {material.filename}
+                  </h3>
+                  
+                  <div className="flex items-center justify-between text-xs text-gray-500 mb-3">
+                    <span>{material.uploader}</span>
+                    <span>{new Date(material.uploadedAt).toLocaleDateString()}</span>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => handleDownload(material)}
+                      className="flex-1 bg-blue-500 text-white text-xs py-2 px-3 rounded hover:bg-blue-600 transition-colors"
+                    >
+                      다운로드
+                    </button>
+                    <button
+                      onClick={() => handlePreview(material)}
+                      className="flex-1 bg-gray-500 text-white text-xs py-2 px-3 rounded hover:bg-gray-600 transition-colors"
+                    >
+                      미리보기
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {materials.length === 0 && (
+            <div className="text-center py-12 text-gray-500">
+              <div className="text-4xl mb-4">📁</div>
+              <p>등록된 자료가 없습니다.</p>
+            </div>
+          )}
+        </>
       )}
 
       {/* Footer: Bulk Actions and Pagination */}
