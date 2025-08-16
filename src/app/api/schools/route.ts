@@ -26,13 +26,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'School name is required' }, { status: 400 });
     }
 
-    // Test database connection first
+    // Test database connection and table existence
     try {
       await prisma.$queryRaw`SELECT 1`;
+      // Check if School table exists
+      await prisma.$queryRaw`SELECT COUNT(*) FROM "School" LIMIT 1`;
     } catch (dbError) {
-      console.error('Database connection failed:', dbError);
+      console.error('Database or table check failed:', dbError);
       return NextResponse.json({ 
-        error: 'Database connection failed. Please check if the database is properly configured.' 
+        error: 'Database not ready. Tables may not exist.',
+        details: dbError instanceof Error ? dbError.message : 'Unknown DB error',
+        suggestion: 'Database migration may be needed'
       }, { status: 503 });
     }
 
