@@ -2,7 +2,18 @@ import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import type { NextAuthOptions } from 'next-auth';
 
+// URL 정리 함수
+const getCleanUrl = () => {
+  const url = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+  // 공백 제거 및 중복 프로토콜 정리
+  return url.trim()
+    .replace(/\s+/g, '')
+    .replace(/^https?:\/\/\s*https?:\/\//, 'https://')
+    .replace(/^http:\/\/\s*http:\/\//, 'http://');
+};
+
 const authOptions: NextAuthOptions = {
+  url: getCleanUrl(),
   providers: [
     CredentialsProvider({
       name: 'credentials',
