@@ -1,0 +1,11 @@
+{
+  "functions": {
+    "src/app/api/**/*.ts": {
+      "maxDuration": 60
+    }
+  },
+  "regions": ["icn1"],
+  "env": {
+    "NEXTAUTH_URL": "https://school-safety-manager.vercel.app"
+  }
+}

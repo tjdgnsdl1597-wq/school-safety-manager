@@ -1,0 +1,53 @@
+'use client';
+
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useSession, signOut } from 'next-auth/react';
+
+export default function Navbar() {
+  const pathname = usePathname();
+  const { data: session } = useSession();
+
+  const navItems = [
+    { name: '학교 정보 관리', href: '/schools' },
+    { name: '일정 관리', href: '/schedules' },
+    { name: '교육 자료', href: '/educational-materials' },
+    { name: '산업 재해', href: '/industrial-accidents' },
+  ];
+
+  return (
+    <nav className="bg-blue-600 p-4 shadow-md">
+      <div className="container mx-auto flex justify-between items-center">
+        <Link href="/" className="text-white text-xl font-bold">
+          인천광역시 학교안전공제회
+        </Link>
+        <div className="flex items-center space-x-4">
+          {navItems.map((item) => (
+            <Link
+              key={item.name}
+              href={item.href}
+              className={`text-white hover:text-blue-200 transition-colors duration-200 ${
+                pathname === item.href ? 'font-bold border-b-2 border-white' : ''
+              }`}
+            >
+              {item.name}
+            </Link>
+          ))}
+          {session && (
+            <div className="flex items-center space-x-4 ml-4">
+              <span className="text-white text-sm">
+                {session.user?.name || '관리자'}님
+              </span>
+              <button
+                onClick={() => signOut({ callbackUrl: '/auth/signin' })}
+                className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition-colors duration-200"
+              >
+                로그아웃
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </nav>
+  );
+}

@@ -1,0 +1,49 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma" // Output Prisma Client to src/generated/prisma
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model School {
+  id            String    @id @default(uuid())
+  name          String    @unique
+  phoneNumber   String?
+  contactPerson String?
+  schedules     Schedule[]
+}
+
+model Schedule {
+  id          String    @id @default(uuid())
+  date        DateTime
+  schoolId    String
+  school      School    @relation(fields: [schoolId], references: [id])
+  ampm        String    // "AM" or "PM"
+  startTime   String    // e.g., "08:00"
+  endTime     String    // e.g., "09:00"
+  purpose     String    // Store as JSON string, e.g., "["월점검", "교육"]"
+  otherReason String?   // Only if "기타" or "교육" is selected
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Material {
+  id            String    @id @default(uuid())
+  filename      String
+  filePath      String
+  uploadedAt    DateTime  @default(now())
+  uploader      String
+  category      String    // "교육자료" or "산업재해"
+  thumbnailPath String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
