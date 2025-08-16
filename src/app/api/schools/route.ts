@@ -25,6 +25,17 @@ export async function POST(request: Request) {
     if (!name) {
       return NextResponse.json({ error: 'School name is required' }, { status: 400 });
     }
+
+    // Test database connection first
+    try {
+      await prisma.$queryRaw`SELECT 1`;
+    } catch (dbError) {
+      console.error('Database connection failed:', dbError);
+      return NextResponse.json({ 
+        error: 'Database connection failed. Please check if the database is properly configured.' 
+      }, { status: 503 });
+    }
+
     const newSchool = await prisma.school.create({
       data: { name, phoneNumber, contactPerson },
     });
@@ -39,8 +50,14 @@ export async function POST(request: Request) {
       if (error.code === 'P2002') {
         return NextResponse.json({ error: `School with name "${error.meta?.target}" already exists.` }, { status: 409 });
       }
+      if (error.code === 'P2021') {
+        return NextResponse.json({ error: 'Database table does not exist. Migration may be needed.' }, { status: 503 });
+      }
     }
-    return NextResponse.json({ error: 'Failed to create school' }, { status: 500 });
+    return NextResponse.json({ 
+      error: 'Failed to create school. Database may not be ready.',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    }, { status: 500 });
   }
 }
 
