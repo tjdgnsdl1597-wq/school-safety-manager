@@ -66,6 +66,14 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    // 데이터베이스 연결 확인
+    try {
+      await prisma.$connect();
+    } catch (dbError) {
+      console.error('Database connection failed:', dbError);
+      return NextResponse.json({ error: 'Database connection failed' }, { status: 503 });
+    }
+
     const formData = await request.formData();
     const file = formData.get('file') as File;
     const category = formData.get('category') as string;
@@ -115,8 +123,13 @@ export async function POST(request: Request) {
     const uploadDir = path.join(process.cwd(), 'public', 'uploads', category);
     const filePath = path.join(uploadDir, safeFilename);
 
-    await mkdir(uploadDir, { recursive: true });
-    await writeFile(filePath, buffer);
+    try {
+      await mkdir(uploadDir, { recursive: true });
+      await writeFile(filePath, buffer);
+    } catch (fileError) {
+      console.error('File write failed:', fileError);
+      return NextResponse.json({ error: 'Failed to save file' }, { status: 500 });
+    }
 
     // 파일 타입에 따른 썸네일 결정
     let thumbnailPath = null;
@@ -124,18 +137,23 @@ export async function POST(request: Request) {
       thumbnailPath = `/uploads/${category}/${safeFilename}`;
     }
 
-    const newMaterial = await prisma.material.create({
-      data: {
-        filename: file.name, // 원본 파일명 저장
-        filePath: `/uploads/${category}/${safeFilename}`,
-        uploadedAt: new Date(),
-        uploader,
-        category,
-        thumbnailPath,
-      },
-    });
+    try {
+      const newMaterial = await prisma.material.create({
+        data: {
+          filename: file.name, // 원본 파일명 저장
+          filePath: `/uploads/${category}/${safeFilename}`,
+          uploadedAt: new Date(),
+          uploader,
+          category,
+          thumbnailPath,
+        },
+      });
 
-    return NextResponse.json(newMaterial, { status: 201 });
+      return NextResponse.json(newMaterial, { status: 201 });
+    } catch (dbError) {
+      console.error('Database create failed:', dbError);
+      return NextResponse.json({ error: 'Database not ready. Tables may not exist yet.' }, { status: 503 });
+    }
   } catch (error) {
     console.error('Error uploading material:', error);
     return NextResponse.json({ error: 'Failed to upload material' }, { status: 500 });
