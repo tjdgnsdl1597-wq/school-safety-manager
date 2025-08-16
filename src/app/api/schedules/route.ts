@@ -5,30 +5,15 @@ const prisma = new PrismaClient();
 
 export async function GET() {
   try {
-    // 데이터베이스 연결 확인
-    try {
-      await prisma.$connect();
-    } catch (dbError) {
-      console.error('Database connection failed:', dbError);
-      // 데이터베이스 연결 실패 시 빈 배열 반환
-      return NextResponse.json([]);
-    }
-
-    try {
-      const schedules = await prisma.schedule.findMany({
-        include: {
-          school: true, // Include school details
-        },
-        orderBy: {
-          date: 'asc',
-        },
-      });
-      return NextResponse.json(schedules);
-    } catch (queryError) {
-      console.error('Database query failed:', queryError);
-      // 쿼리 실패 시 빈 배열 반환
-      return NextResponse.json([]);
-    }
+    const schedules = await prisma.schedule.findMany({
+      include: {
+        school: true, // Include school details
+      },
+      orderBy: {
+        date: 'asc',
+      },
+    });
+    return NextResponse.json(schedules);
   } catch (error) {
     console.error('Error fetching schedules:', error);
     return NextResponse.json([]);
@@ -37,14 +22,6 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    // 데이터베이스 연결 확인
-    try {
-      await prisma.$connect();
-    } catch (dbError) {
-      console.error('Database connection failed:', dbError);
-      return NextResponse.json({ error: 'Database connection failed' }, { status: 503 });
-    }
-
     const { date, schoolId, ampm, startTime, endTime, purpose, otherReason } = await request.json();
 
     if (!date || !schoolId || !ampm || !startTime || !endTime || !purpose) {
@@ -54,23 +31,18 @@ export async function POST(request: Request) {
     // Ensure purpose is stringified if it's an array
     const purposeString = Array.isArray(purpose) ? JSON.stringify(purpose) : purpose;
 
-    try {
-      const newSchedule = await prisma.schedule.create({
-        data: {
-        date: new Date(date),
-          schoolId,
-          ampm,
-          startTime,
-          endTime,
-          purpose: purposeString,
-          otherReason,
-        },
-      });
-      return NextResponse.json(newSchedule, { status: 201 });
-    } catch (queryError) {
-      console.error('Database query failed:', queryError);
-      return NextResponse.json({ error: 'Database not ready. Tables may not exist yet.' }, { status: 503 });
-    }
+    const newSchedule = await prisma.schedule.create({
+      data: {
+      date: new Date(date),
+        schoolId,
+        ampm,
+        startTime,
+        endTime,
+        purpose: purposeString,
+        otherReason,
+      },
+    });
+    return NextResponse.json(newSchedule, { status: 201 });
   } catch (error) {
     console.error('Error creating schedule:', error);
     return NextResponse.json({ error: 'Failed to create schedule' }, { status: 500 });

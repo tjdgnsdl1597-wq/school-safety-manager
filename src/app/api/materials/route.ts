@@ -18,15 +18,6 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Category is required' }, { status: 400 });
     }
 
-    // 데이터베이스 연결 확인
-    try {
-      await prisma.$connect();
-    } catch (dbError) {
-      console.error('Database connection failed:', dbError);
-      // 데이터베이스 연결 실패 시 빈 배열 반환
-      return NextResponse.json({ data: [], totalCount: 0 });
-    }
-
     const skip = (page - 1) * limit;
     const whereClause: Prisma.MaterialWhereInput = { category };
 
@@ -38,25 +29,19 @@ export async function GET(request: Request) {
       }
     }
 
-    try {
-      const [materials, totalCount] = await prisma.$transaction([
-        prisma.material.findMany({
-          where: whereClause,
-          orderBy: {
-            uploadedAt: 'desc',
-          },
-          skip: skip,
-          take: limit,
-        }),
-        prisma.material.count({ where: whereClause }),
-      ]);
+    const [materials, totalCount] = await prisma.$transaction([
+      prisma.material.findMany({
+        where: whereClause,
+        orderBy: {
+          uploadedAt: 'desc',
+        },
+        skip: skip,
+        take: limit,
+      }),
+      prisma.material.count({ where: whereClause }),
+    ]);
 
-      return NextResponse.json({ data: materials, totalCount });
-    } catch (queryError) {
-      console.error('Database query failed:', queryError);
-      // 쿼리 실패 시 빈 배열 반환
-      return NextResponse.json({ data: [], totalCount: 0 });
-    }
+    return NextResponse.json({ data: materials, totalCount });
 
   } catch (error) {
     console.error('Error fetching materials:', error);
@@ -66,14 +51,6 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    // 데이터베이스 연결 확인
-    try {
-      await prisma.$connect();
-    } catch (dbError) {
-      console.error('Database connection failed:', dbError);
-      return NextResponse.json({ error: 'Database connection failed' }, { status: 503 });
-    }
-
     const formData = await request.formData();
     const file = formData.get('file') as File;
     const category = formData.get('category') as string;
@@ -117,19 +94,13 @@ export async function POST(request: Request) {
 
     const buffer = Buffer.from(await file.arrayBuffer());
     const timestamp = Date.now();
-    const fileExtension = path.extname(file.name);
     const safeFilename = `${timestamp}_${file.name.replace(/[^a-zA-Z0-9가-힣._-]/g, '_')}`;
     
     const uploadDir = path.join(process.cwd(), 'public', 'uploads', category);
     const filePath = path.join(uploadDir, safeFilename);
 
-    try {
-      await mkdir(uploadDir, { recursive: true });
-      await writeFile(filePath, buffer);
-    } catch (fileError) {
-      console.error('File write failed:', fileError);
-      return NextResponse.json({ error: 'Failed to save file' }, { status: 500 });
-    }
+    await mkdir(uploadDir, { recursive: true });
+    await writeFile(filePath, buffer);
 
     // 파일 타입에 따른 썸네일 결정
     let thumbnailPath = null;
@@ -137,23 +108,18 @@ export async function POST(request: Request) {
       thumbnailPath = `/uploads/${category}/${safeFilename}`;
     }
 
-    try {
-      const newMaterial = await prisma.material.create({
-        data: {
-          filename: file.name, // 원본 파일명 저장
-          filePath: `/uploads/${category}/${safeFilename}`,
-          uploadedAt: new Date(),
-          uploader,
-          category,
-          thumbnailPath,
-        },
-      });
+    const newMaterial = await prisma.material.create({
+      data: {
+        filename: file.name, // 원본 파일명 저장
+        filePath: `/uploads/${category}/${safeFilename}`,
+        uploadedAt: new Date(),
+        uploader,
+        category,
+        thumbnailPath,
+      },
+    });
 
-      return NextResponse.json(newMaterial, { status: 201 });
-    } catch (dbError) {
-      console.error('Database create failed:', dbError);
-      return NextResponse.json({ error: 'Database not ready. Tables may not exist yet.' }, { status: 503 });
-    }
+    return NextResponse.json(newMaterial, { status: 201 });
   } catch (error) {
     console.error('Error uploading material:', error);
     return NextResponse.json({ error: 'Failed to upload material' }, { status: 500 });

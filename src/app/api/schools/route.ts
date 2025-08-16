@@ -5,27 +5,12 @@ const prisma = new PrismaClient();
 
 export async function GET() {
   try {
-    // 데이터베이스 연결 확인
-    try {
-      await prisma.$connect();
-    } catch (dbError) {
-      console.error('Database connection failed:', dbError);
-      // 데이터베이스 연결 실패 시 빈 배열 반환
-      return NextResponse.json([]);
-    }
-
-    try {
-      const schools = await prisma.school.findMany({
-        orderBy: {
-          name: 'asc', // 가나다순 (오름차순) 정렬
-        },
-      });
-      return NextResponse.json(schools);
-    } catch (queryError) {
-      console.error('Database query failed:', queryError);
-      // 쿼리 실패 시 빈 배열 반환
-      return NextResponse.json([]);
-    }
+    const schools = await prisma.school.findMany({
+      orderBy: {
+        name: 'asc', // 가나다순 (오름차순) 정렬
+      },
+    });
+    return NextResponse.json(schools);
   } catch (error) {
     console.error('Error fetching schools:', error);
     return NextResponse.json([]);
@@ -34,31 +19,17 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    // 데이터베이스 연결 확인
-    try {
-      await prisma.$connect();
-    } catch (dbError) {
-      console.error('Database connection failed:', dbError);
-      return NextResponse.json({ error: 'Database connection failed' }, { status: 503 });
-    }
-
     const { name, phoneNumber, contactPerson } = await request.json();
     console.log('Received school data for creation:', { name, phoneNumber, contactPerson });
 
     if (!name) {
       return NextResponse.json({ error: 'School name is required' }, { status: 400 });
     }
-
-    try {
-      const newSchool = await prisma.school.create({
-        data: { name, phoneNumber, contactPerson },
-      });
-      console.log('School created successfully:', newSchool);
-      return NextResponse.json(newSchool, { status: 201 });
-    } catch (queryError) {
-      console.error('Database query failed:', queryError);
-      return NextResponse.json({ error: 'Database not ready. Tables may not exist yet.' }, { status: 503 });
-    }
+    const newSchool = await prisma.school.create({
+      data: { name, phoneNumber, contactPerson },
+    });
+    console.log('School created successfully:', newSchool);
+    return NextResponse.json(newSchool, { status: 201 });
   } catch (error: unknown) {
     console.error('Error creating school:', error);
     if (error instanceof Error) {
