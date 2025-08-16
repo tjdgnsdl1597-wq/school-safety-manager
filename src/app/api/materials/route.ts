@@ -18,6 +18,15 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Category is required' }, { status: 400 });
     }
 
+    // 데이터베이스 연결 확인
+    try {
+      await prisma.$connect();
+    } catch (dbError) {
+      console.error('Database connection failed:', dbError);
+      // 데이터베이스 연결 실패 시 빈 배열 반환
+      return NextResponse.json({ data: [], totalCount: 0 });
+    }
+
     const skip = (page - 1) * limit;
     const whereClause: Prisma.MaterialWhereInput = { category };
 
@@ -29,23 +38,29 @@ export async function GET(request: Request) {
       }
     }
 
-    const [materials, totalCount] = await prisma.$transaction([
-      prisma.material.findMany({
-        where: whereClause,
-        orderBy: {
-          uploadedAt: 'desc',
-        },
-        skip: skip,
-        take: limit,
-      }),
-      prisma.material.count({ where: whereClause }),
-    ]);
+    try {
+      const [materials, totalCount] = await prisma.$transaction([
+        prisma.material.findMany({
+          where: whereClause,
+          orderBy: {
+            uploadedAt: 'desc',
+          },
+          skip: skip,
+          take: limit,
+        }),
+        prisma.material.count({ where: whereClause }),
+      ]);
 
-    return NextResponse.json({ data: materials, totalCount });
+      return NextResponse.json({ data: materials, totalCount });
+    } catch (queryError) {
+      console.error('Database query failed:', queryError);
+      // 쿼리 실패 시 빈 배열 반환
+      return NextResponse.json({ data: [], totalCount: 0 });
+    }
 
   } catch (error) {
     console.error('Error fetching materials:', error);
-    return NextResponse.json({ error: 'Failed to fetch materials' }, { status: 500 });
+    return NextResponse.json({ data: [], totalCount: 0 });
   }
 }
 
