@@ -409,10 +409,8 @@ export default function HomePage() {
             initialView="dayGridMonth"
             headerToolbar={{ 
               left: 'title', 
-              center: '', 
-              right: 'prev,next',
-              start: 'today',
-              end: 'dayGridMonth,timeGridWeek,timeGridDay'
+              center: 'prev,next', 
+              right: 'today dayGridMonth,timeGridWeek'
             }}
             titleFormat={{ year: 'numeric', month: 'long' }}
             events={calendarEvents}
