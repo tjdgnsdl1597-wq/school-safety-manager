@@ -26,13 +26,24 @@ export async function GET(request: Request) {
       } else if (searchBy === 'content') {
         whereClause.content = { contains: searchTerm };
       } else if (searchBy === 'filename') {
-        whereClause.filename = { contains: searchTerm };
+        whereClause.attachments = {
+          some: {
+            filename: { contains: searchTerm }
+          }
+        };
       }
     }
 
     const [materials, totalCount] = await prisma.$transaction([
       prisma.material.findMany({
         where: whereClause,
+        include: {
+          attachments: {
+            orderBy: {
+              uploadOrder: 'asc'
+            }
+          }
+        },
         orderBy: {
           uploadedAt: 'desc',
         },
@@ -55,18 +66,18 @@ export async function POST(request: Request) {
     console.log('API POST /api/materials called');
     
     const formData = await request.formData();
-    const file = formData.get('file') as File;
+    const files = formData.getAll('files') as File[];
     const title = formData.get('title') as string;
     const content = formData.get('content') as string;
     const category = formData.get('category') as string;
 
     console.log('FormData received:', { 
-      hasFile: !!file, 
+      fileCount: files.length,
       title,
       hasContent: !!content,
       category,
-      fileSize: file?.size,
-      fileName: file?.name 
+      fileSizes: files.map(f => f?.size),
+      fileNames: files.map(f => f?.name)
     });
 
     if (!title || !category) {
@@ -74,11 +85,21 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Title and category are required' }, { status: 400 });
     }
 
-    let gcsUrl = null;
-    let thumbnailPath = null;
+    // 파일 개수 검증 (최대 5개)
+    if (files.length > 5) {
+      return NextResponse.json({ error: '최대 5개의 파일만 업로드할 수 있습니다.' }, { status: 400 });
+    }
 
-    // 파일이 있는 경우에만 업로드 처리
-    if (file) {
+    // 전체 파일 크기 검증 (합계 50MB)
+    const totalSize = files.reduce((sum, file) => sum + (file?.size || 0), 0);
+    const maxTotalSize = 50 * 1024 * 1024;
+    if (totalSize > maxTotalSize) {
+      return NextResponse.json({ error: '전체 파일 크기가 50MB를 초과할 수 없습니다.' }, { status: 400 });
+    }
+
+    // 파일들이 있는 경우에만 업로드 처리
+    const attachments = [];
+    if (files.length > 0 && files[0].size > 0) {
       // 파일 형식 검증
       const allowedTypes = [
         'application/pdf',
@@ -97,54 +118,43 @@ export async function POST(request: Request) {
         'text/plain'
       ];
 
-      if (!allowedTypes.includes(file.type)) {
-        return NextResponse.json({ 
-          error: '지원하지 않는 파일 형식입니다. PDF, PPT, DOC, XLS, 이미지, 동영상 파일만 업로드 가능합니다.' 
-        }, { status: 400 });
-      }
-
-      // 파일 크기 제한 (50MB)
-      const maxSize = 50 * 1024 * 1024;
-      if (file.size > maxSize) {
-        return NextResponse.json({ 
-          error: '파일 크기가 너무 큽니다. 50MB 이하의 파일만 업로드 가능합니다.' 
-        }, { status: 400 });
-      }
-    }
-
-    // 파일이 있는 경우에만 Google Cloud Storage에 업로드
-    if (file) {
-      console.log(`Uploading file to GCS: ${file.name}, Size: ${file.size} bytes`);
-      console.log('Environment check:', {
-        hasProjectId: !!process.env.GOOGLE_CLOUD_PROJECT_ID,
-        hasBucketName: !!process.env.GOOGLE_CLOUD_BUCKET_NAME,
-        hasCredentials: !!process.env.GOOGLE_CLOUD_CREDENTIALS,
-        hasKeyFile: !!process.env.GOOGLE_CLOUD_KEY_FILE
-      });
-      
-      try {
-        // GCS에 파일 업로드
-        gcsUrl = await uploadFileToGCS(file, category);
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
         
-        // 이미지 파일의 경우 썸네일로 GCS URL 사용
-        if (file.type.startsWith('image/')) {
-          thumbnailPath = gcsUrl; // GCS URL을 썸네일로 사용
+        if (!allowedTypes.includes(file.type)) {
+          return NextResponse.json({ 
+            error: `지원하지 않는 파일 형식입니다: ${file.name}. PDF, PPT, DOC, XLS, 이미지, 동영상 파일만 업로드 가능합니다.` 
+          }, { status: 400 });
         }
+
+        console.log(`Uploading file ${i + 1} to GCS: ${file.name}, Size: ${file.size} bytes`);
         
-        console.log(`File uploaded successfully: ${gcsUrl}`);
-      } catch (gcsError) {
-        console.error('GCS upload failed:', gcsError);
-        const errorMessage = gcsError instanceof Error ? gcsError.message : 'Unknown GCS error';
-        console.error('GCS error details:', {
-          message: errorMessage,
-          stack: gcsError instanceof Error ? gcsError.stack : undefined,
-          name: gcsError instanceof Error ? gcsError.name : undefined
-        });
-        
-        return NextResponse.json({ 
-          error: `Google Cloud Storage 업로드 실패: ${errorMessage}`,
-          details: process.env.NODE_ENV === 'development' ? gcsError : undefined
-        }, { status: 500 });
+        try {
+          // GCS에 파일 업로드
+          const gcsUrl = await uploadFileToGCS(file, category);
+          
+          // 썸네일 경로 (이미지인 경우)
+          const thumbnailPath = file.type.startsWith('image/') ? gcsUrl : null;
+          
+          attachments.push({
+            filename: file.name,
+            filePath: gcsUrl,
+            fileSize: file.size,
+            mimeType: file.type,
+            thumbnailPath,
+            uploadOrder: i + 1
+          });
+          
+          console.log(`File ${i + 1} uploaded successfully: ${gcsUrl}`);
+        } catch (gcsError) {
+          console.error(`GCS upload failed for file ${i + 1}:`, gcsError);
+          const errorMessage = gcsError instanceof Error ? gcsError.message : 'Unknown GCS error';
+          
+          return NextResponse.json({ 
+            error: `파일 업로드 실패 (${file.name}): ${errorMessage}`,
+            details: process.env.NODE_ENV === 'development' ? gcsError : undefined
+          }, { status: 500 });
+        }
       }
     }
 
@@ -154,13 +164,20 @@ export async function POST(request: Request) {
         data: {
           title,
           content: content || null,
-          filename: file?.name || null,
-          filePath: gcsUrl || null,
           uploadedAt: new Date(),
           uploader: 'Admin', // 기본값으로 설정
           category,
-          thumbnailPath,
+          attachments: {
+            create: attachments
+          }
         },
+        include: {
+          attachments: {
+            orderBy: {
+              uploadOrder: 'asc'
+            }
+          }
+        }
       });
 
       console.log(`Post created successfully: ${newMaterial.id}`);
@@ -186,16 +203,16 @@ export async function PUT(request: Request) {
     const title = formData.get('title') as string;
     const content = formData.get('content') as string;
     const category = formData.get('category') as string;
-    const file = formData.get('file') as File;
+    const files = formData.getAll('files') as File[];
 
     console.log('FormData received for update:', { 
       id,
       title,
       hasContent: !!content,
       category,
-      hasFile: !!file,
-      fileSize: file?.size,
-      fileName: file?.name 
+      fileCount: files.length,
+      fileSizes: files.map(f => f?.size),
+      fileNames: files.map(f => f?.name)
     });
 
     if (!id || !title || !category) {
@@ -203,20 +220,33 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: 'ID, title and category are required' }, { status: 400 });
     }
 
+    // 파일 개수 검증 (최대 5개)
+    if (files.length > 5) {
+      return NextResponse.json({ error: '최대 5개의 파일만 업로드할 수 있습니다.' }, { status: 400 });
+    }
+
+    // 전체 파일 크기 검증 (합계 50MB)
+    const totalSize = files.reduce((sum, file) => sum + (file?.size || 0), 0);
+    const maxTotalSize = 50 * 1024 * 1024;
+    if (totalSize > maxTotalSize) {
+      return NextResponse.json({ error: '전체 파일 크기가 50MB를 초과할 수 없습니다.' }, { status: 400 });
+    }
+
     // 기존 게시글 조회
     const existingMaterial = await prisma.material.findUnique({
-      where: { id }
+      where: { id },
+      include: {
+        attachments: true
+      }
     });
 
     if (!existingMaterial) {
       return NextResponse.json({ error: 'Post not found' }, { status: 404 });
     }
 
-    let gcsUrl = existingMaterial.filePath;
-    let thumbnailPath = existingMaterial.thumbnailPath;
-
-    // 새 파일이 업로드된 경우
-    if (file && file.size > 0) {
+    // 새 파일들이 업로드된 경우
+    const newAttachments = [];
+    if (files.length > 0 && files[0].size > 0) {
       // 파일 형식 검증
       const allowedTypes = [
         'application/pdf',
@@ -235,49 +265,51 @@ export async function PUT(request: Request) {
         'text/plain'
       ];
 
-      if (!allowedTypes.includes(file.type)) {
-        return NextResponse.json({ 
-          error: '지원하지 않는 파일 형식입니다. PDF, PPT, DOC, XLS, 이미지, 동영상 파일만 업로드 가능합니다.' 
-        }, { status: 400 });
+      // 기존 파일들 삭제
+      for (const attachment of existingMaterial.attachments) {
+        try {
+          await deleteFileFromGCS(attachment.filePath);
+          console.log(`Deleted old file from GCS: ${attachment.filePath}`);
+        } catch (deleteError) {
+          console.warn('Failed to delete old file from GCS:', deleteError);
+        }
       }
 
-      // 파일 크기 제한 (50MB)
-      const maxSize = 50 * 1024 * 1024;
-      if (file.size > maxSize) {
-        return NextResponse.json({ 
-          error: '파일 크기가 너무 큽니다. 50MB 이하의 파일만 업로드 가능합니다.' 
-        }, { status: 400 });
-      }
-
-      try {
-        // 기존 파일 삭제 (GCS URL인 경우)
-        if (existingMaterial.filePath && existingMaterial.filePath.startsWith('https://storage.googleapis.com/')) {
-          try {
-            await deleteFileFromGCS(existingMaterial.filePath);
-            console.log(`Deleted old file from GCS: ${existingMaterial.filePath}`);
-          } catch (deleteError) {
-            console.warn('Failed to delete old file from GCS:', deleteError);
-          }
+      // 새 파일들 업로드
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        
+        if (!allowedTypes.includes(file.type)) {
+          return NextResponse.json({ 
+            error: `지원하지 않는 파일 형식입니다: ${file.name}. PDF, PPT, DOC, XLS, 이미지, 동영상 파일만 업로드 가능합니다.` 
+          }, { status: 400 });
         }
 
-        // 새 파일 업로드
-        gcsUrl = await uploadFileToGCS(file, category);
-        
-        // 이미지 파일의 경우 썸네일로 GCS URL 사용
-        if (file.type.startsWith('image/')) {
-          thumbnailPath = gcsUrl;
-        } else {
-          thumbnailPath = null; // 이미지가 아닌 경우 썸네일 제거
+        try {
+          // GCS에 파일 업로드
+          const gcsUrl = await uploadFileToGCS(file, category);
+          
+          // 썸네일 경로 (이미지인 경우)
+          const thumbnailPath = file.type.startsWith('image/') ? gcsUrl : null;
+          
+          newAttachments.push({
+            filename: file.name,
+            filePath: gcsUrl,
+            fileSize: file.size,
+            mimeType: file.type,
+            thumbnailPath,
+            uploadOrder: i + 1
+          });
+          
+          console.log(`File ${i + 1} uploaded successfully: ${gcsUrl}`);
+        } catch (gcsError) {
+          console.error(`GCS upload failed for file ${i + 1}:`, gcsError);
+          const errorMessage = gcsError instanceof Error ? gcsError.message : 'Unknown GCS error';
+          return NextResponse.json({
+            error: `파일 업로드 실패 (${file.name}): ${errorMessage}`,
+            details: process.env.NODE_ENV === 'development' ? gcsError : undefined
+          }, { status: 500 });
         }
-        
-        console.log(`New file uploaded successfully: ${gcsUrl}`);
-      } catch (gcsError) {
-        console.error('GCS upload failed:', gcsError);
-        const errorMessage = gcsError instanceof Error ? gcsError.message : 'Unknown GCS error';
-        return NextResponse.json({ 
-          error: `Google Cloud Storage 업로드 실패: ${errorMessage}`,
-          details: process.env.NODE_ENV === 'development' ? gcsError : undefined
-        }, { status: 500 });
       }
     }
 
@@ -288,10 +320,18 @@ export async function PUT(request: Request) {
         data: {
           title,
           content: content || null,
-          filename: file && file.size > 0 ? file.name : existingMaterial.filename,
-          filePath: gcsUrl,
-          thumbnailPath,
+          attachments: {
+            deleteMany: {}, // 기존 첨부파일들 모두 삭제
+            create: newAttachments // 새 첨부파일들 생성
+          }
         },
+        include: {
+          attachments: {
+            orderBy: {
+              uploadOrder: 'asc'
+            }
+          }
+        }
       });
 
       console.log(`Post updated successfully: ${updatedMaterial.id}`);
@@ -318,23 +358,25 @@ export async function DELETE(request: Request) {
 
     const materialsToDelete = await prisma.material.findMany({
       where: { id: { in: ids } },
+      include: {
+        attachments: true
+      }
     });
 
     if (materialsToDelete.length !== ids.length) {
         console.warn('Some materials to delete were not found. Deleting the ones that were found.');
     }
 
-    // GCS에서 파일 삭제
+    // GCS에서 첨부파일들 삭제
     for (const material of materialsToDelete) {
-      try {
-        // GCS URL인 경우에만 삭제 시도
-        if (material.filePath && material.filePath.startsWith('https://storage.googleapis.com/')) {
-          await deleteFileFromGCS(material.filePath);
-          console.log(`Deleted file from GCS: ${material.filePath}`);
+      for (const attachment of material.attachments) {
+        try {
+          await deleteFileFromGCS(attachment.filePath);
+          console.log(`Deleted file from GCS: ${attachment.filePath}`);
+        } catch (fileError) {
+          // Log the error but continue, as the DB entry is the source of truth
+          console.error(`Failed to delete file from GCS: ${attachment.filePath}`, fileError);
         }
-      } catch (fileError) {
-        // Log the error but continue, as the DB entry is the source of truth
-        console.error(`Failed to delete file from GCS: ${material.filePath}`, fileError);
       }
     }
 

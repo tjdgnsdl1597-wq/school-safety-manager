@@ -28,6 +28,11 @@ export type Schedule = $Result.DefaultSelection<Prisma.$SchedulePayload>
  * 
  */
 export type Material = $Result.DefaultSelection<Prisma.$MaterialPayload>
+/**
+ * Model MaterialAttachment
+ * 
+ */
+export type MaterialAttachment = $Result.DefaultSelection<Prisma.$MaterialAttachmentPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -176,6 +181,16 @@ export class PrismaClient<
     * ```
     */
   get material(): Prisma.MaterialDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.materialAttachment`: Exposes CRUD operations for the **MaterialAttachment** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more MaterialAttachments
+    * const materialAttachments = await prisma.materialAttachment.findMany()
+    * ```
+    */
+  get materialAttachment(): Prisma.MaterialAttachmentDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -618,7 +633,8 @@ export namespace Prisma {
   export const ModelName: {
     School: 'School',
     Schedule: 'Schedule',
-    Material: 'Material'
+    Material: 'Material',
+    MaterialAttachment: 'MaterialAttachment'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -637,7 +653,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "school" | "schedule" | "material"
+      modelProps: "school" | "schedule" | "material" | "materialAttachment"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -863,6 +879,80 @@ export namespace Prisma {
           }
         }
       }
+      MaterialAttachment: {
+        payload: Prisma.$MaterialAttachmentPayload<ExtArgs>
+        fields: Prisma.MaterialAttachmentFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.MaterialAttachmentFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MaterialAttachmentPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.MaterialAttachmentFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MaterialAttachmentPayload>
+          }
+          findFirst: {
+            args: Prisma.MaterialAttachmentFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MaterialAttachmentPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.MaterialAttachmentFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MaterialAttachmentPayload>
+          }
+          findMany: {
+            args: Prisma.MaterialAttachmentFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MaterialAttachmentPayload>[]
+          }
+          create: {
+            args: Prisma.MaterialAttachmentCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MaterialAttachmentPayload>
+          }
+          createMany: {
+            args: Prisma.MaterialAttachmentCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.MaterialAttachmentCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MaterialAttachmentPayload>[]
+          }
+          delete: {
+            args: Prisma.MaterialAttachmentDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MaterialAttachmentPayload>
+          }
+          update: {
+            args: Prisma.MaterialAttachmentUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MaterialAttachmentPayload>
+          }
+          deleteMany: {
+            args: Prisma.MaterialAttachmentDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.MaterialAttachmentUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.MaterialAttachmentUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MaterialAttachmentPayload>[]
+          }
+          upsert: {
+            args: Prisma.MaterialAttachmentUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MaterialAttachmentPayload>
+          }
+          aggregate: {
+            args: Prisma.MaterialAttachmentAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateMaterialAttachment>
+          }
+          groupBy: {
+            args: Prisma.MaterialAttachmentGroupByArgs<ExtArgs>
+            result: $Utils.Optional<MaterialAttachmentGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.MaterialAttachmentCountArgs<ExtArgs>
+            result: $Utils.Optional<MaterialAttachmentCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -958,6 +1048,7 @@ export namespace Prisma {
     school?: SchoolOmit
     schedule?: ScheduleOmit
     material?: MaterialOmit
+    materialAttachment?: MaterialAttachmentOmit
   }
 
   /* Types for Logging */
@@ -1061,6 +1152,37 @@ export namespace Prisma {
    */
   export type SchoolCountOutputTypeCountSchedulesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ScheduleWhereInput
+  }
+
+
+  /**
+   * Count Type MaterialCountOutputType
+   */
+
+  export type MaterialCountOutputType = {
+    attachments: number
+  }
+
+  export type MaterialCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    attachments?: boolean | MaterialCountOutputTypeCountAttachmentsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * MaterialCountOutputType without action
+   */
+  export type MaterialCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MaterialCountOutputType
+     */
+    select?: MaterialCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * MaterialCountOutputType without action
+   */
+  export type MaterialCountOutputTypeCountAttachmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: MaterialAttachmentWhereInput
   }
 
 
@@ -3258,12 +3380,9 @@ export namespace Prisma {
     id: string | null
     title: string | null
     content: string | null
-    filename: string | null
-    filePath: string | null
     uploadedAt: Date | null
     uploader: string | null
     category: string | null
-    thumbnailPath: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -3272,12 +3391,9 @@ export namespace Prisma {
     id: string | null
     title: string | null
     content: string | null
-    filename: string | null
-    filePath: string | null
     uploadedAt: Date | null
     uploader: string | null
     category: string | null
-    thumbnailPath: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -3286,12 +3402,9 @@ export namespace Prisma {
     id: number
     title: number
     content: number
-    filename: number
-    filePath: number
     uploadedAt: number
     uploader: number
     category: number
-    thumbnailPath: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -3302,12 +3415,9 @@ export namespace Prisma {
     id?: true
     title?: true
     content?: true
-    filename?: true
-    filePath?: true
     uploadedAt?: true
     uploader?: true
     category?: true
-    thumbnailPath?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -3316,12 +3426,9 @@ export namespace Prisma {
     id?: true
     title?: true
     content?: true
-    filename?: true
-    filePath?: true
     uploadedAt?: true
     uploader?: true
     category?: true
-    thumbnailPath?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -3330,12 +3437,9 @@ export namespace Prisma {
     id?: true
     title?: true
     content?: true
-    filename?: true
-    filePath?: true
     uploadedAt?: true
     uploader?: true
     category?: true
-    thumbnailPath?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -3417,12 +3521,9 @@ export namespace Prisma {
     id: string
     title: string
     content: string | null
-    filename: string | null
-    filePath: string | null
     uploadedAt: Date
     uploader: string
     category: string
-    thumbnailPath: string | null
     createdAt: Date
     updatedAt: Date
     _count: MaterialCountAggregateOutputType | null
@@ -3448,26 +3549,22 @@ export namespace Prisma {
     id?: boolean
     title?: boolean
     content?: boolean
-    filename?: boolean
-    filePath?: boolean
     uploadedAt?: boolean
     uploader?: boolean
     category?: boolean
-    thumbnailPath?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    attachments?: boolean | Material$attachmentsArgs<ExtArgs>
+    _count?: boolean | MaterialCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["material"]>
 
   export type MaterialSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     title?: boolean
     content?: boolean
-    filename?: boolean
-    filePath?: boolean
     uploadedAt?: boolean
     uploader?: boolean
     category?: boolean
-    thumbnailPath?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["material"]>
@@ -3476,12 +3573,9 @@ export namespace Prisma {
     id?: boolean
     title?: boolean
     content?: boolean
-    filename?: boolean
-    filePath?: boolean
     uploadedAt?: boolean
     uploader?: boolean
     category?: boolean
-    thumbnailPath?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["material"]>
@@ -3490,31 +3584,33 @@ export namespace Prisma {
     id?: boolean
     title?: boolean
     content?: boolean
-    filename?: boolean
-    filePath?: boolean
     uploadedAt?: boolean
     uploader?: boolean
     category?: boolean
-    thumbnailPath?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type MaterialOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "content" | "filename" | "filePath" | "uploadedAt" | "uploader" | "category" | "thumbnailPath" | "createdAt" | "updatedAt", ExtArgs["result"]["material"]>
+  export type MaterialOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "content" | "uploadedAt" | "uploader" | "category" | "createdAt" | "updatedAt", ExtArgs["result"]["material"]>
+  export type MaterialInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    attachments?: boolean | Material$attachmentsArgs<ExtArgs>
+    _count?: boolean | MaterialCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type MaterialIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type MaterialIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
 
   export type $MaterialPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Material"
-    objects: {}
+    objects: {
+      attachments: Prisma.$MaterialAttachmentPayload<ExtArgs>[]
+    }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       title: string
       content: string | null
-      filename: string | null
-      filePath: string | null
       uploadedAt: Date
       uploader: string
       category: string
-      thumbnailPath: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["material"]>
@@ -3911,6 +4007,7 @@ export namespace Prisma {
    */
   export interface Prisma__MaterialClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    attachments<T extends Material$attachmentsArgs<ExtArgs> = {}>(args?: Subset<T, Material$attachmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MaterialAttachmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3943,12 +4040,9 @@ export namespace Prisma {
     readonly id: FieldRef<"Material", 'String'>
     readonly title: FieldRef<"Material", 'String'>
     readonly content: FieldRef<"Material", 'String'>
-    readonly filename: FieldRef<"Material", 'String'>
-    readonly filePath: FieldRef<"Material", 'String'>
     readonly uploadedAt: FieldRef<"Material", 'DateTime'>
     readonly uploader: FieldRef<"Material", 'String'>
     readonly category: FieldRef<"Material", 'String'>
-    readonly thumbnailPath: FieldRef<"Material", 'String'>
     readonly createdAt: FieldRef<"Material", 'DateTime'>
     readonly updatedAt: FieldRef<"Material", 'DateTime'>
   }
@@ -3968,6 +4062,10 @@ export namespace Prisma {
      */
     omit?: MaterialOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MaterialInclude<ExtArgs> | null
+    /**
      * Filter, which Material to fetch.
      */
     where: MaterialWhereUniqueInput
@@ -3986,6 +4084,10 @@ export namespace Prisma {
      */
     omit?: MaterialOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MaterialInclude<ExtArgs> | null
+    /**
      * Filter, which Material to fetch.
      */
     where: MaterialWhereUniqueInput
@@ -4003,6 +4105,10 @@ export namespace Prisma {
      * Omit specific fields from the Material
      */
     omit?: MaterialOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MaterialInclude<ExtArgs> | null
     /**
      * Filter, which Material to fetch.
      */
@@ -4052,6 +4158,10 @@ export namespace Prisma {
      */
     omit?: MaterialOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MaterialInclude<ExtArgs> | null
+    /**
      * Filter, which Material to fetch.
      */
     where?: MaterialWhereInput
@@ -4100,6 +4210,10 @@ export namespace Prisma {
      */
     omit?: MaterialOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MaterialInclude<ExtArgs> | null
+    /**
      * Filter, which Materials to fetch.
      */
     where?: MaterialWhereInput
@@ -4142,6 +4256,10 @@ export namespace Prisma {
      * Omit specific fields from the Material
      */
     omit?: MaterialOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MaterialInclude<ExtArgs> | null
     /**
      * The data needed to create a Material.
      */
@@ -4188,6 +4306,10 @@ export namespace Prisma {
      * Omit specific fields from the Material
      */
     omit?: MaterialOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MaterialInclude<ExtArgs> | null
     /**
      * The data needed to update a Material.
      */
@@ -4255,6 +4377,10 @@ export namespace Prisma {
      */
     omit?: MaterialOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MaterialInclude<ExtArgs> | null
+    /**
      * The filter to search for the Material to update in case it exists.
      */
     where: MaterialWhereUniqueInput
@@ -4281,6 +4407,10 @@ export namespace Prisma {
      */
     omit?: MaterialOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MaterialInclude<ExtArgs> | null
+    /**
      * Filter which Material to delete.
      */
     where: MaterialWhereUniqueInput
@@ -4301,6 +4431,30 @@ export namespace Prisma {
   }
 
   /**
+   * Material.attachments
+   */
+  export type Material$attachmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MaterialAttachment
+     */
+    select?: MaterialAttachmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MaterialAttachment
+     */
+    omit?: MaterialAttachmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MaterialAttachmentInclude<ExtArgs> | null
+    where?: MaterialAttachmentWhereInput
+    orderBy?: MaterialAttachmentOrderByWithRelationInput | MaterialAttachmentOrderByWithRelationInput[]
+    cursor?: MaterialAttachmentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: MaterialAttachmentScalarFieldEnum | MaterialAttachmentScalarFieldEnum[]
+  }
+
+  /**
    * Material without action
    */
   export type MaterialDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4312,6 +4466,1156 @@ export namespace Prisma {
      * Omit specific fields from the Material
      */
     omit?: MaterialOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MaterialInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model MaterialAttachment
+   */
+
+  export type AggregateMaterialAttachment = {
+    _count: MaterialAttachmentCountAggregateOutputType | null
+    _avg: MaterialAttachmentAvgAggregateOutputType | null
+    _sum: MaterialAttachmentSumAggregateOutputType | null
+    _min: MaterialAttachmentMinAggregateOutputType | null
+    _max: MaterialAttachmentMaxAggregateOutputType | null
+  }
+
+  export type MaterialAttachmentAvgAggregateOutputType = {
+    fileSize: number | null
+    uploadOrder: number | null
+  }
+
+  export type MaterialAttachmentSumAggregateOutputType = {
+    fileSize: number | null
+    uploadOrder: number | null
+  }
+
+  export type MaterialAttachmentMinAggregateOutputType = {
+    id: string | null
+    materialId: string | null
+    filename: string | null
+    filePath: string | null
+    fileSize: number | null
+    mimeType: string | null
+    thumbnailPath: string | null
+    uploadOrder: number | null
+    createdAt: Date | null
+  }
+
+  export type MaterialAttachmentMaxAggregateOutputType = {
+    id: string | null
+    materialId: string | null
+    filename: string | null
+    filePath: string | null
+    fileSize: number | null
+    mimeType: string | null
+    thumbnailPath: string | null
+    uploadOrder: number | null
+    createdAt: Date | null
+  }
+
+  export type MaterialAttachmentCountAggregateOutputType = {
+    id: number
+    materialId: number
+    filename: number
+    filePath: number
+    fileSize: number
+    mimeType: number
+    thumbnailPath: number
+    uploadOrder: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type MaterialAttachmentAvgAggregateInputType = {
+    fileSize?: true
+    uploadOrder?: true
+  }
+
+  export type MaterialAttachmentSumAggregateInputType = {
+    fileSize?: true
+    uploadOrder?: true
+  }
+
+  export type MaterialAttachmentMinAggregateInputType = {
+    id?: true
+    materialId?: true
+    filename?: true
+    filePath?: true
+    fileSize?: true
+    mimeType?: true
+    thumbnailPath?: true
+    uploadOrder?: true
+    createdAt?: true
+  }
+
+  export type MaterialAttachmentMaxAggregateInputType = {
+    id?: true
+    materialId?: true
+    filename?: true
+    filePath?: true
+    fileSize?: true
+    mimeType?: true
+    thumbnailPath?: true
+    uploadOrder?: true
+    createdAt?: true
+  }
+
+  export type MaterialAttachmentCountAggregateInputType = {
+    id?: true
+    materialId?: true
+    filename?: true
+    filePath?: true
+    fileSize?: true
+    mimeType?: true
+    thumbnailPath?: true
+    uploadOrder?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type MaterialAttachmentAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which MaterialAttachment to aggregate.
+     */
+    where?: MaterialAttachmentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MaterialAttachments to fetch.
+     */
+    orderBy?: MaterialAttachmentOrderByWithRelationInput | MaterialAttachmentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: MaterialAttachmentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MaterialAttachments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MaterialAttachments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned MaterialAttachments
+    **/
+    _count?: true | MaterialAttachmentCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: MaterialAttachmentAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: MaterialAttachmentSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: MaterialAttachmentMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: MaterialAttachmentMaxAggregateInputType
+  }
+
+  export type GetMaterialAttachmentAggregateType<T extends MaterialAttachmentAggregateArgs> = {
+        [P in keyof T & keyof AggregateMaterialAttachment]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateMaterialAttachment[P]>
+      : GetScalarType<T[P], AggregateMaterialAttachment[P]>
+  }
+
+
+
+
+  export type MaterialAttachmentGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: MaterialAttachmentWhereInput
+    orderBy?: MaterialAttachmentOrderByWithAggregationInput | MaterialAttachmentOrderByWithAggregationInput[]
+    by: MaterialAttachmentScalarFieldEnum[] | MaterialAttachmentScalarFieldEnum
+    having?: MaterialAttachmentScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: MaterialAttachmentCountAggregateInputType | true
+    _avg?: MaterialAttachmentAvgAggregateInputType
+    _sum?: MaterialAttachmentSumAggregateInputType
+    _min?: MaterialAttachmentMinAggregateInputType
+    _max?: MaterialAttachmentMaxAggregateInputType
+  }
+
+  export type MaterialAttachmentGroupByOutputType = {
+    id: string
+    materialId: string
+    filename: string
+    filePath: string
+    fileSize: number
+    mimeType: string
+    thumbnailPath: string | null
+    uploadOrder: number
+    createdAt: Date
+    _count: MaterialAttachmentCountAggregateOutputType | null
+    _avg: MaterialAttachmentAvgAggregateOutputType | null
+    _sum: MaterialAttachmentSumAggregateOutputType | null
+    _min: MaterialAttachmentMinAggregateOutputType | null
+    _max: MaterialAttachmentMaxAggregateOutputType | null
+  }
+
+  type GetMaterialAttachmentGroupByPayload<T extends MaterialAttachmentGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<MaterialAttachmentGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof MaterialAttachmentGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], MaterialAttachmentGroupByOutputType[P]>
+            : GetScalarType<T[P], MaterialAttachmentGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type MaterialAttachmentSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    materialId?: boolean
+    filename?: boolean
+    filePath?: boolean
+    fileSize?: boolean
+    mimeType?: boolean
+    thumbnailPath?: boolean
+    uploadOrder?: boolean
+    createdAt?: boolean
+    material?: boolean | MaterialDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["materialAttachment"]>
+
+  export type MaterialAttachmentSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    materialId?: boolean
+    filename?: boolean
+    filePath?: boolean
+    fileSize?: boolean
+    mimeType?: boolean
+    thumbnailPath?: boolean
+    uploadOrder?: boolean
+    createdAt?: boolean
+    material?: boolean | MaterialDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["materialAttachment"]>
+
+  export type MaterialAttachmentSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    materialId?: boolean
+    filename?: boolean
+    filePath?: boolean
+    fileSize?: boolean
+    mimeType?: boolean
+    thumbnailPath?: boolean
+    uploadOrder?: boolean
+    createdAt?: boolean
+    material?: boolean | MaterialDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["materialAttachment"]>
+
+  export type MaterialAttachmentSelectScalar = {
+    id?: boolean
+    materialId?: boolean
+    filename?: boolean
+    filePath?: boolean
+    fileSize?: boolean
+    mimeType?: boolean
+    thumbnailPath?: boolean
+    uploadOrder?: boolean
+    createdAt?: boolean
+  }
+
+  export type MaterialAttachmentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "materialId" | "filename" | "filePath" | "fileSize" | "mimeType" | "thumbnailPath" | "uploadOrder" | "createdAt", ExtArgs["result"]["materialAttachment"]>
+  export type MaterialAttachmentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    material?: boolean | MaterialDefaultArgs<ExtArgs>
+  }
+  export type MaterialAttachmentIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    material?: boolean | MaterialDefaultArgs<ExtArgs>
+  }
+  export type MaterialAttachmentIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    material?: boolean | MaterialDefaultArgs<ExtArgs>
+  }
+
+  export type $MaterialAttachmentPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "MaterialAttachment"
+    objects: {
+      material: Prisma.$MaterialPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      materialId: string
+      filename: string
+      filePath: string
+      fileSize: number
+      mimeType: string
+      thumbnailPath: string | null
+      uploadOrder: number
+      createdAt: Date
+    }, ExtArgs["result"]["materialAttachment"]>
+    composites: {}
+  }
+
+  type MaterialAttachmentGetPayload<S extends boolean | null | undefined | MaterialAttachmentDefaultArgs> = $Result.GetResult<Prisma.$MaterialAttachmentPayload, S>
+
+  type MaterialAttachmentCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<MaterialAttachmentFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: MaterialAttachmentCountAggregateInputType | true
+    }
+
+  export interface MaterialAttachmentDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['MaterialAttachment'], meta: { name: 'MaterialAttachment' } }
+    /**
+     * Find zero or one MaterialAttachment that matches the filter.
+     * @param {MaterialAttachmentFindUniqueArgs} args - Arguments to find a MaterialAttachment
+     * @example
+     * // Get one MaterialAttachment
+     * const materialAttachment = await prisma.materialAttachment.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends MaterialAttachmentFindUniqueArgs>(args: SelectSubset<T, MaterialAttachmentFindUniqueArgs<ExtArgs>>): Prisma__MaterialAttachmentClient<$Result.GetResult<Prisma.$MaterialAttachmentPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one MaterialAttachment that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {MaterialAttachmentFindUniqueOrThrowArgs} args - Arguments to find a MaterialAttachment
+     * @example
+     * // Get one MaterialAttachment
+     * const materialAttachment = await prisma.materialAttachment.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends MaterialAttachmentFindUniqueOrThrowArgs>(args: SelectSubset<T, MaterialAttachmentFindUniqueOrThrowArgs<ExtArgs>>): Prisma__MaterialAttachmentClient<$Result.GetResult<Prisma.$MaterialAttachmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first MaterialAttachment that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MaterialAttachmentFindFirstArgs} args - Arguments to find a MaterialAttachment
+     * @example
+     * // Get one MaterialAttachment
+     * const materialAttachment = await prisma.materialAttachment.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends MaterialAttachmentFindFirstArgs>(args?: SelectSubset<T, MaterialAttachmentFindFirstArgs<ExtArgs>>): Prisma__MaterialAttachmentClient<$Result.GetResult<Prisma.$MaterialAttachmentPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first MaterialAttachment that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MaterialAttachmentFindFirstOrThrowArgs} args - Arguments to find a MaterialAttachment
+     * @example
+     * // Get one MaterialAttachment
+     * const materialAttachment = await prisma.materialAttachment.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends MaterialAttachmentFindFirstOrThrowArgs>(args?: SelectSubset<T, MaterialAttachmentFindFirstOrThrowArgs<ExtArgs>>): Prisma__MaterialAttachmentClient<$Result.GetResult<Prisma.$MaterialAttachmentPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more MaterialAttachments that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MaterialAttachmentFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all MaterialAttachments
+     * const materialAttachments = await prisma.materialAttachment.findMany()
+     * 
+     * // Get first 10 MaterialAttachments
+     * const materialAttachments = await prisma.materialAttachment.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const materialAttachmentWithIdOnly = await prisma.materialAttachment.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends MaterialAttachmentFindManyArgs>(args?: SelectSubset<T, MaterialAttachmentFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MaterialAttachmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a MaterialAttachment.
+     * @param {MaterialAttachmentCreateArgs} args - Arguments to create a MaterialAttachment.
+     * @example
+     * // Create one MaterialAttachment
+     * const MaterialAttachment = await prisma.materialAttachment.create({
+     *   data: {
+     *     // ... data to create a MaterialAttachment
+     *   }
+     * })
+     * 
+     */
+    create<T extends MaterialAttachmentCreateArgs>(args: SelectSubset<T, MaterialAttachmentCreateArgs<ExtArgs>>): Prisma__MaterialAttachmentClient<$Result.GetResult<Prisma.$MaterialAttachmentPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many MaterialAttachments.
+     * @param {MaterialAttachmentCreateManyArgs} args - Arguments to create many MaterialAttachments.
+     * @example
+     * // Create many MaterialAttachments
+     * const materialAttachment = await prisma.materialAttachment.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends MaterialAttachmentCreateManyArgs>(args?: SelectSubset<T, MaterialAttachmentCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many MaterialAttachments and returns the data saved in the database.
+     * @param {MaterialAttachmentCreateManyAndReturnArgs} args - Arguments to create many MaterialAttachments.
+     * @example
+     * // Create many MaterialAttachments
+     * const materialAttachment = await prisma.materialAttachment.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many MaterialAttachments and only return the `id`
+     * const materialAttachmentWithIdOnly = await prisma.materialAttachment.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends MaterialAttachmentCreateManyAndReturnArgs>(args?: SelectSubset<T, MaterialAttachmentCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MaterialAttachmentPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a MaterialAttachment.
+     * @param {MaterialAttachmentDeleteArgs} args - Arguments to delete one MaterialAttachment.
+     * @example
+     * // Delete one MaterialAttachment
+     * const MaterialAttachment = await prisma.materialAttachment.delete({
+     *   where: {
+     *     // ... filter to delete one MaterialAttachment
+     *   }
+     * })
+     * 
+     */
+    delete<T extends MaterialAttachmentDeleteArgs>(args: SelectSubset<T, MaterialAttachmentDeleteArgs<ExtArgs>>): Prisma__MaterialAttachmentClient<$Result.GetResult<Prisma.$MaterialAttachmentPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one MaterialAttachment.
+     * @param {MaterialAttachmentUpdateArgs} args - Arguments to update one MaterialAttachment.
+     * @example
+     * // Update one MaterialAttachment
+     * const materialAttachment = await prisma.materialAttachment.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends MaterialAttachmentUpdateArgs>(args: SelectSubset<T, MaterialAttachmentUpdateArgs<ExtArgs>>): Prisma__MaterialAttachmentClient<$Result.GetResult<Prisma.$MaterialAttachmentPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more MaterialAttachments.
+     * @param {MaterialAttachmentDeleteManyArgs} args - Arguments to filter MaterialAttachments to delete.
+     * @example
+     * // Delete a few MaterialAttachments
+     * const { count } = await prisma.materialAttachment.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends MaterialAttachmentDeleteManyArgs>(args?: SelectSubset<T, MaterialAttachmentDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more MaterialAttachments.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MaterialAttachmentUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many MaterialAttachments
+     * const materialAttachment = await prisma.materialAttachment.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends MaterialAttachmentUpdateManyArgs>(args: SelectSubset<T, MaterialAttachmentUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more MaterialAttachments and returns the data updated in the database.
+     * @param {MaterialAttachmentUpdateManyAndReturnArgs} args - Arguments to update many MaterialAttachments.
+     * @example
+     * // Update many MaterialAttachments
+     * const materialAttachment = await prisma.materialAttachment.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more MaterialAttachments and only return the `id`
+     * const materialAttachmentWithIdOnly = await prisma.materialAttachment.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends MaterialAttachmentUpdateManyAndReturnArgs>(args: SelectSubset<T, MaterialAttachmentUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MaterialAttachmentPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one MaterialAttachment.
+     * @param {MaterialAttachmentUpsertArgs} args - Arguments to update or create a MaterialAttachment.
+     * @example
+     * // Update or create a MaterialAttachment
+     * const materialAttachment = await prisma.materialAttachment.upsert({
+     *   create: {
+     *     // ... data to create a MaterialAttachment
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the MaterialAttachment we want to update
+     *   }
+     * })
+     */
+    upsert<T extends MaterialAttachmentUpsertArgs>(args: SelectSubset<T, MaterialAttachmentUpsertArgs<ExtArgs>>): Prisma__MaterialAttachmentClient<$Result.GetResult<Prisma.$MaterialAttachmentPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of MaterialAttachments.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MaterialAttachmentCountArgs} args - Arguments to filter MaterialAttachments to count.
+     * @example
+     * // Count the number of MaterialAttachments
+     * const count = await prisma.materialAttachment.count({
+     *   where: {
+     *     // ... the filter for the MaterialAttachments we want to count
+     *   }
+     * })
+    **/
+    count<T extends MaterialAttachmentCountArgs>(
+      args?: Subset<T, MaterialAttachmentCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], MaterialAttachmentCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a MaterialAttachment.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MaterialAttachmentAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends MaterialAttachmentAggregateArgs>(args: Subset<T, MaterialAttachmentAggregateArgs>): Prisma.PrismaPromise<GetMaterialAttachmentAggregateType<T>>
+
+    /**
+     * Group by MaterialAttachment.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MaterialAttachmentGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends MaterialAttachmentGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: MaterialAttachmentGroupByArgs['orderBy'] }
+        : { orderBy?: MaterialAttachmentGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, MaterialAttachmentGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetMaterialAttachmentGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the MaterialAttachment model
+   */
+  readonly fields: MaterialAttachmentFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for MaterialAttachment.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__MaterialAttachmentClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    material<T extends MaterialDefaultArgs<ExtArgs> = {}>(args?: Subset<T, MaterialDefaultArgs<ExtArgs>>): Prisma__MaterialClient<$Result.GetResult<Prisma.$MaterialPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the MaterialAttachment model
+   */
+  interface MaterialAttachmentFieldRefs {
+    readonly id: FieldRef<"MaterialAttachment", 'String'>
+    readonly materialId: FieldRef<"MaterialAttachment", 'String'>
+    readonly filename: FieldRef<"MaterialAttachment", 'String'>
+    readonly filePath: FieldRef<"MaterialAttachment", 'String'>
+    readonly fileSize: FieldRef<"MaterialAttachment", 'Int'>
+    readonly mimeType: FieldRef<"MaterialAttachment", 'String'>
+    readonly thumbnailPath: FieldRef<"MaterialAttachment", 'String'>
+    readonly uploadOrder: FieldRef<"MaterialAttachment", 'Int'>
+    readonly createdAt: FieldRef<"MaterialAttachment", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * MaterialAttachment findUnique
+   */
+  export type MaterialAttachmentFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MaterialAttachment
+     */
+    select?: MaterialAttachmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MaterialAttachment
+     */
+    omit?: MaterialAttachmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MaterialAttachmentInclude<ExtArgs> | null
+    /**
+     * Filter, which MaterialAttachment to fetch.
+     */
+    where: MaterialAttachmentWhereUniqueInput
+  }
+
+  /**
+   * MaterialAttachment findUniqueOrThrow
+   */
+  export type MaterialAttachmentFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MaterialAttachment
+     */
+    select?: MaterialAttachmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MaterialAttachment
+     */
+    omit?: MaterialAttachmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MaterialAttachmentInclude<ExtArgs> | null
+    /**
+     * Filter, which MaterialAttachment to fetch.
+     */
+    where: MaterialAttachmentWhereUniqueInput
+  }
+
+  /**
+   * MaterialAttachment findFirst
+   */
+  export type MaterialAttachmentFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MaterialAttachment
+     */
+    select?: MaterialAttachmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MaterialAttachment
+     */
+    omit?: MaterialAttachmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MaterialAttachmentInclude<ExtArgs> | null
+    /**
+     * Filter, which MaterialAttachment to fetch.
+     */
+    where?: MaterialAttachmentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MaterialAttachments to fetch.
+     */
+    orderBy?: MaterialAttachmentOrderByWithRelationInput | MaterialAttachmentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for MaterialAttachments.
+     */
+    cursor?: MaterialAttachmentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MaterialAttachments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MaterialAttachments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of MaterialAttachments.
+     */
+    distinct?: MaterialAttachmentScalarFieldEnum | MaterialAttachmentScalarFieldEnum[]
+  }
+
+  /**
+   * MaterialAttachment findFirstOrThrow
+   */
+  export type MaterialAttachmentFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MaterialAttachment
+     */
+    select?: MaterialAttachmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MaterialAttachment
+     */
+    omit?: MaterialAttachmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MaterialAttachmentInclude<ExtArgs> | null
+    /**
+     * Filter, which MaterialAttachment to fetch.
+     */
+    where?: MaterialAttachmentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MaterialAttachments to fetch.
+     */
+    orderBy?: MaterialAttachmentOrderByWithRelationInput | MaterialAttachmentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for MaterialAttachments.
+     */
+    cursor?: MaterialAttachmentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MaterialAttachments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MaterialAttachments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of MaterialAttachments.
+     */
+    distinct?: MaterialAttachmentScalarFieldEnum | MaterialAttachmentScalarFieldEnum[]
+  }
+
+  /**
+   * MaterialAttachment findMany
+   */
+  export type MaterialAttachmentFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MaterialAttachment
+     */
+    select?: MaterialAttachmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MaterialAttachment
+     */
+    omit?: MaterialAttachmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MaterialAttachmentInclude<ExtArgs> | null
+    /**
+     * Filter, which MaterialAttachments to fetch.
+     */
+    where?: MaterialAttachmentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MaterialAttachments to fetch.
+     */
+    orderBy?: MaterialAttachmentOrderByWithRelationInput | MaterialAttachmentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing MaterialAttachments.
+     */
+    cursor?: MaterialAttachmentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MaterialAttachments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MaterialAttachments.
+     */
+    skip?: number
+    distinct?: MaterialAttachmentScalarFieldEnum | MaterialAttachmentScalarFieldEnum[]
+  }
+
+  /**
+   * MaterialAttachment create
+   */
+  export type MaterialAttachmentCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MaterialAttachment
+     */
+    select?: MaterialAttachmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MaterialAttachment
+     */
+    omit?: MaterialAttachmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MaterialAttachmentInclude<ExtArgs> | null
+    /**
+     * The data needed to create a MaterialAttachment.
+     */
+    data: XOR<MaterialAttachmentCreateInput, MaterialAttachmentUncheckedCreateInput>
+  }
+
+  /**
+   * MaterialAttachment createMany
+   */
+  export type MaterialAttachmentCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many MaterialAttachments.
+     */
+    data: MaterialAttachmentCreateManyInput | MaterialAttachmentCreateManyInput[]
+  }
+
+  /**
+   * MaterialAttachment createManyAndReturn
+   */
+  export type MaterialAttachmentCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MaterialAttachment
+     */
+    select?: MaterialAttachmentSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the MaterialAttachment
+     */
+    omit?: MaterialAttachmentOmit<ExtArgs> | null
+    /**
+     * The data used to create many MaterialAttachments.
+     */
+    data: MaterialAttachmentCreateManyInput | MaterialAttachmentCreateManyInput[]
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MaterialAttachmentIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * MaterialAttachment update
+   */
+  export type MaterialAttachmentUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MaterialAttachment
+     */
+    select?: MaterialAttachmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MaterialAttachment
+     */
+    omit?: MaterialAttachmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MaterialAttachmentInclude<ExtArgs> | null
+    /**
+     * The data needed to update a MaterialAttachment.
+     */
+    data: XOR<MaterialAttachmentUpdateInput, MaterialAttachmentUncheckedUpdateInput>
+    /**
+     * Choose, which MaterialAttachment to update.
+     */
+    where: MaterialAttachmentWhereUniqueInput
+  }
+
+  /**
+   * MaterialAttachment updateMany
+   */
+  export type MaterialAttachmentUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update MaterialAttachments.
+     */
+    data: XOR<MaterialAttachmentUpdateManyMutationInput, MaterialAttachmentUncheckedUpdateManyInput>
+    /**
+     * Filter which MaterialAttachments to update
+     */
+    where?: MaterialAttachmentWhereInput
+    /**
+     * Limit how many MaterialAttachments to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * MaterialAttachment updateManyAndReturn
+   */
+  export type MaterialAttachmentUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MaterialAttachment
+     */
+    select?: MaterialAttachmentSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the MaterialAttachment
+     */
+    omit?: MaterialAttachmentOmit<ExtArgs> | null
+    /**
+     * The data used to update MaterialAttachments.
+     */
+    data: XOR<MaterialAttachmentUpdateManyMutationInput, MaterialAttachmentUncheckedUpdateManyInput>
+    /**
+     * Filter which MaterialAttachments to update
+     */
+    where?: MaterialAttachmentWhereInput
+    /**
+     * Limit how many MaterialAttachments to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MaterialAttachmentIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * MaterialAttachment upsert
+   */
+  export type MaterialAttachmentUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MaterialAttachment
+     */
+    select?: MaterialAttachmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MaterialAttachment
+     */
+    omit?: MaterialAttachmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MaterialAttachmentInclude<ExtArgs> | null
+    /**
+     * The filter to search for the MaterialAttachment to update in case it exists.
+     */
+    where: MaterialAttachmentWhereUniqueInput
+    /**
+     * In case the MaterialAttachment found by the `where` argument doesn't exist, create a new MaterialAttachment with this data.
+     */
+    create: XOR<MaterialAttachmentCreateInput, MaterialAttachmentUncheckedCreateInput>
+    /**
+     * In case the MaterialAttachment was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<MaterialAttachmentUpdateInput, MaterialAttachmentUncheckedUpdateInput>
+  }
+
+  /**
+   * MaterialAttachment delete
+   */
+  export type MaterialAttachmentDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MaterialAttachment
+     */
+    select?: MaterialAttachmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MaterialAttachment
+     */
+    omit?: MaterialAttachmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MaterialAttachmentInclude<ExtArgs> | null
+    /**
+     * Filter which MaterialAttachment to delete.
+     */
+    where: MaterialAttachmentWhereUniqueInput
+  }
+
+  /**
+   * MaterialAttachment deleteMany
+   */
+  export type MaterialAttachmentDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which MaterialAttachments to delete
+     */
+    where?: MaterialAttachmentWhereInput
+    /**
+     * Limit how many MaterialAttachments to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * MaterialAttachment without action
+   */
+  export type MaterialAttachmentDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MaterialAttachment
+     */
+    select?: MaterialAttachmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MaterialAttachment
+     */
+    omit?: MaterialAttachmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MaterialAttachmentInclude<ExtArgs> | null
   }
 
 
@@ -4356,17 +5660,29 @@ export namespace Prisma {
     id: 'id',
     title: 'title',
     content: 'content',
-    filename: 'filename',
-    filePath: 'filePath',
     uploadedAt: 'uploadedAt',
     uploader: 'uploader',
     category: 'category',
-    thumbnailPath: 'thumbnailPath',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
 
   export type MaterialScalarFieldEnum = (typeof MaterialScalarFieldEnum)[keyof typeof MaterialScalarFieldEnum]
+
+
+  export const MaterialAttachmentScalarFieldEnum: {
+    id: 'id',
+    materialId: 'materialId',
+    filename: 'filename',
+    filePath: 'filePath',
+    fileSize: 'fileSize',
+    mimeType: 'mimeType',
+    thumbnailPath: 'thumbnailPath',
+    uploadOrder: 'uploadOrder',
+    createdAt: 'createdAt'
+  };
+
+  export type MaterialAttachmentScalarFieldEnum = (typeof MaterialAttachmentScalarFieldEnum)[keyof typeof MaterialAttachmentScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -4408,6 +5724,13 @@ export namespace Prisma {
    * Reference to a field of type 'Int'
    */
   export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+    
+
+
+  /**
+   * Reference to a field of type 'Float'
+   */
+  export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
     
   /**
    * Deep Input Types
@@ -4551,28 +5874,24 @@ export namespace Prisma {
     id?: StringFilter<"Material"> | string
     title?: StringFilter<"Material"> | string
     content?: StringNullableFilter<"Material"> | string | null
-    filename?: StringNullableFilter<"Material"> | string | null
-    filePath?: StringNullableFilter<"Material"> | string | null
     uploadedAt?: DateTimeFilter<"Material"> | Date | string
     uploader?: StringFilter<"Material"> | string
     category?: StringFilter<"Material"> | string
-    thumbnailPath?: StringNullableFilter<"Material"> | string | null
     createdAt?: DateTimeFilter<"Material"> | Date | string
     updatedAt?: DateTimeFilter<"Material"> | Date | string
+    attachments?: MaterialAttachmentListRelationFilter
   }
 
   export type MaterialOrderByWithRelationInput = {
     id?: SortOrder
     title?: SortOrder
     content?: SortOrderInput | SortOrder
-    filename?: SortOrderInput | SortOrder
-    filePath?: SortOrderInput | SortOrder
     uploadedAt?: SortOrder
     uploader?: SortOrder
     category?: SortOrder
-    thumbnailPath?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    attachments?: MaterialAttachmentOrderByRelationAggregateInput
   }
 
   export type MaterialWhereUniqueInput = Prisma.AtLeast<{
@@ -4582,26 +5901,21 @@ export namespace Prisma {
     NOT?: MaterialWhereInput | MaterialWhereInput[]
     title?: StringFilter<"Material"> | string
     content?: StringNullableFilter<"Material"> | string | null
-    filename?: StringNullableFilter<"Material"> | string | null
-    filePath?: StringNullableFilter<"Material"> | string | null
     uploadedAt?: DateTimeFilter<"Material"> | Date | string
     uploader?: StringFilter<"Material"> | string
     category?: StringFilter<"Material"> | string
-    thumbnailPath?: StringNullableFilter<"Material"> | string | null
     createdAt?: DateTimeFilter<"Material"> | Date | string
     updatedAt?: DateTimeFilter<"Material"> | Date | string
+    attachments?: MaterialAttachmentListRelationFilter
   }, "id">
 
   export type MaterialOrderByWithAggregationInput = {
     id?: SortOrder
     title?: SortOrder
     content?: SortOrderInput | SortOrder
-    filename?: SortOrderInput | SortOrder
-    filePath?: SortOrderInput | SortOrder
     uploadedAt?: SortOrder
     uploader?: SortOrder
     category?: SortOrder
-    thumbnailPath?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: MaterialCountOrderByAggregateInput
@@ -4616,14 +5930,88 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"Material"> | string
     title?: StringWithAggregatesFilter<"Material"> | string
     content?: StringNullableWithAggregatesFilter<"Material"> | string | null
-    filename?: StringNullableWithAggregatesFilter<"Material"> | string | null
-    filePath?: StringNullableWithAggregatesFilter<"Material"> | string | null
     uploadedAt?: DateTimeWithAggregatesFilter<"Material"> | Date | string
     uploader?: StringWithAggregatesFilter<"Material"> | string
     category?: StringWithAggregatesFilter<"Material"> | string
-    thumbnailPath?: StringNullableWithAggregatesFilter<"Material"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Material"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Material"> | Date | string
+  }
+
+  export type MaterialAttachmentWhereInput = {
+    AND?: MaterialAttachmentWhereInput | MaterialAttachmentWhereInput[]
+    OR?: MaterialAttachmentWhereInput[]
+    NOT?: MaterialAttachmentWhereInput | MaterialAttachmentWhereInput[]
+    id?: StringFilter<"MaterialAttachment"> | string
+    materialId?: StringFilter<"MaterialAttachment"> | string
+    filename?: StringFilter<"MaterialAttachment"> | string
+    filePath?: StringFilter<"MaterialAttachment"> | string
+    fileSize?: IntFilter<"MaterialAttachment"> | number
+    mimeType?: StringFilter<"MaterialAttachment"> | string
+    thumbnailPath?: StringNullableFilter<"MaterialAttachment"> | string | null
+    uploadOrder?: IntFilter<"MaterialAttachment"> | number
+    createdAt?: DateTimeFilter<"MaterialAttachment"> | Date | string
+    material?: XOR<MaterialScalarRelationFilter, MaterialWhereInput>
+  }
+
+  export type MaterialAttachmentOrderByWithRelationInput = {
+    id?: SortOrder
+    materialId?: SortOrder
+    filename?: SortOrder
+    filePath?: SortOrder
+    fileSize?: SortOrder
+    mimeType?: SortOrder
+    thumbnailPath?: SortOrderInput | SortOrder
+    uploadOrder?: SortOrder
+    createdAt?: SortOrder
+    material?: MaterialOrderByWithRelationInput
+  }
+
+  export type MaterialAttachmentWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: MaterialAttachmentWhereInput | MaterialAttachmentWhereInput[]
+    OR?: MaterialAttachmentWhereInput[]
+    NOT?: MaterialAttachmentWhereInput | MaterialAttachmentWhereInput[]
+    materialId?: StringFilter<"MaterialAttachment"> | string
+    filename?: StringFilter<"MaterialAttachment"> | string
+    filePath?: StringFilter<"MaterialAttachment"> | string
+    fileSize?: IntFilter<"MaterialAttachment"> | number
+    mimeType?: StringFilter<"MaterialAttachment"> | string
+    thumbnailPath?: StringNullableFilter<"MaterialAttachment"> | string | null
+    uploadOrder?: IntFilter<"MaterialAttachment"> | number
+    createdAt?: DateTimeFilter<"MaterialAttachment"> | Date | string
+    material?: XOR<MaterialScalarRelationFilter, MaterialWhereInput>
+  }, "id">
+
+  export type MaterialAttachmentOrderByWithAggregationInput = {
+    id?: SortOrder
+    materialId?: SortOrder
+    filename?: SortOrder
+    filePath?: SortOrder
+    fileSize?: SortOrder
+    mimeType?: SortOrder
+    thumbnailPath?: SortOrderInput | SortOrder
+    uploadOrder?: SortOrder
+    createdAt?: SortOrder
+    _count?: MaterialAttachmentCountOrderByAggregateInput
+    _avg?: MaterialAttachmentAvgOrderByAggregateInput
+    _max?: MaterialAttachmentMaxOrderByAggregateInput
+    _min?: MaterialAttachmentMinOrderByAggregateInput
+    _sum?: MaterialAttachmentSumOrderByAggregateInput
+  }
+
+  export type MaterialAttachmentScalarWhereWithAggregatesInput = {
+    AND?: MaterialAttachmentScalarWhereWithAggregatesInput | MaterialAttachmentScalarWhereWithAggregatesInput[]
+    OR?: MaterialAttachmentScalarWhereWithAggregatesInput[]
+    NOT?: MaterialAttachmentScalarWhereWithAggregatesInput | MaterialAttachmentScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"MaterialAttachment"> | string
+    materialId?: StringWithAggregatesFilter<"MaterialAttachment"> | string
+    filename?: StringWithAggregatesFilter<"MaterialAttachment"> | string
+    filePath?: StringWithAggregatesFilter<"MaterialAttachment"> | string
+    fileSize?: IntWithAggregatesFilter<"MaterialAttachment"> | number
+    mimeType?: StringWithAggregatesFilter<"MaterialAttachment"> | string
+    thumbnailPath?: StringNullableWithAggregatesFilter<"MaterialAttachment"> | string | null
+    uploadOrder?: IntWithAggregatesFilter<"MaterialAttachment"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"MaterialAttachment"> | Date | string
   }
 
   export type SchoolCreateInput = {
@@ -4773,68 +6161,57 @@ export namespace Prisma {
     id?: string
     title: string
     content?: string | null
-    filename?: string | null
-    filePath?: string | null
     uploadedAt?: Date | string
     uploader: string
     category: string
-    thumbnailPath?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    attachments?: MaterialAttachmentCreateNestedManyWithoutMaterialInput
   }
 
   export type MaterialUncheckedCreateInput = {
     id?: string
     title: string
     content?: string | null
-    filename?: string | null
-    filePath?: string | null
     uploadedAt?: Date | string
     uploader: string
     category: string
-    thumbnailPath?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    attachments?: MaterialAttachmentUncheckedCreateNestedManyWithoutMaterialInput
   }
 
   export type MaterialUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     content?: NullableStringFieldUpdateOperationsInput | string | null
-    filename?: NullableStringFieldUpdateOperationsInput | string | null
-    filePath?: NullableStringFieldUpdateOperationsInput | string | null
     uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     uploader?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
-    thumbnailPath?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    attachments?: MaterialAttachmentUpdateManyWithoutMaterialNestedInput
   }
 
   export type MaterialUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     content?: NullableStringFieldUpdateOperationsInput | string | null
-    filename?: NullableStringFieldUpdateOperationsInput | string | null
-    filePath?: NullableStringFieldUpdateOperationsInput | string | null
     uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     uploader?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
-    thumbnailPath?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    attachments?: MaterialAttachmentUncheckedUpdateManyWithoutMaterialNestedInput
   }
 
   export type MaterialCreateManyInput = {
     id?: string
     title: string
     content?: string | null
-    filename?: string | null
-    filePath?: string | null
     uploadedAt?: Date | string
     uploader: string
     category: string
-    thumbnailPath?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -4843,12 +6220,9 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     content?: NullableStringFieldUpdateOperationsInput | string | null
-    filename?: NullableStringFieldUpdateOperationsInput | string | null
-    filePath?: NullableStringFieldUpdateOperationsInput | string | null
     uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     uploader?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
-    thumbnailPath?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -4857,14 +6231,94 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     content?: NullableStringFieldUpdateOperationsInput | string | null
-    filename?: NullableStringFieldUpdateOperationsInput | string | null
-    filePath?: NullableStringFieldUpdateOperationsInput | string | null
     uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     uploader?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
-    thumbnailPath?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MaterialAttachmentCreateInput = {
+    id?: string
+    filename: string
+    filePath: string
+    fileSize: number
+    mimeType: string
+    thumbnailPath?: string | null
+    uploadOrder: number
+    createdAt?: Date | string
+    material: MaterialCreateNestedOneWithoutAttachmentsInput
+  }
+
+  export type MaterialAttachmentUncheckedCreateInput = {
+    id?: string
+    materialId: string
+    filename: string
+    filePath: string
+    fileSize: number
+    mimeType: string
+    thumbnailPath?: string | null
+    uploadOrder: number
+    createdAt?: Date | string
+  }
+
+  export type MaterialAttachmentUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    filename?: StringFieldUpdateOperationsInput | string
+    filePath?: StringFieldUpdateOperationsInput | string
+    fileSize?: IntFieldUpdateOperationsInput | number
+    mimeType?: StringFieldUpdateOperationsInput | string
+    thumbnailPath?: NullableStringFieldUpdateOperationsInput | string | null
+    uploadOrder?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    material?: MaterialUpdateOneRequiredWithoutAttachmentsNestedInput
+  }
+
+  export type MaterialAttachmentUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    materialId?: StringFieldUpdateOperationsInput | string
+    filename?: StringFieldUpdateOperationsInput | string
+    filePath?: StringFieldUpdateOperationsInput | string
+    fileSize?: IntFieldUpdateOperationsInput | number
+    mimeType?: StringFieldUpdateOperationsInput | string
+    thumbnailPath?: NullableStringFieldUpdateOperationsInput | string | null
+    uploadOrder?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MaterialAttachmentCreateManyInput = {
+    id?: string
+    materialId: string
+    filename: string
+    filePath: string
+    fileSize: number
+    mimeType: string
+    thumbnailPath?: string | null
+    uploadOrder: number
+    createdAt?: Date | string
+  }
+
+  export type MaterialAttachmentUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    filename?: StringFieldUpdateOperationsInput | string
+    filePath?: StringFieldUpdateOperationsInput | string
+    fileSize?: IntFieldUpdateOperationsInput | number
+    mimeType?: StringFieldUpdateOperationsInput | string
+    thumbnailPath?: NullableStringFieldUpdateOperationsInput | string | null
+    uploadOrder?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MaterialAttachmentUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    materialId?: StringFieldUpdateOperationsInput | string
+    filename?: StringFieldUpdateOperationsInput | string
+    filePath?: StringFieldUpdateOperationsInput | string
+    fileSize?: IntFieldUpdateOperationsInput | number
+    mimeType?: StringFieldUpdateOperationsInput | string
+    thumbnailPath?: NullableStringFieldUpdateOperationsInput | string | null
+    uploadOrder?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type StringFilter<$PrismaModel = never> = {
@@ -5034,16 +6488,23 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
+  export type MaterialAttachmentListRelationFilter = {
+    every?: MaterialAttachmentWhereInput
+    some?: MaterialAttachmentWhereInput
+    none?: MaterialAttachmentWhereInput
+  }
+
+  export type MaterialAttachmentOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type MaterialCountOrderByAggregateInput = {
     id?: SortOrder
     title?: SortOrder
     content?: SortOrder
-    filename?: SortOrder
-    filePath?: SortOrder
     uploadedAt?: SortOrder
     uploader?: SortOrder
     category?: SortOrder
-    thumbnailPath?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -5052,12 +6513,9 @@ export namespace Prisma {
     id?: SortOrder
     title?: SortOrder
     content?: SortOrder
-    filename?: SortOrder
-    filePath?: SortOrder
     uploadedAt?: SortOrder
     uploader?: SortOrder
     category?: SortOrder
-    thumbnailPath?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -5066,14 +6524,89 @@ export namespace Prisma {
     id?: SortOrder
     title?: SortOrder
     content?: SortOrder
-    filename?: SortOrder
-    filePath?: SortOrder
     uploadedAt?: SortOrder
     uploader?: SortOrder
     category?: SortOrder
-    thumbnailPath?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type IntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
+  }
+
+  export type MaterialScalarRelationFilter = {
+    is?: MaterialWhereInput
+    isNot?: MaterialWhereInput
+  }
+
+  export type MaterialAttachmentCountOrderByAggregateInput = {
+    id?: SortOrder
+    materialId?: SortOrder
+    filename?: SortOrder
+    filePath?: SortOrder
+    fileSize?: SortOrder
+    mimeType?: SortOrder
+    thumbnailPath?: SortOrder
+    uploadOrder?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type MaterialAttachmentAvgOrderByAggregateInput = {
+    fileSize?: SortOrder
+    uploadOrder?: SortOrder
+  }
+
+  export type MaterialAttachmentMaxOrderByAggregateInput = {
+    id?: SortOrder
+    materialId?: SortOrder
+    filename?: SortOrder
+    filePath?: SortOrder
+    fileSize?: SortOrder
+    mimeType?: SortOrder
+    thumbnailPath?: SortOrder
+    uploadOrder?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type MaterialAttachmentMinOrderByAggregateInput = {
+    id?: SortOrder
+    materialId?: SortOrder
+    filename?: SortOrder
+    filePath?: SortOrder
+    fileSize?: SortOrder
+    mimeType?: SortOrder
+    thumbnailPath?: SortOrder
+    uploadOrder?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type MaterialAttachmentSumOrderByAggregateInput = {
+    fileSize?: SortOrder
+    uploadOrder?: SortOrder
+  }
+
+  export type IntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
   }
 
   export type ScheduleCreateNestedManyWithoutSchoolInput = {
@@ -5142,6 +6675,70 @@ export namespace Prisma {
     upsert?: SchoolUpsertWithoutSchedulesInput
     connect?: SchoolWhereUniqueInput
     update?: XOR<XOR<SchoolUpdateToOneWithWhereWithoutSchedulesInput, SchoolUpdateWithoutSchedulesInput>, SchoolUncheckedUpdateWithoutSchedulesInput>
+  }
+
+  export type MaterialAttachmentCreateNestedManyWithoutMaterialInput = {
+    create?: XOR<MaterialAttachmentCreateWithoutMaterialInput, MaterialAttachmentUncheckedCreateWithoutMaterialInput> | MaterialAttachmentCreateWithoutMaterialInput[] | MaterialAttachmentUncheckedCreateWithoutMaterialInput[]
+    connectOrCreate?: MaterialAttachmentCreateOrConnectWithoutMaterialInput | MaterialAttachmentCreateOrConnectWithoutMaterialInput[]
+    createMany?: MaterialAttachmentCreateManyMaterialInputEnvelope
+    connect?: MaterialAttachmentWhereUniqueInput | MaterialAttachmentWhereUniqueInput[]
+  }
+
+  export type MaterialAttachmentUncheckedCreateNestedManyWithoutMaterialInput = {
+    create?: XOR<MaterialAttachmentCreateWithoutMaterialInput, MaterialAttachmentUncheckedCreateWithoutMaterialInput> | MaterialAttachmentCreateWithoutMaterialInput[] | MaterialAttachmentUncheckedCreateWithoutMaterialInput[]
+    connectOrCreate?: MaterialAttachmentCreateOrConnectWithoutMaterialInput | MaterialAttachmentCreateOrConnectWithoutMaterialInput[]
+    createMany?: MaterialAttachmentCreateManyMaterialInputEnvelope
+    connect?: MaterialAttachmentWhereUniqueInput | MaterialAttachmentWhereUniqueInput[]
+  }
+
+  export type MaterialAttachmentUpdateManyWithoutMaterialNestedInput = {
+    create?: XOR<MaterialAttachmentCreateWithoutMaterialInput, MaterialAttachmentUncheckedCreateWithoutMaterialInput> | MaterialAttachmentCreateWithoutMaterialInput[] | MaterialAttachmentUncheckedCreateWithoutMaterialInput[]
+    connectOrCreate?: MaterialAttachmentCreateOrConnectWithoutMaterialInput | MaterialAttachmentCreateOrConnectWithoutMaterialInput[]
+    upsert?: MaterialAttachmentUpsertWithWhereUniqueWithoutMaterialInput | MaterialAttachmentUpsertWithWhereUniqueWithoutMaterialInput[]
+    createMany?: MaterialAttachmentCreateManyMaterialInputEnvelope
+    set?: MaterialAttachmentWhereUniqueInput | MaterialAttachmentWhereUniqueInput[]
+    disconnect?: MaterialAttachmentWhereUniqueInput | MaterialAttachmentWhereUniqueInput[]
+    delete?: MaterialAttachmentWhereUniqueInput | MaterialAttachmentWhereUniqueInput[]
+    connect?: MaterialAttachmentWhereUniqueInput | MaterialAttachmentWhereUniqueInput[]
+    update?: MaterialAttachmentUpdateWithWhereUniqueWithoutMaterialInput | MaterialAttachmentUpdateWithWhereUniqueWithoutMaterialInput[]
+    updateMany?: MaterialAttachmentUpdateManyWithWhereWithoutMaterialInput | MaterialAttachmentUpdateManyWithWhereWithoutMaterialInput[]
+    deleteMany?: MaterialAttachmentScalarWhereInput | MaterialAttachmentScalarWhereInput[]
+  }
+
+  export type MaterialAttachmentUncheckedUpdateManyWithoutMaterialNestedInput = {
+    create?: XOR<MaterialAttachmentCreateWithoutMaterialInput, MaterialAttachmentUncheckedCreateWithoutMaterialInput> | MaterialAttachmentCreateWithoutMaterialInput[] | MaterialAttachmentUncheckedCreateWithoutMaterialInput[]
+    connectOrCreate?: MaterialAttachmentCreateOrConnectWithoutMaterialInput | MaterialAttachmentCreateOrConnectWithoutMaterialInput[]
+    upsert?: MaterialAttachmentUpsertWithWhereUniqueWithoutMaterialInput | MaterialAttachmentUpsertWithWhereUniqueWithoutMaterialInput[]
+    createMany?: MaterialAttachmentCreateManyMaterialInputEnvelope
+    set?: MaterialAttachmentWhereUniqueInput | MaterialAttachmentWhereUniqueInput[]
+    disconnect?: MaterialAttachmentWhereUniqueInput | MaterialAttachmentWhereUniqueInput[]
+    delete?: MaterialAttachmentWhereUniqueInput | MaterialAttachmentWhereUniqueInput[]
+    connect?: MaterialAttachmentWhereUniqueInput | MaterialAttachmentWhereUniqueInput[]
+    update?: MaterialAttachmentUpdateWithWhereUniqueWithoutMaterialInput | MaterialAttachmentUpdateWithWhereUniqueWithoutMaterialInput[]
+    updateMany?: MaterialAttachmentUpdateManyWithWhereWithoutMaterialInput | MaterialAttachmentUpdateManyWithWhereWithoutMaterialInput[]
+    deleteMany?: MaterialAttachmentScalarWhereInput | MaterialAttachmentScalarWhereInput[]
+  }
+
+  export type MaterialCreateNestedOneWithoutAttachmentsInput = {
+    create?: XOR<MaterialCreateWithoutAttachmentsInput, MaterialUncheckedCreateWithoutAttachmentsInput>
+    connectOrCreate?: MaterialCreateOrConnectWithoutAttachmentsInput
+    connect?: MaterialWhereUniqueInput
+  }
+
+  export type IntFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type MaterialUpdateOneRequiredWithoutAttachmentsNestedInput = {
+    create?: XOR<MaterialCreateWithoutAttachmentsInput, MaterialUncheckedCreateWithoutAttachmentsInput>
+    connectOrCreate?: MaterialCreateOrConnectWithoutAttachmentsInput
+    upsert?: MaterialUpsertWithoutAttachmentsInput
+    connect?: MaterialWhereUniqueInput
+    update?: XOR<XOR<MaterialUpdateToOneWithWhereWithoutAttachmentsInput, MaterialUpdateWithoutAttachmentsInput>, MaterialUncheckedUpdateWithoutAttachmentsInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -5253,6 +6850,33 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
+  export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type NestedFloatFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatFilter<$PrismaModel> | number
+  }
+
   export type ScheduleCreateWithoutSchoolInput = {
     id?: string
     date: Date | string
@@ -5362,6 +6986,128 @@ export namespace Prisma {
     contactPerson?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
+  export type MaterialAttachmentCreateWithoutMaterialInput = {
+    id?: string
+    filename: string
+    filePath: string
+    fileSize: number
+    mimeType: string
+    thumbnailPath?: string | null
+    uploadOrder: number
+    createdAt?: Date | string
+  }
+
+  export type MaterialAttachmentUncheckedCreateWithoutMaterialInput = {
+    id?: string
+    filename: string
+    filePath: string
+    fileSize: number
+    mimeType: string
+    thumbnailPath?: string | null
+    uploadOrder: number
+    createdAt?: Date | string
+  }
+
+  export type MaterialAttachmentCreateOrConnectWithoutMaterialInput = {
+    where: MaterialAttachmentWhereUniqueInput
+    create: XOR<MaterialAttachmentCreateWithoutMaterialInput, MaterialAttachmentUncheckedCreateWithoutMaterialInput>
+  }
+
+  export type MaterialAttachmentCreateManyMaterialInputEnvelope = {
+    data: MaterialAttachmentCreateManyMaterialInput | MaterialAttachmentCreateManyMaterialInput[]
+  }
+
+  export type MaterialAttachmentUpsertWithWhereUniqueWithoutMaterialInput = {
+    where: MaterialAttachmentWhereUniqueInput
+    update: XOR<MaterialAttachmentUpdateWithoutMaterialInput, MaterialAttachmentUncheckedUpdateWithoutMaterialInput>
+    create: XOR<MaterialAttachmentCreateWithoutMaterialInput, MaterialAttachmentUncheckedCreateWithoutMaterialInput>
+  }
+
+  export type MaterialAttachmentUpdateWithWhereUniqueWithoutMaterialInput = {
+    where: MaterialAttachmentWhereUniqueInput
+    data: XOR<MaterialAttachmentUpdateWithoutMaterialInput, MaterialAttachmentUncheckedUpdateWithoutMaterialInput>
+  }
+
+  export type MaterialAttachmentUpdateManyWithWhereWithoutMaterialInput = {
+    where: MaterialAttachmentScalarWhereInput
+    data: XOR<MaterialAttachmentUpdateManyMutationInput, MaterialAttachmentUncheckedUpdateManyWithoutMaterialInput>
+  }
+
+  export type MaterialAttachmentScalarWhereInput = {
+    AND?: MaterialAttachmentScalarWhereInput | MaterialAttachmentScalarWhereInput[]
+    OR?: MaterialAttachmentScalarWhereInput[]
+    NOT?: MaterialAttachmentScalarWhereInput | MaterialAttachmentScalarWhereInput[]
+    id?: StringFilter<"MaterialAttachment"> | string
+    materialId?: StringFilter<"MaterialAttachment"> | string
+    filename?: StringFilter<"MaterialAttachment"> | string
+    filePath?: StringFilter<"MaterialAttachment"> | string
+    fileSize?: IntFilter<"MaterialAttachment"> | number
+    mimeType?: StringFilter<"MaterialAttachment"> | string
+    thumbnailPath?: StringNullableFilter<"MaterialAttachment"> | string | null
+    uploadOrder?: IntFilter<"MaterialAttachment"> | number
+    createdAt?: DateTimeFilter<"MaterialAttachment"> | Date | string
+  }
+
+  export type MaterialCreateWithoutAttachmentsInput = {
+    id?: string
+    title: string
+    content?: string | null
+    uploadedAt?: Date | string
+    uploader: string
+    category: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type MaterialUncheckedCreateWithoutAttachmentsInput = {
+    id?: string
+    title: string
+    content?: string | null
+    uploadedAt?: Date | string
+    uploader: string
+    category: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type MaterialCreateOrConnectWithoutAttachmentsInput = {
+    where: MaterialWhereUniqueInput
+    create: XOR<MaterialCreateWithoutAttachmentsInput, MaterialUncheckedCreateWithoutAttachmentsInput>
+  }
+
+  export type MaterialUpsertWithoutAttachmentsInput = {
+    update: XOR<MaterialUpdateWithoutAttachmentsInput, MaterialUncheckedUpdateWithoutAttachmentsInput>
+    create: XOR<MaterialCreateWithoutAttachmentsInput, MaterialUncheckedCreateWithoutAttachmentsInput>
+    where?: MaterialWhereInput
+  }
+
+  export type MaterialUpdateToOneWithWhereWithoutAttachmentsInput = {
+    where?: MaterialWhereInput
+    data: XOR<MaterialUpdateWithoutAttachmentsInput, MaterialUncheckedUpdateWithoutAttachmentsInput>
+  }
+
+  export type MaterialUpdateWithoutAttachmentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    uploader?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MaterialUncheckedUpdateWithoutAttachmentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    uploader?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type ScheduleCreateManySchoolInput = {
     id?: string
     date: Date | string
@@ -5408,6 +7154,50 @@ export namespace Prisma {
     otherReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MaterialAttachmentCreateManyMaterialInput = {
+    id?: string
+    filename: string
+    filePath: string
+    fileSize: number
+    mimeType: string
+    thumbnailPath?: string | null
+    uploadOrder: number
+    createdAt?: Date | string
+  }
+
+  export type MaterialAttachmentUpdateWithoutMaterialInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    filename?: StringFieldUpdateOperationsInput | string
+    filePath?: StringFieldUpdateOperationsInput | string
+    fileSize?: IntFieldUpdateOperationsInput | number
+    mimeType?: StringFieldUpdateOperationsInput | string
+    thumbnailPath?: NullableStringFieldUpdateOperationsInput | string | null
+    uploadOrder?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MaterialAttachmentUncheckedUpdateWithoutMaterialInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    filename?: StringFieldUpdateOperationsInput | string
+    filePath?: StringFieldUpdateOperationsInput | string
+    fileSize?: IntFieldUpdateOperationsInput | number
+    mimeType?: StringFieldUpdateOperationsInput | string
+    thumbnailPath?: NullableStringFieldUpdateOperationsInput | string | null
+    uploadOrder?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MaterialAttachmentUncheckedUpdateManyWithoutMaterialInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    filename?: StringFieldUpdateOperationsInput | string
+    filePath?: StringFieldUpdateOperationsInput | string
+    fileSize?: IntFieldUpdateOperationsInput | number
+    mimeType?: StringFieldUpdateOperationsInput | string
+    thumbnailPath?: NullableStringFieldUpdateOperationsInput | string | null
+    uploadOrder?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
 

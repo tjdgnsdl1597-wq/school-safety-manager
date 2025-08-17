@@ -141,14 +141,23 @@ exports.Prisma.MaterialScalarFieldEnum = {
   id: 'id',
   title: 'title',
   content: 'content',
-  filename: 'filename',
-  filePath: 'filePath',
   uploadedAt: 'uploadedAt',
   uploader: 'uploader',
   category: 'category',
-  thumbnailPath: 'thumbnailPath',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
+};
+
+exports.Prisma.MaterialAttachmentScalarFieldEnum = {
+  id: 'id',
+  materialId: 'materialId',
+  filename: 'filename',
+  filePath: 'filePath',
+  fileSize: 'fileSize',
+  mimeType: 'mimeType',
+  thumbnailPath: 'thumbnailPath',
+  uploadOrder: 'uploadOrder',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -165,7 +174,8 @@ exports.Prisma.NullsOrder = {
 exports.Prisma.ModelName = {
   School: 'School',
   Schedule: 'Schedule',
-  Material: 'Material'
+  Material: 'Material',
+  MaterialAttachment: 'MaterialAttachment'
 };
 
 /**

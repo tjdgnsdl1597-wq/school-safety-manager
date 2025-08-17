@@ -10,7 +10,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -40,12 +40,23 @@ model Material {
   id            String    @id @default(uuid())
   title         String    // 게시글 제목
   content       String?   // 게시글 내용
-  filename      String?   // 첨부파일명 (선택사항)
-  filePath      String?   // 첨부파일 경로 (선택사항)
+  attachments   MaterialAttachment[] // 첨부파일들 (최대 5개)
   uploadedAt    DateTime  @default(now())
   uploader      String
   category      String    // "교육자료" or "산업재해"
-  thumbnailPath String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+}
+
+model MaterialAttachment {
+  id            String    @id @default(uuid())
+  materialId    String
+  material      Material  @relation(fields: [materialId], references: [id], onDelete: Cascade)
+  filename      String    // 원본 파일명
+  filePath      String    // GCS 저장 경로
+  fileSize      Int       // 파일 크기 (bytes)
+  mimeType      String    // MIME 타입
+  thumbnailPath String?   // 썸네일 경로 (이미지인 경우)
+  uploadOrder   Int       // 업로드 순서 (1-5)
+  createdAt     DateTime  @default(now())
 }
