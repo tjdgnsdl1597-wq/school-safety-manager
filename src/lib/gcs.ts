@@ -26,41 +26,40 @@ const getCredentials = () => {
   return undefined;
 };
 
-const credentials = getCredentials();
+// Storage 클라이언트를 동적으로 생성하는 함수
+function createStorageClient(): Storage {
+  const credentials = getCredentials();
+  
+  // Storage 클라이언트 설정
+  const storageConfig: StorageOptions = {
+    projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
+  };
 
-// Storage 클라이언트 설정
-const storageConfig: StorageOptions = {
-  projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
-};
+  // 로컬 개발 환경
+  if (process.env.GOOGLE_CLOUD_KEY_FILE) {
+    storageConfig.keyFilename = process.env.GOOGLE_CLOUD_KEY_FILE;
+    console.log('Using keyFilename for GCS authentication');
+  } 
+  // Vercel 환경
+  else if (credentials) {
+    storageConfig.credentials = credentials;
+    storageConfig.projectId = credentials.project_id; // 인증 정보에서 프로젝트 ID 사용
+    console.log('Using credentials object for GCS authentication');
+  } else {
+    console.error('No valid GCS authentication method found');
+  }
 
-// 로컬 개발 환경
-if (process.env.GOOGLE_CLOUD_KEY_FILE) {
-  storageConfig.keyFilename = process.env.GOOGLE_CLOUD_KEY_FILE;
-} 
-// Vercel 환경
-else if (credentials) {
-  storageConfig.credentials = credentials;
-  storageConfig.projectId = credentials.project_id; // 인증 정보에서 프로젝트 ID 사용
+  console.log('Storage config:', {
+    hasProjectId: !!storageConfig.projectId,
+    hasKeyFilename: !!storageConfig.keyFilename,
+    hasCredentials: !!storageConfig.credentials,
+    projectId: storageConfig.projectId
+  });
+
+  return new Storage(storageConfig);
 }
 
-console.log('Storage config:', {
-  hasProjectId: !!storageConfig.projectId,
-  hasKeyFilename: !!storageConfig.keyFilename,
-  hasCredentials: !!storageConfig.credentials,
-  projectId: storageConfig.projectId
-});
-
-const storage = new Storage(storageConfig);
-
-console.log('GCS Storage initialized with:', {
-  projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
-  hasKeyFile: !!process.env.GOOGLE_CLOUD_KEY_FILE,
-  hasCredentials: !!credentials,
-  bucketName: process.env.GOOGLE_CLOUD_BUCKET_NAME
-});
-
 const bucketName = process.env.GOOGLE_CLOUD_BUCKET_NAME || 'school-safety-manager';
-const bucket = storage.bucket(bucketName);
 
 /**
  * 파일을 Google Cloud Storage에 업로드
@@ -71,6 +70,11 @@ const bucket = storage.bucket(bucketName);
 export async function uploadFileToGCS(file: File, category: string): Promise<string> {
   try {
     console.log('Starting GCS upload process...');
+    
+    // Storage 클라이언트 생성
+    const storage = createStorageClient();
+    const bucket = storage.bucket(bucketName);
+    console.log('Storage client and bucket created');
     
     // 파일명 생성 (타임스탬프 + 카테고리 + 원본파일명)
     const timestamp = Date.now();
@@ -151,6 +155,10 @@ export async function uploadFileToGCS(file: File, category: string): Promise<str
  */
 export async function deleteFileFromGCS(filePath: string): Promise<void> {
   try {
+    // Storage 클라이언트 생성
+    const storage = createStorageClient();
+    const bucket = storage.bucket(bucketName);
+    
     // GCS URL에서 파일 경로 추출
     const fileName = filePath.replace(`https://storage.googleapis.com/${bucketName}/`, '');
     
