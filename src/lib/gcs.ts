@@ -33,7 +33,20 @@ const getCredentials = () => {
       try {
         console.log('Trying Base64 decode...');
         const decodedStr = Buffer.from(process.env.GOOGLE_CLOUD_CREDENTIALS, 'base64').toString();
-        const credentials = JSON.parse(decodedStr);
+        console.log('Base64 decoded, first 200 chars:', decodedStr.substring(0, 200));
+        
+        // 디코딩된 문자열에서도 제어 문자들을 제거
+        const cleanedStr = decodedStr
+          .replace(/[\x00-\x1F\x7F]/g, '') // 모든 제어 문자 제거
+          .replace(/\\n/g, '\n')
+          .replace(/\\r/g, '\r')
+          .replace(/\\t/g, '\t')
+          .replace(/\\\\/g, '\\')
+          .trim();
+        
+        console.log('After cleaning control chars, first 200 chars:', cleanedStr.substring(0, 200));
+        
+        const credentials = JSON.parse(cleanedStr);
         console.log('Base64 decoded credentials parsed successfully');
         return credentials;
       } catch (base64Error) {

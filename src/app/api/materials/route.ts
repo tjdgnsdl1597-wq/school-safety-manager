@@ -23,8 +23,6 @@ export async function GET(request: Request) {
     if (searchTerm && searchBy) {
       if (searchBy === 'filename') {
         whereClause.filename = { contains: searchTerm };
-      } else if (searchBy === 'uploader') {
-        whereClause.uploader = { contains: searchTerm };
       }
     }
 
@@ -55,18 +53,16 @@ export async function POST(request: Request) {
     const formData = await request.formData();
     const file = formData.get('file') as File;
     const category = formData.get('category') as string;
-    const uploader = formData.get('uploader') as string;
 
     console.log('FormData received:', { 
       hasFile: !!file, 
-      category, 
-      uploader,
+      category,
       fileSize: file?.size,
       fileName: file?.name 
     });
 
-    if (!file || !category || !uploader) {
-      console.error('Missing required fields:', { hasFile: !!file, category, uploader });
+    if (!file || !category) {
+      console.error('Missing required fields:', { hasFile: !!file, category });
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
@@ -126,7 +122,7 @@ export async function POST(request: Request) {
           filename: file.name, // 원본 파일명 저장
           filePath: gcsUrl, // GCS 공개 URL 저장
           uploadedAt: new Date(),
-          uploader,
+          uploader: 'Admin', // 기본값으로 설정
           category,
           thumbnailPath,
         },

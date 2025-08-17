@@ -10,7 +10,6 @@ interface Material {
   filename: string;
   filePath: string;
   uploadedAt: string;
-  uploader: string;
   category: string;
   thumbnailPath?: string;
 }
@@ -106,7 +105,6 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
     setUploading(true);
     const formData = new FormData(e.currentTarget);
     formData.append('category', category);
-    formData.append('uploader', '강성훈'); // Placeholder for logged-in user
 
     try {
       const res = await fetch('/api/materials', { method: 'POST', body: formData });
@@ -214,7 +212,6 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
             <label htmlFor="searchBy" className="block text-sm font-medium text-gray-700 mb-1">검색 조건</label>
             <select id="searchBy" value={searchBy} onChange={e => setSearchBy(e.target.value)} className="w-full p-2 border rounded-md">
               <option value="filename">제목</option>
-              <option value="uploader">작성자</option>
             </select>
           </div>
           <div className="md:col-span-2">
@@ -329,8 +326,7 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
                     {material.filename}
                   </h3>
                   
-                  <div className="flex items-center justify-between text-xs text-gray-500 mb-3">
-                    <span>{material.uploader}</span>
+                  <div className="flex items-center justify-end text-xs text-gray-500 mb-3">
                     <span>{new Date(material.uploadedAt).toLocaleDateString()}</span>
                   </div>
 
@@ -405,18 +401,6 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
                 <p className="text-xs text-gray-500 mt-1">
                   지원 형식: PDF, PPT, DOC, XLS, 이미지, 동영상 파일 (최대 50MB)
                 </p>
-              </div>
-              <div className="mb-4">
-                <label htmlFor="uploader" className="block text-gray-700 text-sm font-bold mb-2">업로더</label>
-                <input 
-                  type="text" 
-                  name="uploader" 
-                  id="uploader" 
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700" 
-                  required 
-                  placeholder="업로드하는 사람의 이름을 입력하세요"
-                  autoComplete="name"
-                />
               </div>
               <div className="flex items-center justify-end">
                 <button type="button" onClick={() => setIsModalOpen(false)} className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded mr-2" disabled={uploading}>취소</button>
