@@ -50,12 +50,23 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    console.log('API POST /api/materials called');
+    
     const formData = await request.formData();
     const file = formData.get('file') as File;
     const category = formData.get('category') as string;
     const uploader = formData.get('uploader') as string;
 
+    console.log('FormData received:', { 
+      hasFile: !!file, 
+      category, 
+      uploader,
+      fileSize: file?.size,
+      fileName: file?.name 
+    });
+
     if (!file || !category || !uploader) {
+      console.error('Missing required fields:', { hasFile: !!file, category, uploader });
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
@@ -93,6 +104,12 @@ export async function POST(request: Request) {
 
     // Google Cloud Storage에 파일 업로드
     console.log(`Uploading file to GCS: ${file.name}, Size: ${file.size} bytes`);
+    console.log('Environment check:', {
+      hasProjectId: !!process.env.GOOGLE_CLOUD_PROJECT_ID,
+      hasBucketName: !!process.env.GOOGLE_CLOUD_BUCKET_NAME,
+      hasCredentials: !!process.env.GOOGLE_CLOUD_CREDENTIALS,
+      hasKeyFile: !!process.env.GOOGLE_CLOUD_KEY_FILE
+    });
     
     try {
       // GCS에 파일 업로드

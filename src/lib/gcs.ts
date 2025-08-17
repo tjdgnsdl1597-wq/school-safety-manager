@@ -4,20 +4,32 @@ import { Storage } from '@google-cloud/storage';
 const getCredentials = () => {
   if (process.env.GOOGLE_CLOUD_CREDENTIALS) {
     try {
-      return JSON.parse(process.env.GOOGLE_CLOUD_CREDENTIALS);
+      const credentials = JSON.parse(process.env.GOOGLE_CLOUD_CREDENTIALS);
+      console.log('GCS credentials parsed successfully, project_id:', credentials.project_id);
+      return credentials;
     } catch (error) {
       console.error('Failed to parse GOOGLE_CLOUD_CREDENTIALS:', error);
+      console.error('GOOGLE_CLOUD_CREDENTIALS length:', process.env.GOOGLE_CLOUD_CREDENTIALS?.length);
       return undefined;
     }
   }
+  console.log('No GOOGLE_CLOUD_CREDENTIALS found, using keyFilename');
   return undefined;
 };
 
+const credentials = getCredentials();
 const storage = new Storage({
   projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
   keyFilename: process.env.GOOGLE_CLOUD_KEY_FILE, // 로컬 개발용
   // Vercel 환경에서는 서비스 계정 키를 JSON 문자열로 설정
-  credentials: getCredentials(),
+  credentials: credentials,
+});
+
+console.log('GCS Storage initialized with:', {
+  projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
+  hasKeyFile: !!process.env.GOOGLE_CLOUD_KEY_FILE,
+  hasCredentials: !!credentials,
+  bucketName: process.env.GOOGLE_CLOUD_BUCKET_NAME
 });
 
 const bucketName = process.env.GOOGLE_CLOUD_BUCKET_NAME || 'school-safety-manager';
@@ -31,16 +43,22 @@ const bucket = storage.bucket(bucketName);
  */
 export async function uploadFileToGCS(file: File, category: string): Promise<string> {
   try {
+    console.log('Starting GCS upload process...');
+    
     // 파일명 생성 (타임스탬프 + 카테고리 + 원본파일명)
     const timestamp = Date.now();
     const safeFilename = file.name.replace(/[^a-zA-Z0-9가-힣._-]/g, '_');
     const fileName = `${category}/${timestamp}_${safeFilename}`;
     
+    console.log('Generated filename:', fileName);
+    
     // Buffer로 변환
     const buffer = Buffer.from(await file.arrayBuffer());
+    console.log('File converted to buffer, size:', buffer.length);
     
     // GCS 파일 객체 생성
     const gcsFile = bucket.file(fileName);
+    console.log('GCS file object created');
     
     // 파일 업로드
     await gcsFile.save(buffer, {
@@ -55,12 +73,20 @@ export async function uploadFileToGCS(file: File, category: string): Promise<str
       public: true, // 파일을 공개로 설정
     });
     
+    console.log('File saved to GCS successfully');
+    
     // 공개 URL 반환
     const publicUrl = `https://storage.googleapis.com/${bucketName}/${fileName}`;
+    console.log('Generated public URL:', publicUrl);
     return publicUrl;
     
   } catch (error) {
     console.error('Error uploading file to GCS:', error);
+    console.error('Error details:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      name: error instanceof Error ? error.name : undefined
+    });
     throw new Error('파일 업로드에 실패했습니다.');
   }
 }
