@@ -301,7 +301,7 @@ const MainTasksSection = () => {
 
 // Image Gallery Section with 3 Categories and Slide Animation
 const ImageGallerySection = () => {
-  // 3개 카테고리별 이미지 3장씩 총 9장 (우선 Unsplash로 테스트, 문제 해결 후 로컬 이미지로 전환)
+  // 3개 카테고리별 이미지 3장씩 총 9장 (실제 업로드된 이미지 사용)
   const galleryCategories = [
     {
       id: 'education',
@@ -310,21 +310,18 @@ const ImageGallerySection = () => {
       images: [
         {
           id: 1,
-          src: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=640&h=360&q=80',
-          alt: '안전보건 교육 현장',
-          localSrc: '/images/gallery/education-1.jpg' // 실제 이미지 경로 보관
+          src: '/images/gallery/education-1.jpg',
+          alt: '안전보건 교육 현장'
         },
         {
           id: 2,
-          src: 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&w=640&h=360&q=80',
-          alt: 'PPE 착용 교육',
-          localSrc: '/images/gallery/education-2.jpg'
+          src: '/images/gallery/education-2.jpg',
+          alt: 'PPE 착용 교육'
         },
         {
           id: 3,
-          src: 'https://images.unsplash.com/photo-1584464491033-06628f3a6b7b?auto=format&fit=crop&w=640&h=360&q=80',
-          alt: '화재 대피 훈련',
-          localSrc: '/images/gallery/education-3.jpg'
+          src: '/images/gallery/education-3.jpg',
+          alt: '화재 대피 훈련'
         }
       ]
     },
@@ -335,21 +332,18 @@ const ImageGallerySection = () => {
       images: [
         {
           id: 4,
-          src: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=640&h=360&q=80',
-          alt: '시설 안전 점검',
-          localSrc: '/images/gallery/inspection-1.jpg'
+          src: '/images/gallery/inspection-1.jpg',
+          alt: '시설 안전 점검'
         },
         {
           id: 5,
-          src: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=640&h=360&q=80',
-          alt: '환경 측정 활동',
-          localSrc: '/images/gallery/inspection-2.jpg'
+          src: '/images/gallery/inspection-2.jpg',
+          alt: '환경 측정 활동'
         },
         {
           id: 6,
-          src: 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&w=640&h=360&q=80',
-          alt: '위험요소 점검',
-          localSrc: '/images/gallery/inspection-3.jpg'
+          src: '/images/gallery/inspection-3.jpg',
+          alt: '위험요소 점검'
         }
       ]
     },
@@ -360,21 +354,18 @@ const ImageGallerySection = () => {
       images: [
         {
           id: 7,
-          src: 'https://images.unsplash.com/photo-1554774853-6cb5d0ad4c99?auto=format&fit=crop&w=640&h=360&q=80',
-          alt: '안전시설 개선',
-          localSrc: '/images/gallery/improvement-1.jpg'
+          src: '/images/gallery/improvement-1.jpg',
+          alt: '안전시설 개선'
         },
         {
           id: 8,
-          src: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=640&h=360&q=80',
-          alt: '환경 개선 작업',
-          localSrc: '/images/gallery/improvement-2.jpg'
+          src: '/images/gallery/improvement-2.jpg',
+          alt: '환경 개선 작업'
         },
         {
           id: 9,
-          src: 'https://images.unsplash.com/photo-1585121040688-64164503dd8c?auto=format&fit=crop&w=640&h=360&q=80',
-          alt: '안전장비 설치',
-          localSrc: '/images/gallery/improvement-3.jpg'
+          src: '/images/gallery/improvement-3.jpg',
+          alt: '안전장비 설치'
         }
       ]
     }
@@ -455,15 +446,15 @@ const ImageGallerySection = () => {
                 </div>
 
                 {/* 이미지 슬라이더 */}
-                <div className="relative aspect-video overflow-hidden">
+                <div className="relative w-full h-64 md:h-72 overflow-hidden rounded-lg">
                   <div 
-                    className="flex transition-transform duration-500 ease-in-out"
+                    className="flex transition-transform duration-500 ease-in-out h-full"
                     style={{ 
                       transform: `translateX(-${currentImageIndex[category.id as keyof typeof currentImageIndex] * 100}%)` 
                     }}
                   >
                     {category.images.map((image, imageIndex) => (
-                      <div key={image.id} className="w-full flex-shrink-0 relative">
+                      <div key={image.id} className="w-full h-full flex-shrink-0 relative">
                         <Image
                           src={image.src}
                           alt={image.alt}
@@ -471,6 +462,7 @@ const ImageGallerySection = () => {
                           className="object-cover"
                           sizes="(max-width: 768px) 100vw, 33vw"
                           loading="lazy"
+                          priority={imageIndex === 0}
                           onError={(e) => {
                             const target = e.target as HTMLImageElement;
                             // 카테고리별로 다른 Unsplash 폴백 이미지 사용
@@ -543,7 +535,7 @@ const ImageGallerySection = () => {
 
         <div className="text-center mt-12">
           <p className="text-sm text-gray-500">
-            현재 안전 관련 참고 이미지가 표시되고 있습니다. 실제 활동 사진으로 교체 예정입니다.
+            실제 학교 현장에서의 안전관리 활동 모습들을 확인하실 수 있습니다.
           </p>
         </div>
       </div>
