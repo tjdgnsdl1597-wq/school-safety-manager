@@ -4,55 +4,51 @@ import { Storage, StorageOptions } from '@google-cloud/storage';
 const getCredentials = () => {
   if (process.env.GOOGLE_CLOUD_CREDENTIALS) {
     try {
-      let credentialsStr = process.env.GOOGLE_CLOUD_CREDENTIALS;
+      const credentialsStr = process.env.GOOGLE_CLOUD_CREDENTIALS;
       console.log('GOOGLE_CLOUD_CREDENTIALS found, length:', credentialsStr.length);
-      console.log('First 100 chars:', credentialsStr.substring(0, 100));
+      console.log('First 50 chars:', credentialsStr.substring(0, 50));
       
-      // 제어 문자들을 안전하게 처리
-      credentialsStr = credentialsStr
-        .replace(/\\n/g, '\n')  // \\n을 실제 줄바꿈으로 변환
-        .replace(/\\r/g, '\r')  // \\r을 실제 캐리지 리턴으로 변환
-        .replace(/\\t/g, '\t')  // \\t를 실제 탭으로 변환
-        .replace(/\\\\/g, '\\') // \\를 실제 백슬래시로 변환
-        .trim();
+      // Base64로 인코딩되어 있는지 확인 (Base64는 알파벳+숫자+/+=만 포함)
+      const isBase64 = /^[A-Za-z0-9+/=]+$/.test(credentialsStr);
+      console.log('Is Base64 format:', isBase64);
       
-      console.log('After escape processing, first 150 chars:', credentialsStr.substring(0, 150));
+      let parsedCredentials;
       
-      const credentials = JSON.parse(credentialsStr);
-      console.log('GCS credentials parsed successfully');
-      console.log('Credential keys:', Object.keys(credentials));
-      console.log('project_id:', credentials.project_id);
-      console.log('client_email:', credentials.client_email);
-      
-      return credentials;
-    } catch (error) {
-      console.error('Failed to parse GOOGLE_CLOUD_CREDENTIALS:', error);
-      console.error('Raw env var length:', process.env.GOOGLE_CLOUD_CREDENTIALS?.length);
-      
-      // Base64로 인코딩되어 있을 수도 있음
-      try {
-        console.log('Trying Base64 decode...');
-        const decodedStr = Buffer.from(process.env.GOOGLE_CLOUD_CREDENTIALS, 'base64').toString();
-        console.log('Base64 decoded, first 200 chars:', decodedStr.substring(0, 200));
+      if (isBase64) {
+        // Base64 디코딩
+        console.log('Attempting Base64 decode...');
+        const decodedStr = Buffer.from(credentialsStr, 'base64').toString('utf-8');
+        console.log('Base64 decoded successfully, parsing JSON...');
+        parsedCredentials = JSON.parse(decodedStr);
+        console.log('Base64 decoded credentials parsed successfully');
+      } else {
+        // 직접 JSON 파싱 시도
+        console.log('Attempting direct JSON parse...');
         
-        // 디코딩된 문자열에서도 제어 문자들을 제거
-        const cleanedStr = decodedStr
-          .replace(/[\x00-\x1F\x7F]/g, '') // 모든 제어 문자 제거
+        // escape 문자들을 안전하게 처리
+        const processedStr = credentialsStr
           .replace(/\\n/g, '\n')
-          .replace(/\\r/g, '\r')
+          .replace(/\\r/g, '\r') 
           .replace(/\\t/g, '\t')
           .replace(/\\\\/g, '\\')
           .trim();
-        
-        console.log('After cleaning control chars, first 200 chars:', cleanedStr.substring(0, 200));
-        
-        const credentials = JSON.parse(cleanedStr);
-        console.log('Base64 decoded credentials parsed successfully');
-        return credentials;
-      } catch (base64Error) {
-        console.error('Base64 decode also failed:', base64Error);
+          
+        parsedCredentials = JSON.parse(processedStr);
+        console.log('Direct JSON parsing successful');
       }
       
+      console.log('Credential keys:', Object.keys(parsedCredentials));
+      console.log('project_id:', parsedCredentials.project_id);
+      console.log('client_email:', parsedCredentials.client_email);
+      
+      return parsedCredentials;
+      
+    } catch (error) {
+      console.error('Failed to parse GOOGLE_CLOUD_CREDENTIALS:', error);
+      console.error('Error details:', {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined
+      });
       return undefined;
     }
   }
