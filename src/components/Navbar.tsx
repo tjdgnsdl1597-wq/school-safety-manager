@@ -28,44 +28,59 @@ export default function Navbar() {
   const navItems = isAdmin ? adminNavItems : customerNavItems;
 
   return (
-    <nav className="bg-blue-600 p-4 shadow-md">
-      <div className="container mx-auto flex justify-between items-center">
-        <Link href="/" className="text-white text-xl font-bold">
-          인천광역시 학교안전공제회
-        </Link>
-        <div className="flex items-center space-x-4">
-          {navItems.map((item) => (
-            <Link
-              key={item.name}
-              href={item.href}
-              className={`text-white hover:text-blue-200 transition-colors duration-200 ${
-                pathname === item.href ? 'font-bold border-b-2 border-white' : ''
-              }`}
-            >
-              {item.name}
-            </Link>
-          ))}
-          <div className="flex items-center space-x-4 ml-4">
-            {session ? (
-              <>
-                <span className="text-white text-sm">
-                  {isAdmin ? '관리자' : '고객'}님
-                </span>
-                <button
-                  onClick={() => signOut({ callbackUrl: '/auth/signin' })}
-                  className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition-colors duration-200"
-                >
-                  로그아웃
-                </button>
-              </>
-            ) : (
+    <nav className="bg-gradient-to-r from-slate-900 via-blue-900 to-slate-900 backdrop-blur-lg border-b border-white/10 sticky top-0 z-50">
+      <div className="container mx-auto px-6 py-4">
+        <div className="flex justify-between items-center">
+          <Link 
+            href="/" 
+            className="text-white text-xl font-bold tracking-wide hover:text-blue-300 transition-colors duration-300 flex items-center space-x-2"
+          >
+            <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center">
+              <span className="text-white text-sm font-bold">안</span>
+            </div>
+            <span>인천광역시 학교안전공제회</span>
+          </Link>
+          
+          <div className="flex items-center space-x-1">
+            {navItems.map((item) => (
               <Link
-                href="/auth/signin"
-                className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm transition-colors duration-200"
+                key={item.name}
+                href={item.href}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
+                  pathname === item.href 
+                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/25' 
+                    : 'text-gray-300 hover:text-white hover:bg-white/10'
+                }`}
               >
-                관리자 로그인
+                {item.name}
               </Link>
-            )}
+            ))}
+            
+            <div className="ml-6 flex items-center space-x-3">
+              {session ? (
+                <>
+                  <div className="flex items-center space-x-2 px-3 py-1 bg-white/10 rounded-full">
+                    <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                    <span className="text-gray-300 text-sm">
+                      {isAdmin ? '관리자' : '고객'}
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => signOut({ callbackUrl: '/auth/signin' })}
+                    className="px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white text-sm font-medium rounded-lg transition-all duration-300 shadow-lg shadow-red-500/25 hover:shadow-red-500/40"
+                  >
+                    로그아웃
+                  </button>
+                </>
+              ) : (
+                <Link
+                  href="/auth/signin"
+                  className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white text-sm font-medium rounded-lg transition-all duration-300 shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40"
+                >
+                  관리자 로그인
+                </Link>
+              )}
+            </div>
           </div>
         </div>
       </div>
