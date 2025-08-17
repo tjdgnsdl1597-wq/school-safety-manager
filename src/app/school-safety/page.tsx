@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
+import HeroSplit from '@/components/HeroSplit';
 
 // Hero Section Component
 const HeroSection = () => (
@@ -298,53 +299,115 @@ const MainTasksSection = () => {
   );
 };
 
-// Image Gallery Section with Pixabay API
+// Image Gallery Section with 3 Categories and Slide Animation
 const ImageGallerySection = () => {
-  const [images, setImages] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
-
-  const fetchImages = async (pageNum: number = 1, append: boolean = false) => {
-    try {
-      setLoading(true);
-      const response = await fetch(`/api/pixabay?query=school safety education&per_page=12&page=${pageNum}`);
-      const data = await response.json();
-      
-      if (append) {
-        setImages(prev => [...prev, ...data.hits]);
-      } else {
-        setImages(data.hits);
-      }
-      
-      setHasMore(data.hits.length === 12);
-    } catch (error) {
-      console.error('Failed to fetch images:', error);
-    } finally {
-      setLoading(false);
+  // 3개 카테고리별 이미지 3장씩 총 9장
+  const galleryCategories = [
+    {
+      id: 'education',
+      title: '현장교육',
+      description: '안전보건 교육 및 훈련',
+      images: [
+        {
+          id: 1,
+          src: '/images/gallery/education-1.jpg',
+          alt: '안전보건 교육 현장'
+        },
+        {
+          id: 2,
+          src: '/images/gallery/education-2.jpg',
+          alt: 'PPE 착용 교육'
+        },
+        {
+          id: 3,
+          src: '/images/gallery/education-3.jpg',
+          alt: '화재 대피 훈련'
+        }
+      ]
+    },
+    {
+      id: 'inspection',
+      title: '측정점검',
+      description: '정기 안전 점검 및 측정',
+      images: [
+        {
+          id: 4,
+          src: '/images/gallery/inspection-1.jpg',
+          alt: '시설 안전 점검'
+        },
+        {
+          id: 5,
+          src: '/images/gallery/inspection-2.jpg',
+          alt: '환경 측정 활동'
+        },
+        {
+          id: 6,
+          src: '/images/gallery/inspection-3.jpg',
+          alt: '위험요소 점검'
+        }
+      ]
+    },
+    {
+      id: 'improvement',
+      title: '조치개선',
+      description: '위험요소 개선 및 조치',
+      images: [
+        {
+          id: 7,
+          src: '/images/gallery/improvement-1.jpg',
+          alt: '안전시설 개선'
+        },
+        {
+          id: 8,
+          src: '/images/gallery/improvement-2.jpg',
+          alt: '환경 개선 작업'
+        },
+        {
+          id: 9,
+          src: '/images/gallery/improvement-3.jpg',
+          alt: '안전장비 설치'
+        }
+      ]
     }
-  };
+  ];
 
-  // Load initial images
+  // 각 카테고리별 현재 이미지 인덱스 상태
+  const [currentImageIndex, setCurrentImageIndex] = useState({
+    education: 0,
+    inspection: 0,
+    improvement: 0
+  });
+
+  // 자동 슬라이드 효과
   useEffect(() => {
-    fetchImages(1);
+    const interval = setInterval(() => {
+      setCurrentImageIndex(prev => ({
+        education: (prev.education + 1) % 3,
+        inspection: (prev.inspection + 1) % 3,
+        improvement: (prev.improvement + 1) % 3
+      }));
+    }, 2000); // 2초마다 변경
+
+    return () => clearInterval(interval);
   }, []);
 
-  const loadMore = () => {
-    const nextPage = page + 1;
-    setPage(nextPage);
-    fetchImages(nextPage, true);
-  };
-
-  const getAltText = (tags: string) => {
-    if (tags.includes('school')) return '학교 안전관리 활동';
-    if (tags.includes('safety')) return '안전교육 및 점검 활동';
-    if (tags.includes('education')) return '교육 현장 안전관리';
-    return '학교 안전보건 관련 활동';
+  // 수동 이미지 변경 함수
+  const handleImageChange = (categoryId: string, direction: 'prev' | 'next') => {
+    setCurrentImageIndex(prev => {
+      const currentIndex = prev[categoryId as keyof typeof prev];
+      const newIndex = direction === 'next' 
+        ? (currentIndex + 1) % 3 
+        : (currentIndex - 1 + 3) % 3;
+      
+      return {
+        ...prev,
+        [categoryId]: newIndex
+      };
+    });
   };
 
   return (
-    <section className="py-20 bg-white">
+    <section className="py-20 bg-gradient-to-br from-gray-50 via-blue-50 to-gray-100">
       <div className="container mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -361,54 +424,101 @@ const ImageGallerySection = () => {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {images.map((image, index) => (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          {galleryCategories.map((category, categoryIndex) => (
             <motion.div
-              key={image.id}
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6, delay: (index % 12) * 0.1 }}
+              key={category.id}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: categoryIndex * 0.2 }}
               viewport={{ once: true }}
-              className="group cursor-pointer"
+              className="group"
             >
-              <div className="bg-gray-200 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-105">
-                <div className="aspect-video relative">
-                  <Image
-                    src={image.webformatURL}
-                    alt={getAltText(image.tags)}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    loading="lazy"
-                  />
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl overflow-hidden shadow-xl border border-white/20 hover:shadow-2xl transition-all duration-500">
+                {/* 카테고리 제목 */}
+                <div className="p-6 border-b border-gray-100">
+                  <h3 className="text-xl font-bold text-gray-800 text-center mb-2">
+                    {category.title}
+                  </h3>
+                  <p className="text-sm text-gray-600 text-center">
+                    {category.description}
+                  </p>
+                </div>
+
+                {/* 이미지 슬라이더 */}
+                <div className="relative aspect-video overflow-hidden">
+                  <div 
+                    className="flex transition-transform duration-500 ease-in-out"
+                    style={{ 
+                      transform: `translateX(-${currentImageIndex[category.id as keyof typeof currentImageIndex] * 100}%)` 
+                    }}
+                  >
+                    {category.images.map((image, imageIndex) => (
+                      <div key={image.id} className="w-full flex-shrink-0 relative">
+                        <Image
+                          src={image.src}
+                          alt={image.alt}
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 768px) 100vw, 33vw"
+                          loading="lazy"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = `/api/placeholder/640/360?text=${encodeURIComponent(category.title)}${imageIndex + 1}`;
+                          }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* 네비게이션 버튼 */}
+                  <div className="absolute bottom-4 left-4 flex space-x-2 bg-white/90 backdrop-blur-sm rounded-lg p-2 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <button 
+                      onClick={() => handleImageChange(category.id, 'prev')}
+                      className="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded transition-colors"
+                      aria-label="이전 이미지"
+                    >
+                      ←
+                    </button>
+                    <button 
+                      onClick={() => handleImageChange(category.id, 'next')}
+                      className="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded transition-colors"
+                      aria-label="다음 이미지"
+                    >
+                      →
+                    </button>
+                  </div>
+
+                  {/* 이미지 인디케이터 */}
+                  <div className="absolute bottom-4 right-4 flex space-x-1">
+                    {[0, 1, 2].map((index) => (
+                      <button
+                        key={index}
+                        onClick={() => setCurrentImageIndex(prev => ({
+                          ...prev,
+                          [category.id]: index
+                        }))}
+                        className={`w-2 h-2 rounded-full transition-colors ${
+                          currentImageIndex[category.id as keyof typeof currentImageIndex] === index 
+                            ? 'bg-blue-500' 
+                            : 'bg-white/50'
+                        }`}
+                        aria-label={`${index + 1}번째 이미지로 이동`}
+                      />
+                    ))}
+                  </div>
                 </div>
               </div>
             </motion.div>
           ))}
         </div>
 
-        {loading && (
-          <div className="text-center mt-12">
-            <div className="inline-flex items-center space-x-2">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
-              <span className="text-gray-600">이미지 로딩 중...</span>
-            </div>
-          </div>
-        )}
-
-        {!loading && hasMore && (
-          <div className="text-center mt-12">
-            <button
-              onClick={loadMore}
-              className="px-8 py-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:scale-105"
-            >
-              더 보기
-            </button>
-          </div>
-        )}
-
-        <div className="text-center mt-6">
-          <p className="text-sm text-gray-500">이미지 출처: Pixabay</p>
+        <div className="text-center mt-12">
+          <p className="text-sm text-gray-500">
+            ※ 이미지를 업로드하시려면 <code className="bg-gray-100 px-2 py-1 rounded text-blue-600">public/images/gallery/</code> 폴더에 
+            <br />
+            <code className="bg-gray-100 px-2 py-1 rounded text-blue-600">education-1~3.jpg, inspection-1~3.jpg, improvement-1~3.jpg</code> 파일명으로 저장해주세요.
+          </p>
         </div>
       </div>
     </section>
@@ -419,15 +529,12 @@ const ImageGallerySection = () => {
 const TrustComplianceSection = () => {
   const regulations = [
     { name: "중대재해 처벌 등에 관한 법률", code: "중대재해처벌법" },
-    { name: "산업안전보건법", code: "산안법" },
-    { name: "교육기본법", code: "교육법" },
-    { name: "학교안전사고 예방 및 보상에 관한 법률", code: "학교안전법" },
-    { name: "재해경감을 위한 기업의 자율활동 지원에 관한 법률", code: "재해경감법" },
-    { name: "화학물질관리법", code: "화관법" }
+    { name: "기준에관한규칙, 시행령, 시행규칙", code: "산업안전보건법" },
+    { name: "학교안전사고 예방 및 보상에 관한 법률", code: "학교안전법" }
   ];
 
   return (
-    <section className="py-20 bg-gradient-to-br from-slate-800 via-blue-900 to-slate-900">
+    <section className="py-20 bg-white">
       <div className="container mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -436,15 +543,15 @@ const TrustComplianceSection = () => {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
             신뢰와 준법 기반
           </h2>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             관련 법령과 기준을 철저히 준수하는 전문적인 서비스
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
           {regulations.map((regulation, index) => (
             <motion.div
               key={index}
@@ -454,13 +561,13 @@ const TrustComplianceSection = () => {
               viewport={{ once: true }}
               className="group"
             >
-              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-300 hover:scale-105">
+              <div className="bg-gradient-to-br from-slate-50 to-white rounded-2xl p-8 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-500 hover:scale-105">
                 <div className="text-center">
-                  <div className="w-16 h-16 bg-gradient-to-r from-emerald-400 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                    <span className="text-white font-bold">✓</span>
+                  <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                    <span className="text-white font-bold text-2xl">✓</span>
                   </div>
-                  <h3 className="text-lg font-bold text-white mb-2">{regulation.code}</h3>
-                  <p className="text-sm text-gray-300 leading-relaxed">{regulation.name}</p>
+                  <h3 className="text-xl font-bold text-gray-800 mb-4">{regulation.code}</h3>
+                  <p className="text-gray-600 leading-relaxed break-keep">{regulation.name}</p>
                 </div>
               </div>
             </motion.div>
@@ -488,7 +595,7 @@ const LegalNoticeSection = () => (
 export default function SchoolSafetyPage() {
   return (
     <div className="min-h-screen">
-      <HeroSection />
+      <HeroSplit />
       <CoreValuesSection />
       <ConsultingAreasSection />
       <MainTasksSection />
