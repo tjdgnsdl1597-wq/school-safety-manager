@@ -104,14 +104,8 @@ body {
 }
 
 .fc-day-today .fc-daygrid-day-number {
-  background-color: #3b82f6 !important;
-  color: white !important;
-  border-radius: 50% !important;
-  width: 1.5rem !important;
-  height: 1.5rem !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
+  color: #000000 !important;
+  font-weight: 600 !important;
 }
 
 /* Event container */
