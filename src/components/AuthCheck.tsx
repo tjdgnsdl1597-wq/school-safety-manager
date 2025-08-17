@@ -13,6 +13,7 @@ export default function AuthCheck({ children }: { children: React.ReactNode }) {
   const publicPages = useMemo(() => [
     '/',
     '/auth/signin',
+    '/school-safety',
     '/educational-materials',
     '/industrial-accidents'
   ], []);
