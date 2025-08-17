@@ -6,43 +6,43 @@ import { useState, useEffect } from 'react';
 
 // Hero Section Component
 const HeroSection = () => (
-  <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800">
-    {/* Background Pattern */}
-    <div className="absolute inset-0 opacity-10">
-      <div className="absolute top-10 left-10 w-32 h-32 bg-blue-400 rounded-full blur-3xl"></div>
-      <div className="absolute top-40 right-20 w-48 h-48 bg-emerald-400 rounded-full blur-3xl"></div>
-      <div className="absolute bottom-20 left-1/3 w-40 h-40 bg-purple-400 rounded-full blur-3xl"></div>
-    </div>
+  <section className="relative min-h-[65vh] py-16 md:py-20 flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800">
+  {/* Background Pattern */}
+  <div className="absolute inset-0 opacity-10">
+    <div className="absolute top-10 left-10 w-24 h-24 bg-blue-400 rounded-full blur-2xl"></div>
+    <div className="absolute top-40 right-20 w-36 h-36 bg-emerald-400 rounded-full blur-2xl"></div>
+    <div className="absolute bottom-20 left-1/3 w-28 h-28 bg-purple-400 rounded-full blur-2xl"></div>
+  </div>
 
-    {/* Content */}
-    <div className="relative z-10 container mx-auto px-6 text-center">
+  {/* Content */}
+  <div className="relative z-10 container mx-auto px-4 sm:px-6 text-center">
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8 }}
+      className="max-w-3xl md:max-w-4xl mx-auto scale-90 md:scale-95 lg:scale-100 origin-center"
+    >
+      <h1 className="text-[clamp(2rem,5vw,3.5rem)] font-bold text-white mb-6 leading-[1.2]">
+        체계적인 학교 안전보건 시스템 구축,
+        <span className="block text-blue-300 mt-3">
+          인천광역시학교안전공제회가 가장 든든한 파트너가 되겠습니다.
+        </span>
+      </h1>
+
       <motion.div
-        initial={{ opacity: 0, y: 30 }}
+        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        className="max-w-5xl mx-auto"
+        transition={{ duration: 0.8, delay: 0.3 }}
+        className="text-base md:text-lg text-gray-300 mb-8 leading-relaxed"
       >
-        <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-8 leading-tight">
-          체계적인 학교 안전보건 시스템 구축,
-          <span className="block text-blue-300 mt-4">
-            인천광역시학교안전공제회가 가장 든든한 파트너가 되겠습니다.
-          </span>
-        </h1>
-        
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.3 }}
-          className="text-xl md:text-2xl text-gray-300 mb-12 leading-relaxed"
-        >
-          <p className="font-semibold text-emerald-300 mb-4">
-            법규 준수부터 재해 예방까지, 원스톱 학교 안전 솔루션
-          </p>
-          <p className="max-w-4xl mx-auto">
-            복잡한 중대재해처벌법과 산업안전보건법, 교육 현장의 수많은 업무와 병행하기에 어려움이 많으셨을 겁니다. 
-            학생과 교직원의 안전을 책임져야 한다는 막중한 부담감, 이제 안전공제회 산업안전팀이 함께 나누겠습니다.
-          </p>
-        </motion.div>
+        <p className="font-semibold text-emerald-300 mb-3">
+          법규 준수부터 재해 예방까지, 원스톱 학교 안전 솔루션
+        </p>
+        <p className="max-w-3xl mx-auto">
+          복잡한 중대재해처벌법과 산업안전보건법, 교육 현장의 수많은 업무와 병행하기에 어려움이 많으셨을 겁니다.
+          학생과 교직원의 안전을 책임져야 한다는 막중한 부담감, 이제 안전공제회 산업안전팀이 함께 나누겠습니다.
+        </p>
+      </motion.div>
 
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
