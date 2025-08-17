@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import { useState } from 'react';
+import Image from 'next/image';
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -33,16 +34,19 @@ export default function Navbar() {
     <nav className="bg-gradient-to-r from-slate-900 via-blue-900 to-slate-900 backdrop-blur-lg border-b border-white/10 sticky top-0 z-50">
       <div className="container mx-auto px-4 sm:px-6">
         <div className="flex justify-between items-center h-16">
-          {/* 로고 - 모바일에서 축약 */}
+          {/* 로고 */}
           <Link 
             href="/" 
-            className="text-white font-bold hover:text-blue-300 transition-colors duration-300 flex items-center space-x-2"
+            className="flex items-center space-x-2 hover:opacity-80 transition-opacity duration-300"
           >
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center">
-              <span className="text-white text-sm font-bold">안</span>
-            </div>
-            <span className="hidden sm:inline text-lg lg:text-xl">인천광역시 학교안전공제회</span>
-            <span className="sm:hidden text-base">학교안전공제회</span>
+            <Image
+              src="/images/incheon-logo.png"
+              alt="인천광역시 학교안전공제회"
+              width={180}
+              height={40}
+              className="h-8 sm:h-10 w-auto"
+              priority
+            />
           </Link>
           
           {/* 데스크톱 메뉴 */}
