@@ -65,7 +65,15 @@ export default function HeroSplit() {
         <div className="grid grid-cols-1 lg:grid-cols-12 items-center gap-12 min-h-[70vh] py-16 md:py-20">
           
           {/* Left: Text */}
-          <div className="order-2 lg:order-1 lg:col-span-6">
+          <div className="
+            relative z-10 order-2 lg:order-1 lg:col-span-6
+            before:content-[''] before:absolute before:pointer-events-none before:select-none
+            before:bg-[url('/images/issa-logo.png')] before:bg-no-repeat before:bg-contain
+            before:opacity-10 before:aspect-square
+            before:hidden md:before:block
+            before:top-1/2 before:-translate-y-1/2 before:right-[-24px]
+            before:w-[420px] md:before:w-[520px] xl:before:w-[600px]
+          ">
             <h1 className="text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight leading-tight break-keep [text-wrap:balance] text-gray-900">
               체계적인 학교 안전보건 시스템 구축,
               <span className="block text-gray-900 mt-3">
