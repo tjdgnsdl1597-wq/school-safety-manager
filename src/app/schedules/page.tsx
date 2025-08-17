@@ -259,19 +259,34 @@ export default function SchedulesPage() {
   if (error) return <div className="text-center p-8 text-red-500">오류: {error}</div>;
 
   return (
-    <div className="container mx-auto p-4">
-        <h1 className="text-3xl font-bold text-blue-800 mb-6">일정 관리</h1>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2 bg-white p-6 rounded-lg shadow-md">
+    <div className="container mx-auto p-4 max-w-7xl">
+        <h1 className="text-2xl md:text-3xl font-bold text-blue-800 mb-6">일정 관리</h1>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-8">
+            <div className="lg:col-span-2 bg-white p-4 sm:p-6 rounded-lg shadow-md">
                 <FullCalendar 
                     plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]} 
                     initialView="dayGridMonth" 
-                    headerToolbar={{left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek'}} 
+                    headerToolbar={{ 
+                      left: 'title', 
+                      center: '', 
+                      right: 'prev,next',
+                      start: 'today',
+                      end: 'dayGridMonth,timeGridWeek'
+                    }}
+                    titleFormat={{ year: 'numeric', month: 'long' }}
                     events={calendarEvents} 
                     locale="ko" 
                     height="auto" 
                     weekends={false} 
-                    dateClick={handleDateClick} 
+                    dateClick={handleDateClick}
+                    buttonText={{
+                      today: '오늘',
+                      month: '월',
+                      week: '주'
+                    }}
+                    dayMaxEventRows={3}
+                    moreLinkClick="popover"
+                    eventClassNames="fc-custom-event" 
                     eventClick={handleEventClick} 
                     slotMinTime="08:00:00" 
                     slotMaxTime="17:30:00"

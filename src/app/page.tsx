@@ -403,11 +403,18 @@ export default function HomePage() {
           </div>
         </div>
 
-        <div className="lg:col-span-2 bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-xl border border-white/20">
+        <div className="lg:col-span-2 bg-white/80 backdrop-blur-sm p-4 sm:p-8 rounded-2xl shadow-xl border border-white/20">
           <FullCalendar
             plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
             initialView="dayGridMonth"
-            headerToolbar={{ left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,timeGridDay' }}
+            headerToolbar={{ 
+              left: 'title', 
+              center: '', 
+              right: 'prev,next',
+              start: 'today',
+              end: 'dayGridMonth,timeGridWeek,timeGridDay'
+            }}
+            titleFormat={{ year: 'numeric', month: 'long' }}
             events={calendarEvents}
             locale="ko"
             height="auto"
@@ -416,6 +423,15 @@ export default function HomePage() {
             slotMaxTime="17:30:00"
             eventClick={handleEventClick}
             eventContent={renderEventContent}
+            buttonText={{
+              today: '오늘',
+              month: '월',
+              week: '주',
+              day: '일'
+            }}
+            dayMaxEventRows={3}
+            moreLinkClick="popover"
+            eventClassNames="fc-custom-event"
           />
         </div>
 
