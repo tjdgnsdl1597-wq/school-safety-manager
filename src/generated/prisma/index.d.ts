@@ -3256,6 +3256,8 @@ export namespace Prisma {
 
   export type MaterialMinAggregateOutputType = {
     id: string | null
+    title: string | null
+    content: string | null
     filename: string | null
     filePath: string | null
     uploadedAt: Date | null
@@ -3268,6 +3270,8 @@ export namespace Prisma {
 
   export type MaterialMaxAggregateOutputType = {
     id: string | null
+    title: string | null
+    content: string | null
     filename: string | null
     filePath: string | null
     uploadedAt: Date | null
@@ -3280,6 +3284,8 @@ export namespace Prisma {
 
   export type MaterialCountAggregateOutputType = {
     id: number
+    title: number
+    content: number
     filename: number
     filePath: number
     uploadedAt: number
@@ -3294,6 +3300,8 @@ export namespace Prisma {
 
   export type MaterialMinAggregateInputType = {
     id?: true
+    title?: true
+    content?: true
     filename?: true
     filePath?: true
     uploadedAt?: true
@@ -3306,6 +3314,8 @@ export namespace Prisma {
 
   export type MaterialMaxAggregateInputType = {
     id?: true
+    title?: true
+    content?: true
     filename?: true
     filePath?: true
     uploadedAt?: true
@@ -3318,6 +3328,8 @@ export namespace Prisma {
 
   export type MaterialCountAggregateInputType = {
     id?: true
+    title?: true
+    content?: true
     filename?: true
     filePath?: true
     uploadedAt?: true
@@ -3403,8 +3415,10 @@ export namespace Prisma {
 
   export type MaterialGroupByOutputType = {
     id: string
-    filename: string
-    filePath: string
+    title: string
+    content: string | null
+    filename: string | null
+    filePath: string | null
     uploadedAt: Date
     uploader: string
     category: string
@@ -3432,6 +3446,8 @@ export namespace Prisma {
 
   export type MaterialSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    title?: boolean
+    content?: boolean
     filename?: boolean
     filePath?: boolean
     uploadedAt?: boolean
@@ -3444,6 +3460,8 @@ export namespace Prisma {
 
   export type MaterialSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    title?: boolean
+    content?: boolean
     filename?: boolean
     filePath?: boolean
     uploadedAt?: boolean
@@ -3456,6 +3474,8 @@ export namespace Prisma {
 
   export type MaterialSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    title?: boolean
+    content?: boolean
     filename?: boolean
     filePath?: boolean
     uploadedAt?: boolean
@@ -3468,6 +3488,8 @@ export namespace Prisma {
 
   export type MaterialSelectScalar = {
     id?: boolean
+    title?: boolean
+    content?: boolean
     filename?: boolean
     filePath?: boolean
     uploadedAt?: boolean
@@ -3478,15 +3500,17 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type MaterialOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "filename" | "filePath" | "uploadedAt" | "uploader" | "category" | "thumbnailPath" | "createdAt" | "updatedAt", ExtArgs["result"]["material"]>
+  export type MaterialOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "content" | "filename" | "filePath" | "uploadedAt" | "uploader" | "category" | "thumbnailPath" | "createdAt" | "updatedAt", ExtArgs["result"]["material"]>
 
   export type $MaterialPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Material"
     objects: {}
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      filename: string
-      filePath: string
+      title: string
+      content: string | null
+      filename: string | null
+      filePath: string | null
       uploadedAt: Date
       uploader: string
       category: string
@@ -3917,6 +3941,8 @@ export namespace Prisma {
    */
   interface MaterialFieldRefs {
     readonly id: FieldRef<"Material", 'String'>
+    readonly title: FieldRef<"Material", 'String'>
+    readonly content: FieldRef<"Material", 'String'>
     readonly filename: FieldRef<"Material", 'String'>
     readonly filePath: FieldRef<"Material", 'String'>
     readonly uploadedAt: FieldRef<"Material", 'DateTime'>
@@ -4328,6 +4354,8 @@ export namespace Prisma {
 
   export const MaterialScalarFieldEnum: {
     id: 'id',
+    title: 'title',
+    content: 'content',
     filename: 'filename',
     filePath: 'filePath',
     uploadedAt: 'uploadedAt',
@@ -4521,8 +4549,10 @@ export namespace Prisma {
     OR?: MaterialWhereInput[]
     NOT?: MaterialWhereInput | MaterialWhereInput[]
     id?: StringFilter<"Material"> | string
-    filename?: StringFilter<"Material"> | string
-    filePath?: StringFilter<"Material"> | string
+    title?: StringFilter<"Material"> | string
+    content?: StringNullableFilter<"Material"> | string | null
+    filename?: StringNullableFilter<"Material"> | string | null
+    filePath?: StringNullableFilter<"Material"> | string | null
     uploadedAt?: DateTimeFilter<"Material"> | Date | string
     uploader?: StringFilter<"Material"> | string
     category?: StringFilter<"Material"> | string
@@ -4533,8 +4563,10 @@ export namespace Prisma {
 
   export type MaterialOrderByWithRelationInput = {
     id?: SortOrder
-    filename?: SortOrder
-    filePath?: SortOrder
+    title?: SortOrder
+    content?: SortOrderInput | SortOrder
+    filename?: SortOrderInput | SortOrder
+    filePath?: SortOrderInput | SortOrder
     uploadedAt?: SortOrder
     uploader?: SortOrder
     category?: SortOrder
@@ -4548,8 +4580,10 @@ export namespace Prisma {
     AND?: MaterialWhereInput | MaterialWhereInput[]
     OR?: MaterialWhereInput[]
     NOT?: MaterialWhereInput | MaterialWhereInput[]
-    filename?: StringFilter<"Material"> | string
-    filePath?: StringFilter<"Material"> | string
+    title?: StringFilter<"Material"> | string
+    content?: StringNullableFilter<"Material"> | string | null
+    filename?: StringNullableFilter<"Material"> | string | null
+    filePath?: StringNullableFilter<"Material"> | string | null
     uploadedAt?: DateTimeFilter<"Material"> | Date | string
     uploader?: StringFilter<"Material"> | string
     category?: StringFilter<"Material"> | string
@@ -4560,8 +4594,10 @@ export namespace Prisma {
 
   export type MaterialOrderByWithAggregationInput = {
     id?: SortOrder
-    filename?: SortOrder
-    filePath?: SortOrder
+    title?: SortOrder
+    content?: SortOrderInput | SortOrder
+    filename?: SortOrderInput | SortOrder
+    filePath?: SortOrderInput | SortOrder
     uploadedAt?: SortOrder
     uploader?: SortOrder
     category?: SortOrder
@@ -4578,8 +4614,10 @@ export namespace Prisma {
     OR?: MaterialScalarWhereWithAggregatesInput[]
     NOT?: MaterialScalarWhereWithAggregatesInput | MaterialScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Material"> | string
-    filename?: StringWithAggregatesFilter<"Material"> | string
-    filePath?: StringWithAggregatesFilter<"Material"> | string
+    title?: StringWithAggregatesFilter<"Material"> | string
+    content?: StringNullableWithAggregatesFilter<"Material"> | string | null
+    filename?: StringNullableWithAggregatesFilter<"Material"> | string | null
+    filePath?: StringNullableWithAggregatesFilter<"Material"> | string | null
     uploadedAt?: DateTimeWithAggregatesFilter<"Material"> | Date | string
     uploader?: StringWithAggregatesFilter<"Material"> | string
     category?: StringWithAggregatesFilter<"Material"> | string
@@ -4733,8 +4771,10 @@ export namespace Prisma {
 
   export type MaterialCreateInput = {
     id?: string
-    filename: string
-    filePath: string
+    title: string
+    content?: string | null
+    filename?: string | null
+    filePath?: string | null
     uploadedAt?: Date | string
     uploader: string
     category: string
@@ -4745,8 +4785,10 @@ export namespace Prisma {
 
   export type MaterialUncheckedCreateInput = {
     id?: string
-    filename: string
-    filePath: string
+    title: string
+    content?: string | null
+    filename?: string | null
+    filePath?: string | null
     uploadedAt?: Date | string
     uploader: string
     category: string
@@ -4757,8 +4799,10 @@ export namespace Prisma {
 
   export type MaterialUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    filename?: StringFieldUpdateOperationsInput | string
-    filePath?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    filename?: NullableStringFieldUpdateOperationsInput | string | null
+    filePath?: NullableStringFieldUpdateOperationsInput | string | null
     uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     uploader?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
@@ -4769,8 +4813,10 @@ export namespace Prisma {
 
   export type MaterialUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    filename?: StringFieldUpdateOperationsInput | string
-    filePath?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    filename?: NullableStringFieldUpdateOperationsInput | string | null
+    filePath?: NullableStringFieldUpdateOperationsInput | string | null
     uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     uploader?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
@@ -4781,8 +4827,10 @@ export namespace Prisma {
 
   export type MaterialCreateManyInput = {
     id?: string
-    filename: string
-    filePath: string
+    title: string
+    content?: string | null
+    filename?: string | null
+    filePath?: string | null
     uploadedAt?: Date | string
     uploader: string
     category: string
@@ -4793,8 +4841,10 @@ export namespace Prisma {
 
   export type MaterialUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    filename?: StringFieldUpdateOperationsInput | string
-    filePath?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    filename?: NullableStringFieldUpdateOperationsInput | string | null
+    filePath?: NullableStringFieldUpdateOperationsInput | string | null
     uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     uploader?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
@@ -4805,8 +4855,10 @@ export namespace Prisma {
 
   export type MaterialUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    filename?: StringFieldUpdateOperationsInput | string
-    filePath?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    filename?: NullableStringFieldUpdateOperationsInput | string | null
+    filePath?: NullableStringFieldUpdateOperationsInput | string | null
     uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     uploader?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
@@ -4984,6 +5036,8 @@ export namespace Prisma {
 
   export type MaterialCountOrderByAggregateInput = {
     id?: SortOrder
+    title?: SortOrder
+    content?: SortOrder
     filename?: SortOrder
     filePath?: SortOrder
     uploadedAt?: SortOrder
@@ -4996,6 +5050,8 @@ export namespace Prisma {
 
   export type MaterialMaxOrderByAggregateInput = {
     id?: SortOrder
+    title?: SortOrder
+    content?: SortOrder
     filename?: SortOrder
     filePath?: SortOrder
     uploadedAt?: SortOrder
@@ -5008,6 +5064,8 @@ export namespace Prisma {
 
   export type MaterialMinOrderByAggregateInput = {
     id?: SortOrder
+    title?: SortOrder
+    content?: SortOrder
     filename?: SortOrder
     filePath?: SortOrder
     uploadedAt?: SortOrder

@@ -139,6 +139,8 @@ exports.Prisma.ScheduleScalarFieldEnum = {
 
 exports.Prisma.MaterialScalarFieldEnum = {
   id: 'id',
+  title: 'title',
+  content: 'content',
   filename: 'filename',
   filePath: 'filePath',
   uploadedAt: 'uploadedAt',

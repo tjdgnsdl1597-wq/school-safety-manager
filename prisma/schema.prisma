@@ -10,7 +10,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -38,8 +38,10 @@ model Schedule {
 
 model Material {
   id            String    @id @default(uuid())
-  filename      String
-  filePath      String
+  title         String    // 게시글 제목
+  content       String?   // 게시글 내용
+  filename      String?   // 첨부파일명 (선택사항)
+  filePath      String?   // 첨부파일 경로 (선택사항)
   uploadedAt    DateTime  @default(now())
   uploader      String
   category      String    // "교육자료" or "산업재해"

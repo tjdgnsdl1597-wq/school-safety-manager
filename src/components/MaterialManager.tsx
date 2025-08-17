@@ -4,11 +4,13 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 
-// Interface for Material, matching Prisma schema
+// Interface for Material, matching updated Prisma schema
 interface Material {
   id: string;
-  filename: string;
-  filePath: string;
+  title: string;
+  content?: string;
+  filename?: string;
+  filePath?: string;
   uploadedAt: string;
   category: string;
   thumbnailPath?: string;
@@ -33,11 +35,13 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [selectedPost, setSelectedPost] = useState<Material | null>(null);
   const [uploading, setUploading] = useState(false);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
-  const [searchBy, setSearchBy] = useState('filename');
+  const [searchBy, setSearchBy] = useState('title');
 
   // Function to fetch materials from the API
   const fetchMaterials = useCallback(async () => {
@@ -70,7 +74,9 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
   }, [fetchMaterials]);
 
   // 파일 확장자에 따른 아이콘 반환
-  const getFileIcon = (filename: string) => {
+  const getFileIcon = (filename?: string) => {
+    if (!filename) return '📝'; // 파일이 없는 경우 기본 아이콘
+    
     const ext = filename.toLowerCase().split('.').pop() || '';
     
     if (['pdf'].includes(ext)) return '📄';
@@ -94,9 +100,15 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
   // Reset search fields and fetch all materials
   const resetSearch = () => {
     setSearchTerm('');
-    setSearchBy('filename');
+    setSearchBy('title');
     setCurrentPage(1);
     // useEffect will trigger a refetch
+  };
+
+  // Handle post detail view
+  const handlePostClick = (material: Material) => {
+    setSelectedPost(material);
+    setIsDetailModalOpen(true);
   };
 
   // Handle file upload
@@ -161,6 +173,11 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
 
   // Handle file download
   const handleDownload = (material: Material) => {
+    if (!material.filePath || !material.filename) {
+      alert('첨부파일이 없습니다.');
+      return;
+    }
+
     // temp:// 경로인 경우 (기존 임시 파일)
     if (material.filePath.startsWith('temp://')) {
       alert(`파일 "${material.filename}"은 임시 저장된 상태입니다.\n실제 파일 다운로드 기능은 외부 스토리지 연동 후 제공될 예정입니다.`);
@@ -179,6 +196,11 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
 
   // Handle file preview
   const handlePreview = (material: Material) => {
+    if (!material.filePath || !material.filename) {
+      alert('첨부파일이 없습니다.');
+      return;
+    }
+
     if (material.filePath.startsWith('temp://')) {
       alert(`파일 "${material.filename}"의 미리보기는 현재 지원되지 않습니다.\n실제 파일 미리보기 기능은 외부 스토리지 연동 후 제공될 예정입니다.`);
       return;
@@ -211,7 +233,8 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
           <div className="sm:col-span-1 lg:col-span-1">
             <label htmlFor="searchBy" className="block text-sm font-medium text-gray-700 mb-1">검색 조건</label>
             <select id="searchBy" value={searchBy} onChange={e => setSearchBy(e.target.value)} className="w-full p-2 border rounded-md">
-              <option value="filename">제목</option>
+              <option value="title">제목</option>
+              <option value="content">내용</option>
             </select>
           </div>
           <div className="sm:col-span-1 lg:col-span-2">
@@ -265,89 +288,116 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
             )}
           </div>
 
-          {/* Responsive Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-            {materials.map((material) => (
-              <div 
-                key={material.id} 
-                className={`bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-200 ${
-                  selectedItems.includes(material.id) ? 'ring-2 ring-blue-500' : ''
-                }`}
-              >
-                {/* Thumbnail Area */}
-                <div className="h-48 bg-gray-100 flex items-center justify-center relative">
+          {/* Posts Table */}
+          <div className="bg-white rounded-lg shadow overflow-hidden">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
                   {isAdmin && (
-                    <div className="absolute top-2 left-2">
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12">
                       <input 
                         type="checkbox" 
-                        checked={selectedItems.includes(material.id)} 
-                        onChange={() => handleSelectItem(material.id)}
+                        onChange={handleSelectAll} 
+                        checked={selectedItems.length === materials.length && materials.length > 0}
                         className="rounded"
                       />
-                    </div>
+                    </th>
                   )}
-                  
-                  {/* 이미지 썸네일이 있는 경우 */}
-                  {material.thumbnailPath && material.thumbnailPath.startsWith('https://') ? (
-                    <Image 
-                      src={material.thumbnailPath} 
-                      alt={material.filename}
-                      width={200}
-                      height={192}
-                      className="w-full h-full object-cover"
-                      onError={() => {
-                        // 이미지 로드 실패시 처리
-                        console.warn('Failed to load thumbnail:', material.thumbnailPath);
-                      }}
-                    />
-                  ) : null}
-                  
-                  {/* 기본 파일 아이콘 */}
-                  <div className={`text-center ${material.thumbnailPath?.startsWith('https://') ? 'hidden' : ''}`}>
-                    <div className="text-6xl mb-2">{getFileIcon(material.filename)}</div>
-                    <div className="text-xs text-gray-500 px-2">
-                      {material.filename.split('.').pop()?.toUpperCase()}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Content Area */}
-                <div className="p-4">
-                  <h3 
-                    className="font-semibold text-sm text-gray-900 mb-2 overflow-hidden" 
-                    style={{
-                      display: '-webkit-box',
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: 'vertical',
-                      maxHeight: '2.5rem'
-                    }}
-                    title={material.filename}
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    제목
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">
+                    첨부파일
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">
+                    작성일
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    작업
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {materials.map((material) => (
+                  <tr 
+                    key={material.id} 
+                    className={`hover:bg-gray-50 ${selectedItems.includes(material.id) ? 'bg-blue-50' : ''}`}
                   >
-                    {material.filename}
-                  </h3>
-                  
-                  <div className="flex items-center justify-end text-xs text-gray-500 mb-3">
-                    <span>{new Date(material.uploadedAt).toLocaleDateString()}</span>
-                  </div>
-
-                  {/* Action Buttons */}
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={() => handleDownload(material)}
-                      className="flex-1 bg-blue-500 text-white text-xs py-2 px-3 rounded hover:bg-blue-600 transition-colors"
-                    >
-                      다운로드
-                    </button>
-                    <button
-                      onClick={() => handlePreview(material)}
-                      className="flex-1 bg-gray-500 text-white text-xs py-2 px-3 rounded hover:bg-gray-600 transition-colors"
-                    >
-                      미리보기
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
+                    {isAdmin && (
+                      <td className="px-6 py-4 whitespace-nowrap w-12">
+                        <input 
+                          type="checkbox" 
+                          checked={selectedItems.includes(material.id)} 
+                          onChange={() => handleSelectItem(material.id)}
+                          className="rounded"
+                        />
+                      </td>
+                    )}
+                    <td className="px-6 py-4">
+                      <div className="max-w-xs">
+                        <button
+                          onClick={() => handlePostClick(material)}
+                          className="text-sm font-medium text-blue-600 hover:text-blue-800 break-keep text-left w-full"
+                        >
+                          {material.title}
+                        </button>
+                        {material.content && (
+                          <div className="text-sm text-gray-500 mt-1 line-clamp-2 break-keep">
+                            {material.content.length > 100 
+                              ? material.content.substring(0, 100) + '...' 
+                              : material.content
+                            }
+                          </div>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap hidden md:table-cell">
+                      {material.filename ? (
+                        <div className="flex items-center">
+                          <span className="text-lg mr-2">{getFileIcon(material.filename)}</span>
+                          <span className="text-sm text-gray-900 truncate max-w-40" title={material.filename}>
+                            {material.filename}
+                          </span>
+                        </div>
+                      ) : (
+                        <span className="text-sm text-gray-400">첨부파일 없음</span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden sm:table-cell">
+                      {new Date(material.uploadedAt).toLocaleDateString('ko-KR')}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <div className="flex space-x-2 justify-end">
+                        {material.filename && (
+                          <>
+                            <button
+                              onClick={() => handleDownload(material)}
+                              className="text-blue-600 hover:text-blue-900 text-xs px-2 py-1 border border-blue-300 rounded hover:bg-blue-50"
+                            >
+                              다운로드
+                            </button>
+                            <button
+                              onClick={() => handlePreview(material)}
+                              className="text-gray-600 hover:text-gray-900 text-xs px-2 py-1 border border-gray-300 rounded hover:bg-gray-50"
+                            >
+                              미리보기
+                            </button>
+                          </>
+                        )}
+                        {isAdmin && (
+                          <button
+                            onClick={() => {/* TODO: 편집 기능 */}}
+                            className="text-green-600 hover:text-green-900 text-xs px-2 py-1 border border-green-300 rounded hover:bg-green-50"
+                          >
+                            편집
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
 
           {materials.length === 0 && (
@@ -398,20 +448,44 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
         <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} className="px-2 sm:px-3 py-1 border rounded-md disabled:opacity-50 text-xs sm:text-sm">다음</button>
       </div>
 
-      {/* Upload Modal */}
+      {/* Post Creation Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center p-4">
-          <div className="bg-white p-4 sm:p-8 rounded-lg shadow-xl w-full max-w-md mx-4">
-            <h2 className="text-2xl font-bold mb-4">새 자료 업로드</h2>
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center p-4 z-50">
+          <div className="bg-white p-4 sm:p-8 rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+            <h2 className="text-2xl font-bold mb-6">새 게시글 작성</h2>
             <form onSubmit={handleFileSubmit}>
               <div className="mb-4">
-                <label htmlFor="file" className="block text-gray-700 text-sm font-bold mb-2">파일</label>
+                <label htmlFor="title" className="block text-gray-700 text-sm font-bold mb-2">제목 *</label>
+                <input 
+                  type="text" 
+                  name="title" 
+                  id="title" 
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline" 
+                  required 
+                  autoComplete="off"
+                  placeholder="게시글 제목을 입력하세요"
+                />
+              </div>
+              
+              <div className="mb-4">
+                <label htmlFor="content" className="block text-gray-700 text-sm font-bold mb-2">내용</label>
+                <textarea 
+                  name="content" 
+                  id="content" 
+                  rows={6}
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline resize-none" 
+                  autoComplete="off"
+                  placeholder="게시글 내용을 입력하세요"
+                />
+              </div>
+              
+              <div className="mb-6">
+                <label htmlFor="file" className="block text-gray-700 text-sm font-bold mb-2">첨부파일 (선택사항)</label>
                 <input 
                   type="file" 
                   name="file" 
                   id="file" 
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700" 
-                  required 
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline" 
                   autoComplete="off"
                   accept=".pdf,.ppt,.pptx,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.gif,.webp,.mp4,.webm,.txt"
                 />
@@ -419,13 +493,106 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
                   지원 형식: PDF, PPT, DOC, XLS, 이미지, 동영상 파일 (최대 50MB)
                 </p>
               </div>
+              
               <div className="flex flex-col sm:flex-row items-center justify-end space-y-2 sm:space-y-0 sm:space-x-2">
-                <button type="button" onClick={() => setIsModalOpen(false)} className="w-full sm:w-auto bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded" disabled={uploading}>취소</button>
-                <button type="submit" className="w-full sm:w-auto bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded" disabled={uploading}>
-                  {uploading ? '업로드 중...' : '업로드'}
+                <button 
+                  type="button" 
+                  onClick={() => setIsModalOpen(false)} 
+                  className="w-full sm:w-auto bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded" 
+                  disabled={uploading}
+                >
+                  취소
+                </button>
+                <button 
+                  type="submit" 
+                  className="w-full sm:w-auto bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded" 
+                  disabled={uploading}
+                >
+                  {uploading ? '등록 중...' : '등록'}
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Post Detail Modal */}
+      {isDetailModalOpen && selectedPost && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center p-4 z-50">
+          <div className="bg-white p-6 sm:p-8 rounded-lg shadow-xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-900 break-keep">
+                {selectedPost.title}
+              </h2>
+              <button
+                onClick={() => setIsDetailModalOpen(false)}
+                className="text-gray-400 hover:text-gray-600 text-2xl font-bold"
+              >
+                ×
+              </button>
+            </div>
+            
+            <div className="mb-4 text-sm text-gray-500">
+              작성일: {new Date(selectedPost.uploadedAt).toLocaleDateString('ko-KR')}
+            </div>
+            
+            {selectedPost.content && (
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold mb-3">내용</h3>
+                <div className="text-gray-700 leading-relaxed whitespace-pre-wrap break-keep bg-gray-50 p-4 rounded-lg">
+                  {selectedPost.content}
+                </div>
+              </div>
+            )}
+            
+            {selectedPost.filename && selectedPost.filePath && (
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold mb-3">첨부파일</h3>
+                <div className="border border-gray-200 rounded-lg p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <span className="text-2xl mr-3">{getFileIcon(selectedPost.filename)}</span>
+                      <div>
+                        <div className="font-medium text-gray-900 break-all">
+                          {selectedPost.filename}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => handleDownload(selectedPost)}
+                        className="px-4 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 transition-colors"
+                      >
+                        다운로드
+                      </button>
+                      <button
+                        onClick={() => handlePreview(selectedPost)}
+                        className="px-4 py-2 bg-gray-500 text-white text-sm rounded hover:bg-gray-600 transition-colors"
+                      >
+                        미리보기
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            <div className="flex justify-end space-x-3">
+              {isAdmin && (
+                <button
+                  onClick={() => {/* TODO: 편집 기능 */}}
+                  className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
+                >
+                  편집
+                </button>
+              )}
+              <button
+                onClick={() => setIsDetailModalOpen(false)}
+                className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors"
+              >
+                닫기
+              </button>
+            </div>
           </div>
         </div>
       )}
