@@ -33,6 +33,17 @@ export default function HeroSplit() {
     setLoading(false);
   }, []);
 
+  // 자동 슬라이드 효과 (3초마다)
+  useEffect(() => {
+    if (images.length > 1) {
+      const interval = setInterval(() => {
+        setCurrentImage((prev) => (prev + 1) % images.length);
+      }, 3000); // 3초마다 변경
+
+      return () => clearInterval(interval);
+    }
+  }, [images.length]);
+
   const nextImage = () => {
     setCurrentImage((prev) => (prev + 1) % images.length);
   };
@@ -132,12 +143,6 @@ export default function HeroSplit() {
               )}
             </div>
 
-            {/* 이미지 하단 정보 */}
-            <div className="mt-3 text-xs text-gray-500 text-center">
-              ※ 이미지를 업로드하시려면 <code className="bg-gray-100 px-1 py-0.5 rounded text-blue-600">public/images/hero/</code> 폴더에 
-              <br />
-              <code className="bg-gray-100 px-1 py-0.5 rounded text-blue-600">hero-1.jpg, hero-2.jpg, hero-3.jpg</code> 파일명으로 저장해주세요.
-            </div>
           </div>
 
         </div>
