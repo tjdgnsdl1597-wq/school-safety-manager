@@ -59,11 +59,16 @@ export default function HomePage() {
   const { data: session } = useSession();
   const router = useRouter();
   
-  // 관리자가 아닌 경우 교육자료 페이지로 리다이렉트
+  // 권한에 따른 리다이렉트
   useEffect(() => {
-    if (session && session.user?.role !== 'admin') {
+    if (session === null) {
+      // 로그인하지 않은 사용자 → 교육자료 페이지로
+      router.push('/educational-materials');
+    } else if (session?.user?.role !== 'admin') {
+      // 로그인했지만 관리자가 아닌 경우 → 교육자료 페이지로
       router.push('/educational-materials');
     }
+    // 관리자인 경우 → 대시보드 유지
   }, [session, router]);
 
   const [schedules, setSchedules] = useState<Schedule[]>([]);

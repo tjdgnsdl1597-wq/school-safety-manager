@@ -9,13 +9,25 @@ export default function AuthCheck({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
 
-  // 로그인이 필요하지 않은 페이지들
-  const publicPages = ['/auth/signin'];
+  // 로그인이 필요하지 않은 페이지들 (일반 방문자 접근 가능)
+  const publicPages = [
+    '/',
+    '/auth/signin',
+    '/educational-materials',
+    '/industrial-accidents'
+  ];
 
   useEffect(() => {
     if (status === 'loading') return; // 로딩 중에는 아무것도 하지 않음
 
-    if (!session && !publicPages.includes(pathname)) {
+    // 공개 페이지는 로그인 체크 없이 접근 허용
+    if (publicPages.includes(pathname)) {
+      return;
+    }
+
+    // 관리자 페이지 접근 시
+    if (!session) {
+      // 로그인하지 않은 경우 → 로그인 페이지로
       router.push('/auth/signin');
     }
   }, [session, status, pathname, router]);
