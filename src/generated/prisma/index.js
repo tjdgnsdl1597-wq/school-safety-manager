@@ -87,6 +87,9 @@ Prisma.NullTypes = {
  * Enums
  */
 exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
+  ReadUncommitted: 'ReadUncommitted',
+  ReadCommitted: 'ReadCommitted',
+  RepeatableRead: 'RepeatableRead',
   Serializable: 'Serializable'
 });
 
@@ -136,6 +139,11 @@ exports.Prisma.MaterialAttachmentScalarFieldEnum = {
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
+};
+
+exports.Prisma.QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
 };
 
 exports.Prisma.NullsOrder = {
@@ -188,7 +196,8 @@ const config = {
   "datasourceNames": [
     "db"
   ],
-  "activeProvider": "sqlite",
+  "activeProvider": "postgresql",
+  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
@@ -197,8 +206,8 @@ const config = {
       }
     }
   },
-  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/prisma\" // Output Prisma Client to src/generated/prisma\n}\n\ndatasource db {\n  provider = \"sqlite\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel School {\n  id            String     @id @default(uuid())\n  name          String     @unique\n  phoneNumber   String?\n  contactPerson String?\n  schedules     Schedule[]\n}\n\nmodel Schedule {\n  id          String   @id @default(uuid())\n  date        DateTime\n  schoolId    String\n  school      School   @relation(fields: [schoolId], references: [id])\n  ampm        String // \"AM\" or \"PM\"\n  startTime   String // e.g., \"08:00\"\n  endTime     String // e.g., \"09:00\"\n  purpose     String // Store as JSON string, e.g., \"[\"월점검\", \"교육\"]\"\n  otherReason String? // Only if \"기타\" or \"교육\" is selected\n  createdAt   DateTime @default(now())\n  updatedAt   DateTime @updatedAt\n}\n\nmodel Material {\n  id          String               @id @default(uuid())\n  title       String // 게시글 제목\n  content     String? // 게시글 내용\n  attachments MaterialAttachment[] // 첨부파일들 (최대 5개)\n  uploadedAt  DateTime             @default(now())\n  uploader    String\n  category    String // \"교육자료\" or \"산업재해\"\n  createdAt   DateTime             @default(now())\n  updatedAt   DateTime             @updatedAt\n}\n\nmodel MaterialAttachment {\n  id            String   @id @default(uuid())\n  materialId    String\n  material      Material @relation(fields: [materialId], references: [id], onDelete: Cascade)\n  filename      String // 원본 파일명\n  filePath      String // GCS 저장 경로\n  fileSize      Int // 파일 크기 (bytes)\n  mimeType      String // MIME 타입\n  thumbnailPath String? // 썸네일 경로 (이미지인 경우)\n  uploadOrder   Int // 업로드 순서 (1-5)\n  createdAt     DateTime @default(now())\n}\n",
-  "inlineSchemaHash": "f9c442ba977e991d25b70ea05881e5b0a8c1f9d7dab130f3beb9ac0187a61924",
+  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/prisma\" // Output Prisma Client to src/generated/prisma\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel School {\n  id            String     @id @default(uuid())\n  name          String     @unique\n  phoneNumber   String?\n  contactPerson String?\n  schedules     Schedule[]\n}\n\nmodel Schedule {\n  id          String   @id @default(uuid())\n  date        DateTime\n  schoolId    String\n  school      School   @relation(fields: [schoolId], references: [id])\n  ampm        String // \"AM\" or \"PM\"\n  startTime   String // e.g., \"08:00\"\n  endTime     String // e.g., \"09:00\"\n  purpose     String // Store as JSON string, e.g., \"[\"월점검\", \"교육\"]\"\n  otherReason String? // Only if \"기타\" or \"교육\" is selected\n  createdAt   DateTime @default(now())\n  updatedAt   DateTime @updatedAt\n}\n\nmodel Material {\n  id          String               @id @default(uuid())\n  title       String // 게시글 제목\n  content     String? // 게시글 내용\n  attachments MaterialAttachment[] // 첨부파일들 (최대 5개)\n  uploadedAt  DateTime             @default(now())\n  uploader    String\n  category    String // \"교육자료\" or \"산업재해\"\n  createdAt   DateTime             @default(now())\n  updatedAt   DateTime             @updatedAt\n}\n\nmodel MaterialAttachment {\n  id            String   @id @default(uuid())\n  materialId    String\n  material      Material @relation(fields: [materialId], references: [id], onDelete: Cascade)\n  filename      String // 원본 파일명\n  filePath      String // GCS 저장 경로\n  fileSize      Int // 파일 크기 (bytes)\n  mimeType      String // MIME 타입\n  thumbnailPath String? // 썸네일 경로 (이미지인 경우)\n  uploadOrder   Int // 업로드 순서 (1-5)\n  createdAt     DateTime @default(now())\n}\n",
+  "inlineSchemaHash": "d828a0ae1134d7c5d3d975dfcbbc78ce1826692727131bb731457f724678f6c7",
   "copyEngine": true
 }
 

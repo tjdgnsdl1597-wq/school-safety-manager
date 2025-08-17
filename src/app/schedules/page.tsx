@@ -259,10 +259,18 @@ export default function SchedulesPage() {
   if (error) return <div className="text-center p-8 text-red-500">오류: {error}</div>;
 
   return (
-    <div className="container mx-auto p-4 max-w-7xl">
-        <h1 className="text-2xl md:text-3xl font-bold text-blue-800 mb-6">일정 관리</h1>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-8">
-            <div className="lg:col-span-2 bg-white p-4 sm:p-6 rounded-lg shadow-md">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+      <div className="container mx-auto p-4 max-w-7xl">
+        <div className="flex items-center space-x-3 mb-8">
+          <div className="p-3 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl shadow-lg">
+            <span className="text-2xl text-white">📅</span>
+          </div>
+          <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+            일정 관리
+          </h1>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+            <div className="lg:col-span-2 bg-white/80 backdrop-blur-sm p-4 sm:p-6 rounded-xl shadow-xl border border-white/20">
                 <FullCalendar 
                     plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]} 
                     initialView="dayGridMonth" 
@@ -291,8 +299,11 @@ export default function SchedulesPage() {
                     eventContent={renderEventContent}
                 />
             </div>
-            <div className="bg-white p-6 rounded-lg shadow-md">
-                <h2 className="text-2xl font-bold mb-4">{editingSchedule ? '일정 수정' : '새 일정 추가'}</h2>
+            <div className="bg-white/80 backdrop-blur-sm p-6 rounded-xl shadow-xl border border-white/20">
+                <h2 className="text-2xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent flex items-center space-x-2">
+                  <span>{editingSchedule ? '✏️' : '📝'}</span>
+                  <span>{editingSchedule ? '일정 수정' : '새 일정 추가'}</span>
+                </h2>
                 <form id="schedule-form" onSubmit={handleFormSubmit}>
                     <div className="space-y-4">
                         <div>
@@ -347,14 +358,36 @@ export default function SchedulesPage() {
                             </div>
                         )}
                     </div>
-                    <div className="flex items-center justify-end mt-6">
-                        {editingSchedule && <button type="button" onClick={() => handleDelete(editingSchedule.id)} className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded mr-auto">삭제</button>}
-                        <button type="button" onClick={handleCancelEdit} className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded mr-2">취소</button>
-                        <button type="submit" className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">{editingSchedule ? '수정하기' : '저장하기'}</button>
+                    <div className="flex flex-col sm:flex-row items-center justify-between mt-8 space-y-3 sm:space-y-0">
+                        {editingSchedule && (
+                          <button 
+                            type="button" 
+                            onClick={() => handleDelete(editingSchedule.id)} 
+                            className="w-full sm:w-auto bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
+                          >
+                            🗑️ 삭제
+                          </button>
+                        )}
+                        <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 w-full sm:w-auto">
+                          <button 
+                            type="button" 
+                            onClick={handleCancelEdit} 
+                            className="w-full sm:w-auto bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
+                          >
+                            ✕ 취소
+                          </button>
+                          <button 
+                            type="submit" 
+                            className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl"
+                          >
+                            {editingSchedule ? '✏️ 수정하기' : '💾 저장하기'}
+                          </button>
+                        </div>
                     </div>
                 </form>
             </div>
         </div>
+      </div>
     </div>
   );
 }
