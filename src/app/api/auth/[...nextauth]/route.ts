@@ -1,4 +1,4 @@
-import NextAuth from 'next-auth';
+import NextAuth, { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 
 // URL 정리 함수
@@ -11,7 +11,7 @@ const getCleanUrl = () => {
     .replace(/^http:\/\/\s*http:\/\//, 'http://');
 };
 
-const authOptions = {
+const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   providers: [
     CredentialsProvider({
