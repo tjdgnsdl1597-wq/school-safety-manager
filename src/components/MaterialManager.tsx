@@ -626,7 +626,7 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
               </div>
             </form>
           </div>
-          )}
+        </div>
         )}
       </div>
     </div>
