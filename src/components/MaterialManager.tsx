@@ -202,19 +202,19 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
   if (error) return <div className="text-center p-8 text-red-500">오류: {error}</div>;
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold text-blue-800 mb-6">{title}</h1>
+    <div className="container mx-auto p-4 max-w-7xl">
+      <h1 className="text-2xl md:text-3xl font-bold text-blue-800 mb-6">{title}</h1>
 
       {/* Search Area */}
       <div className="bg-gray-100 p-4 rounded-lg mb-6">
-        <form onSubmit={handleSearch} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-          <div className="md:col-span-1">
+        <form onSubmit={handleSearch} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+          <div className="sm:col-span-1 lg:col-span-1">
             <label htmlFor="searchBy" className="block text-sm font-medium text-gray-700 mb-1">검색 조건</label>
             <select id="searchBy" value={searchBy} onChange={e => setSearchBy(e.target.value)} className="w-full p-2 border rounded-md">
               <option value="filename">제목</option>
             </select>
           </div>
-          <div className="md:col-span-2">
+          <div className="sm:col-span-1 lg:col-span-2">
             <label htmlFor="searchTerm" className="block text-sm font-medium text-gray-700 mb-1">검색어</label>
             <input
               type="text"
@@ -225,19 +225,19 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
               placeholder="검색어를 입력하세요..."
             />
           </div>
-          <div className="flex space-x-2">
-            <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600">검색</button>
-            <button type="button" onClick={resetSearch} className="w-full bg-gray-500 text-white p-2 rounded-md hover:bg-gray-600">초기화</button>
+          <div className="sm:col-span-2 lg:col-span-1 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+            <button type="submit" className="flex-1 bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600">검색</button>
+            <button type="button" onClick={resetSearch} className="flex-1 bg-gray-500 text-white p-2 rounded-md hover:bg-gray-600">초기화</button>
           </div>
         </form>
       </div>
 
       {/* Summary and Actions */}
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 space-y-2 sm:space-y-0">
         <div>
-          <span className="text-gray-700">총 <span className="font-bold">{totalCount}</span>개의 게시물이 있습니다.</span>
+          <span className="text-gray-700 text-sm sm:text-base">총 <span className="font-bold">{totalCount}</span>개의 게시물이 있습니다.</span>
         </div>
-        <button onClick={handleExcelDownload} className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">엑셀 다운로드</button>
+        <button onClick={handleExcelDownload} className="bg-green-500 text-white px-3 sm:px-4 py-2 rounded-md hover:bg-green-600 text-sm sm:text-base w-full sm:w-auto">엑셀 다운로드</button>
       </div>
 
       {/* Grid Area */}
@@ -265,8 +265,8 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
             )}
           </div>
 
-          {/* 4-Column Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* Responsive Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
             {materials.map((material) => (
               <div 
                 key={material.id} 
@@ -361,30 +361,47 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
 
       {/* Footer: Bulk Actions and Pagination */}
       {isAdmin && (
-        <div className="flex justify-between items-center mt-6">
-          <div className="flex space-x-2">
-            <button onClick={handleBulkDelete} className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 disabled:bg-gray-300" disabled={selectedItems.length === 0}>선택 삭제</button>
-            {/* <button className="bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600 disabled:bg-gray-300" disabled={selectedItems.length === 0}>선택 이동</button> */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-6 space-y-3 sm:space-y-0">
+          <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
+            <button onClick={handleBulkDelete} className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 disabled:bg-gray-300 text-sm sm:text-base w-full sm:w-auto" disabled={selectedItems.length === 0}>선택 삭제</button>
           </div>
-          <button onClick={() => setIsModalOpen(true)} className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">새로운 게시물 등록</button>
+          <button onClick={() => setIsModalOpen(true)} className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 text-sm sm:text-base w-full sm:w-auto">새로운 게시물 등록</button>
         </div>
       )}
 
       {/* Pagination */}
-      <div className="flex justify-center items-center mt-6 space-x-2">
-        <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1} className="px-3 py-1 border rounded-md disabled:opacity-50">이전</button>
-        {[...Array(totalPages).keys()].map(num => (
-          <button key={num + 1} onClick={() => setCurrentPage(num + 1)} className={`px-3 py-1 border rounded-md ${currentPage === num + 1 ? 'bg-blue-500 text-white' : ''}`}>
-            {num + 1}
-          </button>
-        ))}
-        <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} className="px-3 py-1 border rounded-md disabled:opacity-50">다음</button>
+      <div className="flex justify-center items-center mt-6 space-x-1 sm:space-x-2 overflow-x-auto">
+        <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1} className="px-2 sm:px-3 py-1 border rounded-md disabled:opacity-50 text-xs sm:text-sm">이전</button>
+        <div className="flex space-x-1 sm:space-x-2">
+          {[...Array(Math.min(totalPages, 7)).keys()].map(num => {
+            let pageNum;
+            if (totalPages <= 7) {
+              pageNum = num + 1;
+            } else if (currentPage <= 4) {
+              pageNum = num + 1;
+            } else if (currentPage >= totalPages - 3) {
+              pageNum = totalPages - 6 + num;
+            } else {
+              pageNum = currentPage - 3 + num;
+            }
+            return (
+              <button 
+                key={pageNum} 
+                onClick={() => setCurrentPage(pageNum)} 
+                className={`px-2 sm:px-3 py-1 border rounded-md text-xs sm:text-sm ${currentPage === pageNum ? 'bg-blue-500 text-white' : ''}`}
+              >
+                {pageNum}
+              </button>
+            );
+          })}
+        </div>
+        <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} className="px-2 sm:px-3 py-1 border rounded-md disabled:opacity-50 text-xs sm:text-sm">다음</button>
       </div>
 
       {/* Upload Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
-          <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center p-4">
+          <div className="bg-white p-4 sm:p-8 rounded-lg shadow-xl w-full max-w-md mx-4">
             <h2 className="text-2xl font-bold mb-4">새 자료 업로드</h2>
             <form onSubmit={handleFileSubmit}>
               <div className="mb-4">
@@ -402,9 +419,9 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
                   지원 형식: PDF, PPT, DOC, XLS, 이미지, 동영상 파일 (최대 50MB)
                 </p>
               </div>
-              <div className="flex items-center justify-end">
-                <button type="button" onClick={() => setIsModalOpen(false)} className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded mr-2" disabled={uploading}>취소</button>
-                <button type="submit" className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded" disabled={uploading}>
+              <div className="flex flex-col sm:flex-row items-center justify-end space-y-2 sm:space-y-0 sm:space-x-2">
+                <button type="button" onClick={() => setIsModalOpen(false)} className="w-full sm:w-auto bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded" disabled={uploading}>취소</button>
+                <button type="submit" className="w-full sm:w-auto bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded" disabled={uploading}>
                   {uploading ? '업로드 중...' : '업로드'}
                 </button>
               </div>
