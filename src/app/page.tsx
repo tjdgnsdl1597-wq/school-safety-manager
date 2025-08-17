@@ -59,17 +59,8 @@ export default function HomePage() {
   const { data: session } = useSession();
   const router = useRouter();
   
-  // 권한에 따른 리다이렉트
-  useEffect(() => {
-    if (session === null) {
-      // 로그인하지 않은 사용자 → 교육자료 페이지로
-      router.push('/educational-materials');
-    } else if (session?.user?.role !== 'admin') {
-      // 로그인했지만 관리자가 아닌 경우 → 교육자료 페이지로
-      router.push('/educational-materials');
-    }
-    // 관리자인 경우 → 대시보드 유지
-  }, [session, router]);
+  // 관리자 여부 확인
+  const isAdmin = session?.user?.role === 'admin';
 
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [latestEduMaterials, setLatestEduMaterials] = useState<Material[]>([]);
@@ -187,9 +178,98 @@ export default function HomePage() {
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
     .slice(0, 5);
 
+  // 관리자가 아닌 경우 공개 콘텐츠 표시
+  if (!isAdmin) {
+    return (
+      <div className="container mx-auto p-4 bg-gray-50">
+        <h1 className="text-3xl font-bold text-blue-800 mb-6">인천광역시 학교안전공제회</h1>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* 교육자료 섹션 */}
+          <div className="bg-white p-6 rounded-lg shadow-md border border-gray-300">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">최신 교육자료</h2>
+            {latestEduMaterials.length > 0 ? (
+              <div className="space-y-3">
+                {latestEduMaterials.map((material) => (
+                  <div key={material.id} className="border-b border-gray-200 pb-2">
+                    <a 
+                      href={material.filePath} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:text-blue-800 font-medium"
+                    >
+                      {material.filename}
+                    </a>
+                    <p className="text-sm text-gray-500">
+                      {new Date(material.uploadedAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-500">등록된 교육자료가 없습니다.</p>
+            )}
+            <div className="mt-4">
+              <Link 
+                href="/educational-materials" 
+                className="inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
+              >
+                더 보기
+              </Link>
+            </div>
+          </div>
+
+          {/* 산업재해 섹션 */}
+          <div className="bg-white p-6 rounded-lg shadow-md border border-gray-300">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">산업재해 정보</h2>
+            {latestIndAccidents.length > 0 ? (
+              <div className="space-y-3">
+                {latestIndAccidents.map((material) => (
+                  <div key={material.id} className="border-b border-gray-200 pb-2">
+                    <a 
+                      href={material.filePath} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:text-blue-800 font-medium"
+                    >
+                      {material.filename}
+                    </a>
+                    <p className="text-sm text-gray-500">
+                      {new Date(material.uploadedAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-500">등록된 산업재해 정보가 없습니다.</p>
+            )}
+            <div className="mt-4">
+              <Link 
+                href="/industrial-accidents" 
+                className="inline-block bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors"
+              >
+                더 보기
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* 안내 메시지 */}
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+          <h3 className="text-lg font-semibold text-blue-800 mb-2">학교 안전보건 관리 시스템</h3>
+          <p className="text-blue-700">
+            학교 안전보건과 관련된 교육자료와 산업재해 정보를 제공합니다. 
+            필요한 자료를 다운로드하여 활용하시기 바랍니다.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // 관리자용 대시보드
   return (
     <div className="container mx-auto p-4 bg-gray-50">
-      <h1 className="text-3xl font-bold text-blue-800 mb-6">학교안전보건관리</h1>
+      <h1 className="text-3xl font-bold text-blue-800 mb-6">학교안전보건관리 - 관리자</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         <div className="bg-white p-6 rounded-lg shadow-md flex flex-col border border-gray-300">
