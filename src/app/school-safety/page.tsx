@@ -22,12 +22,12 @@ const HeroSection = () => (
       transition={{ duration: 0.8 }}
       className="max-w-3xl md:max-w-4xl mx-auto scale-90 md:scale-95 lg:scale-100 origin-center"
     >
-      <h1 className="text-[clamp(2rem,5vw,3.5rem)] font-bold text-white mb-6 leading-[1.2]">
-        체계적인 학교 안전보건 시스템 구축,
-        <span className="block text-blue-300 mt-3">
-          인천광역시학교안전공제회가 가장 든든한 파트너가 되겠습니다.
-        </span>
-      </h1>
+      <h1 className="text-[clamp(2rem,5vw,3.5rem)] font-bold text-white mb-6 leading-[1.2] [text-wrap:balance] break-keep">
+  체계적인 학교 안전보건 시스템 구축,
+  <span className="block text-blue-300 mt-3">
+    인천광역시학교안전공제회가 가장 든든한 파트너가 되겠습니다.
+  </span>
+</h1>
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
