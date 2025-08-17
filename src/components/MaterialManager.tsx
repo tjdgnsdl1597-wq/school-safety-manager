@@ -38,6 +38,8 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState<Material | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingPost, setEditingPost] = useState<Material | null>(null);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
@@ -111,7 +113,22 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
     setIsDetailModalOpen(true);
   };
 
-  // Handle file upload
+  // Handle edit post
+  const handleEditPost = (material: Material) => {
+    setEditingPost(material);
+    setIsEditing(true);
+    setIsModalOpen(true);
+    setIsDetailModalOpen(false);
+  };
+
+  // Close edit modal
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    setEditingPost(null);
+    setIsModalOpen(false);
+  };
+
+  // Handle file upload/update
   const handleFileSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setUploading(true);
@@ -119,12 +136,21 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
     formData.append('category', category);
 
     try {
-      const res = await fetch('/api/materials', { method: 'POST', body: formData });
-      if (!res.ok) throw new Error((await res.json()).error || 'Upload failed');
+      if (isEditing && editingPost) {
+        // 편집 모드
+        formData.append('id', editingPost.id);
+        const res = await fetch('/api/materials', { method: 'PUT', body: formData });
+        if (!res.ok) throw new Error((await res.json()).error || 'Update failed');
+      } else {
+        // 새 게시글 생성
+        const res = await fetch('/api/materials', { method: 'POST', body: formData });
+        if (!res.ok) throw new Error((await res.json()).error || 'Upload failed');
+      }
       fetchMaterials(); // Refresh list
       setIsModalOpen(false);
+      handleCancelEdit(); // 편집 상태 초기화
     } catch (err) {
-      alert('Upload failed: ' + (err instanceof Error ? err.message : 'Unknown error'));
+      alert((isEditing ? 'Update' : 'Upload') + ' failed: ' + (err instanceof Error ? err.message : 'Unknown error'));
     } finally {
       setUploading(false);
     }
@@ -386,7 +412,7 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
                         )}
                         {isAdmin && (
                           <button
-                            onClick={() => {/* TODO: 편집 기능 */}}
+                            onClick={() => handleEditPost(material)}
                             className="text-green-600 hover:text-green-900 text-xs px-2 py-1 border border-green-300 rounded hover:bg-green-50"
                           >
                             편집
@@ -415,7 +441,7 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
           <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
             <button onClick={handleBulkDelete} className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 disabled:bg-gray-300 text-sm sm:text-base w-full sm:w-auto" disabled={selectedItems.length === 0}>선택 삭제</button>
           </div>
-          <button onClick={() => setIsModalOpen(true)} className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 text-sm sm:text-base w-full sm:w-auto">새로운 게시물 등록</button>
+          <button onClick={() => setIsModalOpen(true)} className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 text-sm sm:text-base w-full sm:w-auto">새로운 게시글 등록</button>
         </div>
       )}
 
@@ -448,11 +474,13 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
         <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} className="px-2 sm:px-3 py-1 border rounded-md disabled:opacity-50 text-xs sm:text-sm">다음</button>
       </div>
 
-      {/* Post Creation Modal */}
+      {/* Post Creation/Edit Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center p-4 z-50">
           <div className="bg-white p-4 sm:p-8 rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
-            <h2 className="text-2xl font-bold mb-6">새 게시글 작성</h2>
+            <h2 className="text-2xl font-bold mb-6">
+              {isEditing ? '게시글 수정' : '새 게시글 작성'}
+            </h2>
             <form onSubmit={handleFileSubmit}>
               <div className="mb-4">
                 <label htmlFor="title" className="block text-gray-700 text-sm font-bold mb-2">제목 *</label>
@@ -464,6 +492,7 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
                   required 
                   autoComplete="off"
                   placeholder="게시글 제목을 입력하세요"
+                  defaultValue={isEditing ? editingPost?.title || '' : ''}
                 />
               </div>
               
@@ -476,11 +505,23 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline resize-none" 
                   autoComplete="off"
                   placeholder="게시글 내용을 입력하세요"
+                  defaultValue={isEditing ? editingPost?.content || '' : ''}
                 />
               </div>
               
               <div className="mb-6">
                 <label htmlFor="file" className="block text-gray-700 text-sm font-bold mb-2">첨부파일 (선택사항)</label>
+                
+                {isEditing && editingPost?.filename && (
+                  <div className="mb-3 p-3 bg-gray-50 rounded-lg">
+                    <div className="flex items-center">
+                      <span className="text-lg mr-2">{getFileIcon(editingPost.filename)}</span>
+                      <span className="text-sm text-gray-700">현재 파일: {editingPost.filename}</span>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">새 파일을 선택하면 기존 파일이 교체됩니다.</p>
+                  </div>
+                )}
+                
                 <input 
                   type="file" 
                   name="file" 
@@ -497,7 +538,7 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
               <div className="flex flex-col sm:flex-row items-center justify-end space-y-2 sm:space-y-0 sm:space-x-2">
                 <button 
                   type="button" 
-                  onClick={() => setIsModalOpen(false)} 
+                  onClick={isEditing ? handleCancelEdit : () => setIsModalOpen(false)} 
                   className="w-full sm:w-auto bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded" 
                   disabled={uploading}
                 >
@@ -508,7 +549,10 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
                   className="w-full sm:w-auto bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded" 
                   disabled={uploading}
                 >
-                  {uploading ? '등록 중...' : '등록'}
+                  {uploading 
+                    ? (isEditing ? '수정 중...' : '등록 중...') 
+                    : (isEditing ? '수정' : '등록')
+                  }
                 </button>
               </div>
             </form>
@@ -580,7 +624,7 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
             <div className="flex justify-end space-x-3">
               {isAdmin && (
                 <button
-                  onClick={() => {/* TODO: 편집 기능 */}}
+                  onClick={() => handleEditPost(selectedPost)}
                   className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
                 >
                   편집

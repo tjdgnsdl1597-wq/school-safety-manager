@@ -177,6 +177,137 @@ export async function POST(request: Request) {
   }
 }
 
+export async function PUT(request: Request) {
+  try {
+    console.log('API PUT /api/materials called');
+    
+    const formData = await request.formData();
+    const id = formData.get('id') as string;
+    const title = formData.get('title') as string;
+    const content = formData.get('content') as string;
+    const category = formData.get('category') as string;
+    const file = formData.get('file') as File;
+
+    console.log('FormData received for update:', { 
+      id,
+      title,
+      hasContent: !!content,
+      category,
+      hasFile: !!file,
+      fileSize: file?.size,
+      fileName: file?.name 
+    });
+
+    if (!id || !title || !category) {
+      console.error('Missing required fields:', { id, title, category });
+      return NextResponse.json({ error: 'ID, title and category are required' }, { status: 400 });
+    }
+
+    // 기존 게시글 조회
+    const existingMaterial = await prisma.material.findUnique({
+      where: { id }
+    });
+
+    if (!existingMaterial) {
+      return NextResponse.json({ error: 'Post not found' }, { status: 404 });
+    }
+
+    let gcsUrl = existingMaterial.filePath;
+    let thumbnailPath = existingMaterial.thumbnailPath;
+
+    // 새 파일이 업로드된 경우
+    if (file && file.size > 0) {
+      // 파일 형식 검증
+      const allowedTypes = [
+        'application/pdf',
+        'application/vnd.ms-powerpoint',
+        'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.ms-excel',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'image/jpeg',
+        'image/png',
+        'image/gif',
+        'image/webp',
+        'video/mp4',
+        'video/webm',
+        'text/plain'
+      ];
+
+      if (!allowedTypes.includes(file.type)) {
+        return NextResponse.json({ 
+          error: '지원하지 않는 파일 형식입니다. PDF, PPT, DOC, XLS, 이미지, 동영상 파일만 업로드 가능합니다.' 
+        }, { status: 400 });
+      }
+
+      // 파일 크기 제한 (50MB)
+      const maxSize = 50 * 1024 * 1024;
+      if (file.size > maxSize) {
+        return NextResponse.json({ 
+          error: '파일 크기가 너무 큽니다. 50MB 이하의 파일만 업로드 가능합니다.' 
+        }, { status: 400 });
+      }
+
+      try {
+        // 기존 파일 삭제 (GCS URL인 경우)
+        if (existingMaterial.filePath && existingMaterial.filePath.startsWith('https://storage.googleapis.com/')) {
+          try {
+            await deleteFileFromGCS(existingMaterial.filePath);
+            console.log(`Deleted old file from GCS: ${existingMaterial.filePath}`);
+          } catch (deleteError) {
+            console.warn('Failed to delete old file from GCS:', deleteError);
+          }
+        }
+
+        // 새 파일 업로드
+        gcsUrl = await uploadFileToGCS(file, category);
+        
+        // 이미지 파일의 경우 썸네일로 GCS URL 사용
+        if (file.type.startsWith('image/')) {
+          thumbnailPath = gcsUrl;
+        } else {
+          thumbnailPath = null; // 이미지가 아닌 경우 썸네일 제거
+        }
+        
+        console.log(`New file uploaded successfully: ${gcsUrl}`);
+      } catch (gcsError) {
+        console.error('GCS upload failed:', gcsError);
+        const errorMessage = gcsError instanceof Error ? gcsError.message : 'Unknown GCS error';
+        return NextResponse.json({ 
+          error: `Google Cloud Storage 업로드 실패: ${errorMessage}`,
+          details: process.env.NODE_ENV === 'development' ? gcsError : undefined
+        }, { status: 500 });
+      }
+    }
+
+    // 데이터베이스 업데이트
+    try {
+      const updatedMaterial = await prisma.material.update({
+        where: { id },
+        data: {
+          title,
+          content: content || null,
+          filename: file && file.size > 0 ? file.name : existingMaterial.filename,
+          filePath: gcsUrl,
+          thumbnailPath,
+        },
+      });
+
+      console.log(`Post updated successfully: ${updatedMaterial.id}`);
+      return NextResponse.json(updatedMaterial, { status: 200 });
+    } catch (dbError) {
+      console.error('Database update failed:', dbError);
+      return NextResponse.json({ 
+        error: '데이터베이스 업데이트에 실패했습니다.' 
+      }, { status: 500 });
+    }
+  } catch (error) {
+    console.error('Error updating material:', error);
+    return NextResponse.json({ error: 'Failed to update material' }, { status: 500 });
+  }
+}
+
 export async function DELETE(request: Request) {
   try {
     const { ids } = await request.json();
