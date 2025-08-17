@@ -1,13 +1,23 @@
 import { Storage } from '@google-cloud/storage';
 
 // Google Cloud Storage 클라이언트 초기화
+const getCredentials = () => {
+  if (process.env.GOOGLE_CLOUD_CREDENTIALS) {
+    try {
+      return JSON.parse(process.env.GOOGLE_CLOUD_CREDENTIALS);
+    } catch (error) {
+      console.error('Failed to parse GOOGLE_CLOUD_CREDENTIALS:', error);
+      return undefined;
+    }
+  }
+  return undefined;
+};
+
 const storage = new Storage({
   projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
   keyFilename: process.env.GOOGLE_CLOUD_KEY_FILE, // 로컬 개발용
   // Vercel 환경에서는 서비스 계정 키를 JSON 문자열로 설정
-  credentials: process.env.GOOGLE_CLOUD_CREDENTIALS 
-    ? JSON.parse(process.env.GOOGLE_CLOUD_CREDENTIALS)
-    : undefined,
+  credentials: getCredentials(),
 });
 
 const bucketName = process.env.GOOGLE_CLOUD_BUCKET_NAME || 'school-safety-manager';
