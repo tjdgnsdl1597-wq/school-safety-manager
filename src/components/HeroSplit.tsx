@@ -8,56 +8,29 @@ export default function HeroSplit() {
   const [images, setImages] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Pixabay에서 안전 점검 관련 이미지 가져오기
+  // 업로드된 Hero 이미지 사용
   useEffect(() => {
-    const fetchSafetyImages = async () => {
-      try {
-        const queries = [
-          'construction safety hard hat',
-          'school safety inspection',
-          'PPE protective equipment',
-          'laboratory safety',
-          'site inspection safety'
-        ];
-        
-        const imagePromises = queries.map(query => 
-          fetch(`/api/pixabay?query=${encodeURIComponent(query)}&per_page=2&page=1`)
-            .then(res => res.json())
-            .then(data => data.hits[0]) // 첫 번째 이미지만 사용
-            .catch(() => null)
-        );
-
-        const fetchedImages = await Promise.all(imagePromises);
-        const validImages = fetchedImages.filter(img => img !== null);
-        
-        // 폴백 이미지 추가 (API 실패시)
-        if (validImages.length === 0) {
-          setImages([
-            {
-              id: 1,
-              webformatURL: '/api/placeholder/720/520?text=안전점검',
-              tags: '안전 점검, safety inspection'
-            }
-          ]);
-        } else {
-          setImages(validImages);
-        }
-      } catch (error) {
-        console.error('Failed to fetch safety images:', error);
-        // 폴백 이미지
-        setImages([
-          {
-            id: 1,
-            webformatURL: '/api/placeholder/720/520?text=안전점검',
-            tags: '안전 점검, safety inspection'
-          }
-        ]);
-      } finally {
-        setLoading(false);
+    // Hero 이미지 배열 (사용자 업로드)
+    const heroImages = [
+      {
+        id: 1,
+        webformatURL: '/images/hero/hero-1.jpg',
+        tags: '학교 안전 점검, safety inspection'
+      },
+      {
+        id: 2,
+        webformatURL: '/images/hero/hero-2.jpg',
+        tags: '안전 교육 현장, safety education'
+      },
+      {
+        id: 3,
+        webformatURL: '/images/hero/hero-3.jpg',
+        tags: '안전 관리 활동, safety management'
       }
-    };
-
-    fetchSafetyImages();
+    ];
+    
+    setImages(heroImages);
+    setLoading(false);
   }, []);
 
   const nextImage = () => {
@@ -78,13 +51,13 @@ export default function HeroSplit() {
       </div>
 
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 items-center gap-10 min-h-[70vh] py-16 md:py-20">
+        <div className="grid grid-cols-1 lg:grid-cols-12 items-center gap-12 min-h-[70vh] py-16 md:py-20">
           
           {/* Left: Text */}
-          <div className="order-2 lg:order-1 lg:col-span-5">
-            <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight leading-tight break-keep [text-wrap:balance] text-gray-900">
+          <div className="order-2 lg:order-1 lg:col-span-6">
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight leading-tight break-keep [text-wrap:balance] text-gray-900">
               체계적인 학교 안전보건 시스템 구축,
-              <span className="block text-gray-900 mt-2">
+              <span className="block text-gray-900 mt-3">
                 인천광역시학교안전공제회가 가장 든든한 파트너가 되겠습니다.
               </span>
             </h1>
@@ -101,7 +74,7 @@ export default function HeroSplit() {
           </div>
 
           {/* Right: Image */}
-          <div className="order-1 lg:order-2 lg:col-span-7 relative">
+          <div className="order-1 lg:order-2 lg:col-span-6 relative">
             {/* 블루프린트 장식 (뒤쪽) */}
             <div className="pointer-events-none absolute -z-10 inset-0 -left-10">
               <div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-white opacity-50"></div>
@@ -123,6 +96,17 @@ export default function HeroSplit() {
                     sizes="(min-width:1024px) 720px, 100vw"
                     className="object-cover rounded-xl"
                     priority
+                    onError={(e) => {
+                      // 이미지 로드 실패시 Unsplash 폴백 이미지로 대체
+                      const target = e.target as HTMLImageElement;
+                      const fallbackImages = [
+                        'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=720&h=520&q=80',
+                        'https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=720&h=520&q=80',
+                        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=720&h=520&q=80'
+                      ];
+                      const imageIndex = currentImage % 3;
+                      target.src = fallbackImages[imageIndex];
+                    }}
                   />
                   
                   {/* 이미지 슬라이드 네비게이션 (이미지가 2개 이상일 때만 표시) */}
@@ -150,7 +134,9 @@ export default function HeroSplit() {
 
             {/* 이미지 하단 정보 */}
             <div className="mt-3 text-xs text-gray-500 text-center">
-              이미지 출처: Pixabay (상업적 이용 가능)
+              ※ 이미지를 업로드하시려면 <code className="bg-gray-100 px-1 py-0.5 rounded text-blue-600">public/images/hero/</code> 폴더에 
+              <br />
+              <code className="bg-gray-100 px-1 py-0.5 rounded text-blue-600">hero-1.jpg, hero-2.jpg, hero-3.jpg</code> 파일명으로 저장해주세요.
             </div>
           </div>
 
