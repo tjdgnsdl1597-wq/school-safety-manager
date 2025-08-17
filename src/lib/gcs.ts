@@ -4,9 +4,19 @@ import { Storage, StorageOptions } from '@google-cloud/storage';
 const getCredentials = () => {
   if (process.env.GOOGLE_CLOUD_CREDENTIALS) {
     try {
-      const credentialsStr = process.env.GOOGLE_CLOUD_CREDENTIALS;
+      let credentialsStr = process.env.GOOGLE_CLOUD_CREDENTIALS;
       console.log('GOOGLE_CLOUD_CREDENTIALS found, length:', credentialsStr.length);
       console.log('First 100 chars:', credentialsStr.substring(0, 100));
+      
+      // 제어 문자들을 안전하게 처리
+      credentialsStr = credentialsStr
+        .replace(/\\n/g, '\n')  // \\n을 실제 줄바꿈으로 변환
+        .replace(/\\r/g, '\r')  // \\r을 실제 캐리지 리턴으로 변환
+        .replace(/\\t/g, '\t')  // \\t를 실제 탭으로 변환
+        .replace(/\\\\/g, '\\') // \\를 실제 백슬래시로 변환
+        .trim();
+      
+      console.log('After escape processing, first 150 chars:', credentialsStr.substring(0, 150));
       
       const credentials = JSON.parse(credentialsStr);
       console.log('GCS credentials parsed successfully');
@@ -18,7 +28,18 @@ const getCredentials = () => {
     } catch (error) {
       console.error('Failed to parse GOOGLE_CLOUD_CREDENTIALS:', error);
       console.error('Raw env var length:', process.env.GOOGLE_CLOUD_CREDENTIALS?.length);
-      console.error('First 200 chars of env var:', process.env.GOOGLE_CLOUD_CREDENTIALS?.substring(0, 200));
+      
+      // Base64로 인코딩되어 있을 수도 있음
+      try {
+        console.log('Trying Base64 decode...');
+        const decodedStr = Buffer.from(process.env.GOOGLE_CLOUD_CREDENTIALS, 'base64').toString();
+        const credentials = JSON.parse(decodedStr);
+        console.log('Base64 decoded credentials parsed successfully');
+        return credentials;
+      } catch (base64Error) {
+        console.error('Base64 decode also failed:', base64Error);
+      }
+      
       return undefined;
     }
   }
