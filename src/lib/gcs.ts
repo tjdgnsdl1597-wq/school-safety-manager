@@ -70,8 +70,29 @@ export async function uploadFileToGCS(file: File, category: string): Promise<str
           category: category,
         },
       },
-      public: true, // 파일을 공개로 설정
+      resumable: false, // 작은 파일은 resumable upload 비활성화
     });
+    
+    console.log('File saved, now making it public...');
+    
+    // 파일을 공개로 설정
+    try {
+      await gcsFile.makePublic();
+      console.log('File made public successfully');
+    } catch (publicError) {
+      console.warn('Failed to make file public, trying alternative approach:', publicError);
+      // 대안: ACL 설정
+      try {
+        await gcsFile.acl.add({
+          entity: 'allUsers',
+          role: 'READER'
+        });
+        console.log('File made public via ACL');
+      } catch (aclError) {
+        console.error('Failed to set ACL:', aclError);
+        // 공개 설정 실패해도 업로드는 성공으로 처리
+      }
+    }
     
     console.log('File saved to GCS successfully');
     
@@ -85,9 +106,15 @@ export async function uploadFileToGCS(file: File, category: string): Promise<str
     console.error('Error details:', {
       message: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined,
-      name: error instanceof Error ? error.name : undefined
+      name: error instanceof Error ? error.name : undefined,
+      code: (error as any)?.code,
+      errors: (error as any)?.errors,
+      response: (error as any)?.response?.data
     });
-    throw new Error('파일 업로드에 실패했습니다.');
+    
+    // 더 구체적인 에러 메시지를 전달
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    throw new Error(`GCS 업로드 실패: ${errorMessage}`);
   }
 }
 

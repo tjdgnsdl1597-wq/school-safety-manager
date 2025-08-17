@@ -136,8 +136,16 @@ export async function POST(request: Request) {
       return NextResponse.json(newMaterial, { status: 201 });
     } catch (gcsError) {
       console.error('GCS upload failed:', gcsError);
+      const errorMessage = gcsError instanceof Error ? gcsError.message : 'Unknown GCS error';
+      console.error('GCS error details:', {
+        message: errorMessage,
+        stack: gcsError instanceof Error ? gcsError.stack : undefined,
+        name: gcsError instanceof Error ? gcsError.name : undefined
+      });
+      
       return NextResponse.json({ 
-        error: 'Google Cloud Storage 업로드에 실패했습니다. 잠시 후 다시 시도해주세요.' 
+        error: `Google Cloud Storage 업로드 실패: ${errorMessage}`,
+        details: process.env.NODE_ENV === 'development' ? gcsError : undefined
       }, { status: 500 });
     }
   } catch (error) {
