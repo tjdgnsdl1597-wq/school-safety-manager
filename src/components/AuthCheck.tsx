@@ -2,12 +2,13 @@
 
 import { useSession } from 'next-auth/react';
 import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 export default function AuthCheck({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession();
   const pathname = usePathname();
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
 
   // 로그인이 필요하지 않은 페이지들 (일반 방문자 접근 가능)
   const publicPages = useMemo(() => [
@@ -19,10 +20,14 @@ export default function AuthCheck({ children }: { children: React.ReactNode }) {
   ], []);
 
   useEffect(() => {
-    if (status === 'loading') return; // 로딩 중에는 아무것도 하지 않음
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted || status === 'loading') return; // 마운트되지 않았거나 로딩 중에는 아무것도 하지 않음
 
     // 공개 페이지는 로그인 체크 없이 접근 허용
-    if (publicPages.includes(pathname)) {
+    if (publicPages.some(page => pathname.startsWith(page))) {
       return;
     }
 
@@ -31,10 +36,10 @@ export default function AuthCheck({ children }: { children: React.ReactNode }) {
       // 로그인하지 않은 경우 → 로그인 페이지로
       router.push('/auth/signin');
     }
-  }, [session, status, pathname, router, publicPages]);
+  }, [mounted, session, status, pathname, router, publicPages]);
 
-  // 로딩 중
-  if (status === 'loading') {
+  // 마운트되지 않았거나 로딩 중
+  if (!mounted || status === 'loading') {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -45,8 +50,8 @@ export default function AuthCheck({ children }: { children: React.ReactNode }) {
     );
   }
 
-  // 로그인 페이지는 그대로 표시
-  if (publicPages.includes(pathname)) {
+  // 공개 페이지는 그대로 표시 (동적 경로 포함)
+  if (publicPages.some(page => pathname.startsWith(page))) {
     return <>{children}</>;
   }
 
