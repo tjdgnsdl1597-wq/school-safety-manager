@@ -4,12 +4,21 @@ import { Storage } from '@google-cloud/storage';
 const getCredentials = () => {
   if (process.env.GOOGLE_CLOUD_CREDENTIALS) {
     try {
-      const credentials = JSON.parse(process.env.GOOGLE_CLOUD_CREDENTIALS);
-      console.log('GCS credentials parsed successfully, project_id:', credentials.project_id);
+      const credentialsStr = process.env.GOOGLE_CLOUD_CREDENTIALS;
+      console.log('GOOGLE_CLOUD_CREDENTIALS found, length:', credentialsStr.length);
+      console.log('First 100 chars:', credentialsStr.substring(0, 100));
+      
+      const credentials = JSON.parse(credentialsStr);
+      console.log('GCS credentials parsed successfully');
+      console.log('Credential keys:', Object.keys(credentials));
+      console.log('project_id:', credentials.project_id);
+      console.log('client_email:', credentials.client_email);
+      
       return credentials;
     } catch (error) {
       console.error('Failed to parse GOOGLE_CLOUD_CREDENTIALS:', error);
-      console.error('GOOGLE_CLOUD_CREDENTIALS length:', process.env.GOOGLE_CLOUD_CREDENTIALS?.length);
+      console.error('Raw env var length:', process.env.GOOGLE_CLOUD_CREDENTIALS?.length);
+      console.error('First 200 chars of env var:', process.env.GOOGLE_CLOUD_CREDENTIALS?.substring(0, 200));
       return undefined;
     }
   }
@@ -18,12 +27,30 @@ const getCredentials = () => {
 };
 
 const credentials = getCredentials();
-const storage = new Storage({
+
+// Storage 클라이언트 설정
+const storageConfig: any = {
   projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
-  keyFilename: process.env.GOOGLE_CLOUD_KEY_FILE, // 로컬 개발용
-  // Vercel 환경에서는 서비스 계정 키를 JSON 문자열로 설정
-  credentials: credentials,
+};
+
+// 로컬 개발 환경
+if (process.env.GOOGLE_CLOUD_KEY_FILE) {
+  storageConfig.keyFilename = process.env.GOOGLE_CLOUD_KEY_FILE;
+} 
+// Vercel 환경
+else if (credentials) {
+  storageConfig.credentials = credentials;
+  storageConfig.projectId = credentials.project_id; // 인증 정보에서 프로젝트 ID 사용
+}
+
+console.log('Storage config:', {
+  hasProjectId: !!storageConfig.projectId,
+  hasKeyFilename: !!storageConfig.keyFilename,
+  hasCredentials: !!storageConfig.credentials,
+  projectId: storageConfig.projectId
 });
+
+const storage = new Storage(storageConfig);
 
 console.log('GCS Storage initialized with:', {
   projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
