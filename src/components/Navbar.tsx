@@ -16,12 +16,14 @@ export default function Navbar() {
     { name: '대시보드', href: '/' },
     { name: '학교 정보', href: '/schools' },
     { name: '일정 관리', href: '/schedules' },
+    { name: '학교 안전보건', href: '/school-safety' },
     { name: '교육 자료', href: '/educational-materials' },
     { name: '산업 재해', href: '/industrial-accidents' },
   ];
 
   // 고객용 네비게이션 메뉴 (교육자료, 산업재해만)
   const customerNavItems = [
+    { name: '학교 안전보건', href: '/school-safety' },
     { name: '교육 자료', href: '/educational-materials' },
     { name: '산업 재해', href: '/industrial-accidents' },
   ];
