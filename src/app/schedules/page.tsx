@@ -70,7 +70,7 @@ export default function SchedulesPage() {
   
   // 관리자가 아닌 경우 교육자료 페이지로 리다이렉트
   useEffect(() => {
-    if (session && session.user?.role !== 'admin') {
+    if (session && (session.user as any)?.role !== 'admin') {
       router.push('/educational-materials');
     }
   }, [session, router]);

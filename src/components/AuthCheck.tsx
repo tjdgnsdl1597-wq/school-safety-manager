@@ -2,7 +2,7 @@
 
 import { useSession } from 'next-auth/react';
 import { usePathname, useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 
 export default function AuthCheck({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession();
@@ -10,12 +10,12 @@ export default function AuthCheck({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   // 로그인이 필요하지 않은 페이지들 (일반 방문자 접근 가능)
-  const publicPages = [
+  const publicPages = useMemo(() => [
     '/',
     '/auth/signin',
     '/educational-materials',
     '/industrial-accidents'
-  ];
+  ], []);
 
   useEffect(() => {
     if (status === 'loading') return; // 로딩 중에는 아무것도 하지 않음
@@ -30,7 +30,7 @@ export default function AuthCheck({ children }: { children: React.ReactNode }) {
       // 로그인하지 않은 경우 → 로그인 페이지로
       router.push('/auth/signin');
     }
-  }, [session, status, pathname, router]);
+  }, [session, status, pathname, router, publicPages]);
 
   // 로딩 중
   if (status === 'loading') {

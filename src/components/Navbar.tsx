@@ -24,7 +24,7 @@ export default function Navbar() {
   ];
 
   // 로그인하지 않은 사용자는 고객 메뉴 표시
-  const isAdmin = session?.user?.role === 'admin';
+  const isAdmin = (session?.user as any)?.role === 'admin';
   const navItems = isAdmin ? adminNavItems : customerNavItems;
 
   return (

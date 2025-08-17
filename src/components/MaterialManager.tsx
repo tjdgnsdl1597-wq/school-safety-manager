@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import Link from 'next/link';
 import { useSession } from 'next-auth/react';
+import Image from 'next/image';
 
 // Interface for Material, matching Prisma schema
 interface Material {
@@ -26,7 +26,7 @@ const ITEMS_PER_PAGE = 10;
 export default function MaterialManager({ category, title }: MaterialManagerProps) {
   // Auth session
   const { data: session } = useSession();
-  const isAdmin = session?.user?.role === 'admin';
+  const isAdmin = (session?.user as any)?.role === 'admin';
 
   // State variables
   const [materials, setMaterials] = useState<Material[]>([]);
@@ -84,14 +84,6 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
     return '📎';
   };
 
-  // 파일 크기 포맷팅
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
 
   // Handle search submission
   const handleSearch = (e: React.FormEvent) => {
@@ -278,7 +270,7 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
 
           {/* 4-Column Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {materials.map((material, index) => (
+            {materials.map((material) => (
               <div 
                 key={material.id} 
                 className={`bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-200 ${
@@ -300,15 +292,15 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
                   
                   {/* 이미지 썸네일이 있는 경우 */}
                   {material.thumbnailPath && material.thumbnailPath.startsWith('https://') ? (
-                    <img 
+                    <Image 
                       src={material.thumbnailPath} 
                       alt={material.filename}
+                      width={200}
+                      height={192}
                       className="w-full h-full object-cover"
-                      onError={(e) => {
-                        // 이미지 로드 실패시 기본 아이콘으로 대체
-                        const target = e.target as HTMLImageElement;
-                        target.style.display = 'none';
-                        target.nextElementSibling?.classList.remove('hidden');
+                      onError={() => {
+                        // 이미지 로드 실패시 처리
+                        console.warn('Failed to load thumbnail:', material.thumbnailPath);
                       }}
                     />
                   ) : null}

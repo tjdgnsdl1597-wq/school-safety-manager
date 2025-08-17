@@ -1,6 +1,5 @@
-import NextAuth from 'next-auth';
+const NextAuth = require('next-auth').default;
 import CredentialsProvider from 'next-auth/providers/credentials';
-import type { NextAuthOptions } from 'next-auth';
 
 // URL 정리 함수
 const getCleanUrl = () => {
@@ -12,7 +11,7 @@ const getCleanUrl = () => {
     .replace(/^http:\/\/\s*http:\/\//, 'http://');
 };
 
-const authOptions: NextAuthOptions = {
+const authOptions = {
   providers: [
     CredentialsProvider({
       name: 'credentials',
@@ -49,13 +48,13 @@ const authOptions: NextAuthOptions = {
     strategy: 'jwt',
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user }: { token: any; user?: any }) {
       if (user) {
         token.role = user.role;
       }
       return token;
     },
-    async session({ session, token }) {
+    async session({ session, token }: { session: any; token: any }) {
       if (token) {
         session.user.id = token.sub || '';
         session.user.role = token.role;

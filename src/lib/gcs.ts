@@ -1,4 +1,4 @@
-import { Storage } from '@google-cloud/storage';
+import { Storage, StorageOptions } from '@google-cloud/storage';
 
 // Google Cloud Storage 클라이언트 초기화
 const getCredentials = () => {
@@ -29,7 +29,7 @@ const getCredentials = () => {
 const credentials = getCredentials();
 
 // Storage 클라이언트 설정
-const storageConfig: any = {
+const storageConfig: StorageOptions = {
   projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
 };
 
@@ -134,9 +134,9 @@ export async function uploadFileToGCS(file: File, category: string): Promise<str
       message: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined,
       name: error instanceof Error ? error.name : undefined,
-      code: (error as any)?.code,
-      errors: (error as any)?.errors,
-      response: (error as any)?.response?.data
+      code: (error as Error & { code?: string })?.code,
+      errors: (error as Error & { errors?: unknown })?.errors,
+      response: (error as Error & { response?: { data?: unknown } })?.response?.data
     });
     
     // 더 구체적인 에러 메시지를 전달

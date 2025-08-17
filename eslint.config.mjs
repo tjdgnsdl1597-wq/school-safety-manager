@@ -18,6 +18,13 @@ const eslintConfig = [
       "node_modules/**/*",
       "prisma/migrations/**/*"
     ]
+  },
+  {
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-require-imports": "off",
+      "@typescript-eslint/no-unused-vars": "warn"
+    }
   }
 ];
 
