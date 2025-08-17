@@ -24,14 +24,22 @@ const getCredentials = () => {
       } else {
         // 직접 JSON 파싱 시도
         console.log('Attempting direct JSON parse...');
+        console.log('Raw string sample (chars 160-170):', credentialsStr.substring(160, 170));
         
-        // escape 문자들을 안전하게 처리
-        const processedStr = credentialsStr
-          .replace(/\\n/g, '\n')
-          .replace(/\\r/g, '\r') 
-          .replace(/\\t/g, '\t')
-          .replace(/\\\\/g, '\\')
-          .trim();
+        // JSON 문자열에서 문제가 되는 제어 문자들을 정리
+        let processedStr = credentialsStr.trim();
+        
+        // private_key 필드 내의 실제 줄바꿈 문자들을 \\n으로 이스케이프
+        processedStr = processedStr.replace(/"private_key":"([^"]*?)"/g, (match, key) => {
+          // private_key 내용에서 실제 줄바꿈을 \\n으로 변경
+          const escapedKey = key
+            .replace(/\n/g, '\\n')
+            .replace(/\r/g, '\\r')
+            .replace(/\t/g, '\\t');
+          return `"private_key":"${escapedKey}"`;
+        });
+        
+        console.log('After private_key processing, sample (chars 160-170):', processedStr.substring(160, 170));
           
         parsedCredentials = JSON.parse(processedStr);
         console.log('Direct JSON parsing successful');
