@@ -12,6 +12,7 @@ interface Material {
   uploadedAt: string;
   uploader: string;
   category: string;
+  thumbnailPath?: string;
 }
 
 // Props for the component
