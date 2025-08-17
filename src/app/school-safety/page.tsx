@@ -38,10 +38,10 @@ const HeroSection = () => (
         <p className="font-semibold text-emerald-300 mb-3">
           법규 준수부터 재해 예방까지, 원스톱 학교 안전 솔루션
         </p>
-        <p className="max-w-3xl mx-auto">
-          복잡한 중대재해처벌법과 산업안전보건법, 교육 현장의 수많은 업무와 병행하기에 어려움이 많으셨을 겁니다.
-          학생과 교직원의 안전을 책임져야 한다는 막중한 부담감, 이제 안전공제회 산업안전팀이 함께 나누겠습니다.
-        </p>
+        <p className="max-w-3xl mx-auto text-gray-300 text-base md:text-lg leading-relaxed break-keep whitespace-pre-line text-center">
+  {`복잡한 중대재해처벌법과 산업안전보건법, 교육 현장의 수많은 업무와 병행하기에 어려움이 많으셨을 겁니다.
+학생과 교직원의 안전을 책임져야 한다는 막중한 부담감, 이제 안전공제회 산업안전팀이 함께 나누겠습니다.`}
+</p>
       </motion.div>
 
         <motion.div
