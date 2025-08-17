@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect, FormEvent, useMemo } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -63,6 +65,16 @@ const ALL_PURPOSES = ['월점검', '위험성평가', '근골조사', '산업재
 
 // --- Component ---
 export default function SchedulesPage() {
+  const { data: session } = useSession();
+  const router = useRouter();
+  
+  // 관리자가 아닌 경우 교육자료 페이지로 리다이렉트
+  useEffect(() => {
+    if (session && session.user?.role !== 'admin') {
+      router.push('/educational-materials');
+    }
+  }, [session, router]);
+
   // --- State ---
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [schools, setSchools] = useState<School[]>([]);

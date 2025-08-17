@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import FullCalendar from '@fullcalendar/react';
 import type { EventContentArg } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
@@ -54,6 +56,16 @@ interface Material {
 
 // --- Component ---
 export default function HomePage() {
+  const { data: session } = useSession();
+  const router = useRouter();
+  
+  // 관리자가 아닌 경우 교육자료 페이지로 리다이렉트
+  useEffect(() => {
+    if (session && session.user?.role !== 'admin') {
+      router.push('/educational-materials');
+    }
+  }, [session, router]);
+
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [latestEduMaterials, setLatestEduMaterials] = useState<Material[]>([]);
   const [latestIndAccidents, setLatestIndAccidents] = useState<Material[]>([]);

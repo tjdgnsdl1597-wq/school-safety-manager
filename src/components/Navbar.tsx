@@ -8,12 +8,24 @@ export default function Navbar() {
   const pathname = usePathname();
   const { data: session } = useSession();
 
-  const navItems = [
+  // 관리자용 네비게이션 메뉴
+  const adminNavItems = [
+    { name: '대시보드', href: '/' },
     { name: '학교 정보 관리', href: '/schools' },
     { name: '일정 관리', href: '/schedules' },
     { name: '교육 자료', href: '/educational-materials' },
     { name: '산업 재해', href: '/industrial-accidents' },
   ];
+
+  // 고객용 네비게이션 메뉴 (교육자료, 산업재해만)
+  const customerNavItems = [
+    { name: '교육 자료', href: '/educational-materials' },
+    { name: '산업 재해', href: '/industrial-accidents' },
+  ];
+
+  // 로그인하지 않은 사용자는 고객 메뉴 표시
+  const isAdmin = session?.user?.role === 'admin';
+  const navItems = isAdmin ? adminNavItems : customerNavItems;
 
   return (
     <nav className="bg-blue-600 p-4 shadow-md">
@@ -33,19 +45,28 @@ export default function Navbar() {
               {item.name}
             </Link>
           ))}
-          {session && (
-            <div className="flex items-center space-x-4 ml-4">
-              <span className="text-white text-sm">
-                {session.user?.name || '관리자'}님
-              </span>
-              <button
-                onClick={() => signOut({ callbackUrl: '/auth/signin' })}
-                className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition-colors duration-200"
+          <div className="flex items-center space-x-4 ml-4">
+            {session ? (
+              <>
+                <span className="text-white text-sm">
+                  {isAdmin ? '관리자' : '고객'}님
+                </span>
+                <button
+                  onClick={() => signOut({ callbackUrl: '/auth/signin' })}
+                  className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition-colors duration-200"
+                >
+                  로그아웃
+                </button>
+              </>
+            ) : (
+              <Link
+                href="/auth/signin"
+                className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm transition-colors duration-200"
               >
-                로그아웃
-              </button>
-            </div>
-          )}
+                관리자 로그인
+              </Link>
+            )}
+          </div>
         </div>
       </div>
     </nav>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
 
 // Interface for Material, matching Prisma schema
 interface Material {
@@ -22,6 +23,10 @@ interface MaterialManagerProps {
 const ITEMS_PER_PAGE = 10;
 
 export default function MaterialManager({ category, title }: MaterialManagerProps) {
+  // Auth session
+  const { data: session } = useSession();
+  const isAdmin = session?.user?.role === 'admin';
+
   // State variables
   const [materials, setMaterials] = useState<Material[]>([]);
   const [totalCount, setTotalCount] = useState(0);
@@ -165,16 +170,17 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
 
   // Handle file download
   const handleDownload = (material: Material) => {
-    // Vercel 환경에서는 실제 파일이 저장되지 않으므로 대안 제공
+    // temp:// 경로인 경우 (기존 임시 파일)
     if (material.filePath.startsWith('temp://')) {
       alert(`파일 "${material.filename}"은 임시 저장된 상태입니다.\n실제 파일 다운로드 기능은 외부 스토리지 연동 후 제공될 예정입니다.`);
       return;
     }
     
-    // 실제 파일 경로가 있는 경우 다운로드
+    // GCS URL 또는 기타 실제 파일 경로인 경우 다운로드
     const link = document.createElement('a');
     link.href = material.filePath;
     link.download = material.filename;
+    link.target = '_blank'; // GCS URL의 경우 새 창에서 열기
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -187,7 +193,7 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
       return;
     }
     
-    // PDF나 이미지 파일의 경우 새 창에서 열기
+    // GCS URL 또는 실제 파일 경로의 경우 미리보기
     const fileExt = material.filename.toLowerCase().split('.').pop() || '';
     if (['pdf', 'jpg', 'jpeg', 'png', 'gif', 'webp'].includes(fileExt)) {
       window.open(material.filePath, '_blank');
@@ -251,20 +257,22 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
         <>
           {/* Selection Controls */}
           <div className="mb-4 flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <label className="flex items-center space-x-2">
-                <input 
-                  type="checkbox" 
-                  onChange={handleSelectAll} 
-                  checked={selectedItems.length === materials.length && materials.length > 0}
-                  className="rounded"
-                />
-                <span className="text-sm text-gray-700">전체 선택</span>
-              </label>
-              {selectedItems.length > 0 && (
-                <span className="text-sm text-blue-600">{selectedItems.length}개 선택됨</span>
-              )}
-            </div>
+            {isAdmin && (
+              <div className="flex items-center space-x-4">
+                <label className="flex items-center space-x-2">
+                  <input 
+                    type="checkbox" 
+                    onChange={handleSelectAll} 
+                    checked={selectedItems.length === materials.length && materials.length > 0}
+                    className="rounded"
+                  />
+                  <span className="text-sm text-gray-700">전체 선택</span>
+                </label>
+                {selectedItems.length > 0 && (
+                  <span className="text-sm text-blue-600">{selectedItems.length}개 선택됨</span>
+                )}
+              </div>
+            )}
           </div>
 
           {/* 4-Column Grid */}
@@ -278,15 +286,34 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
               >
                 {/* Thumbnail Area */}
                 <div className="h-48 bg-gray-100 flex items-center justify-center relative">
-                  <div className="absolute top-2 left-2">
-                    <input 
-                      type="checkbox" 
-                      checked={selectedItems.includes(material.id)} 
-                      onChange={() => handleSelectItem(material.id)}
-                      className="rounded"
+                  {isAdmin && (
+                    <div className="absolute top-2 left-2">
+                      <input 
+                        type="checkbox" 
+                        checked={selectedItems.includes(material.id)} 
+                        onChange={() => handleSelectItem(material.id)}
+                        className="rounded"
+                      />
+                    </div>
+                  )}
+                  
+                  {/* 이미지 썸네일이 있는 경우 */}
+                  {material.thumbnailPath && material.thumbnailPath.startsWith('https://') ? (
+                    <img 
+                      src={material.thumbnailPath} 
+                      alt={material.filename}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        // 이미지 로드 실패시 기본 아이콘으로 대체
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = 'none';
+                        target.nextElementSibling?.classList.remove('hidden');
+                      }}
                     />
-                  </div>
-                  <div className="text-center">
+                  ) : null}
+                  
+                  {/* 기본 파일 아이콘 */}
+                  <div className={`text-center ${material.thumbnailPath?.startsWith('https://') ? 'hidden' : ''}`}>
                     <div className="text-6xl mb-2">{getFileIcon(material.filename)}</div>
                     <div className="text-xs text-gray-500 px-2">
                       {material.filename.split('.').pop()?.toUpperCase()}
@@ -344,13 +371,15 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
       )}
 
       {/* Footer: Bulk Actions and Pagination */}
-      <div className="flex justify-between items-center mt-6">
-        <div className="flex space-x-2">
-          <button onClick={handleBulkDelete} className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 disabled:bg-gray-300" disabled={selectedItems.length === 0}>선택 삭제</button>
-          {/* <button className="bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600 disabled:bg-gray-300" disabled={selectedItems.length === 0}>선택 이동</button> */}
+      {isAdmin && (
+        <div className="flex justify-between items-center mt-6">
+          <div className="flex space-x-2">
+            <button onClick={handleBulkDelete} className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 disabled:bg-gray-300" disabled={selectedItems.length === 0}>선택 삭제</button>
+            {/* <button className="bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600 disabled:bg-gray-300" disabled={selectedItems.length === 0}>선택 이동</button> */}
+          </div>
+          <button onClick={() => setIsModalOpen(true)} className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">새로운 게시물 등록</button>
         </div>
-        <button onClick={() => setIsModalOpen(true)} className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">새로운 게시물 등록</button>
-      </div>
+      )}
 
       {/* Pagination */}
       <div className="flex justify-center items-center mt-6 space-x-2">
