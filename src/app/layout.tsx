@@ -4,6 +4,8 @@ import "./globals.css";
 import Navbar from '../components/Navbar';
 import Providers from '../components/Providers';
 import AuthCheck from '../components/AuthCheck';
+import { getServerSession } from "next-auth/next";
+import { authOptions } from '@/lib/auth';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,17 +23,19 @@ export const metadata: Metadata = {
   viewport: "width=device-width, initial-scale=1, maximum-scale=1",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await getServerSession(authOptions);
+
   return (
     <html lang="ko">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Providers>
+        <Providers session={session}>
           <AuthCheck>
             <Navbar />
             <main className="pt-4">
