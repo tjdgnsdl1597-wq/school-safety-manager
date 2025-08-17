@@ -301,7 +301,7 @@ const MainTasksSection = () => {
 
 // Image Gallery Section with 3 Categories and Slide Animation
 const ImageGallerySection = () => {
-  // 3개 카테고리별 이미지 3장씩 총 9장 (GitHub 업로드된 실제 이미지 사용)
+  // 3개 카테고리별 이미지 3장씩 총 9장 (GitHub 업로드된 실제 이미지 + Unsplash 폴백)
   const galleryCategories = [
     {
       id: 'education',
@@ -464,7 +464,26 @@ const ImageGallerySection = () => {
                           loading="lazy"
                           onError={(e) => {
                             const target = e.target as HTMLImageElement;
-                            target.src = `https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=640&h=360&fit=crop&crop=center&q=80&auto=format`;
+                            // 카테고리별로 다른 Unsplash 폴백 이미지 사용
+                            const fallbackImages = {
+                              education: [
+                                'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=640&h=360&q=80',
+                                'https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&w=640&h=360&q=80',
+                                'https://images.unsplash.com/photo-1584464491033-06628f3a6b7b?auto=format&fit=crop&w=640&h=360&q=80'
+                              ],
+                              inspection: [
+                                'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=640&h=360&q=80',
+                                'https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=640&h=360&q=80',
+                                'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&w=640&h=360&q=80'
+                              ],
+                              improvement: [
+                                'https://images.unsplash.com/photo-1554774853-6cb5d0ad4c99?auto=format&fit=crop&w=640&h=360&q=80',
+                                'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=640&h=360&q=80',
+                                'https://images.unsplash.com/photo-1585121040688-64164503dd8c?auto=format&fit=crop&w=640&h=360&q=80'
+                              ]
+                            };
+                            const fallbacks = fallbackImages[category.id as keyof typeof fallbackImages];
+                            target.src = fallbacks[imageIndex] || fallbacks[0];
                           }}
                         />
                       </div>
