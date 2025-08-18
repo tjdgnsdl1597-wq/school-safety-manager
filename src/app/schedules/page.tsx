@@ -75,11 +75,9 @@ export default function SchedulesPage() {
   const timeOptions = useMemo(() => generateTimeOptions(), []);
 
   const filteredTimeOptions = useMemo(() => {
-    if (ampm === 'AM') {
-      return timeOptions.filter(t => t < '12:00');
-    }
-    return timeOptions.filter(t => t >= '12:00');
-  }, [ampm, timeOptions]);
+    // 오전/오후 관계없이 모든 시간을 표시 (08:00 ~ 17:30)
+    return timeOptions;
+  }, [timeOptions]);
 
   // --- Effects ---
   useEffect(() => {

@@ -118,8 +118,7 @@ export default function HeroSplit() {
                       className={`object-cover rounded-xl transition-opacity duration-1000 ease-in-out ${
                         currentImage === index ? 'opacity-100' : 'opacity-0'
                       }`}
-                      priority={index === 0}
-                      loading={index === 0 ? "eager" : "lazy"}
+                      {...(index === 0 ? { priority: true } : { loading: "lazy" })}
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         // 이미 fallback으로 변경되었다면 더 이상 변경하지 않음

@@ -659,8 +659,7 @@ const ImageGallerySection = () => {
                           fill
                           className="object-cover"
                           sizes="(max-width: 768px) 100vw, 33vw"
-                          loading="lazy"
-                          priority={imageIndex === 0}
+                          {...(imageIndex === 0 ? { priority: true } : { loading: "lazy" })}
                           onError={(e) => {
                             const target = e.target as HTMLImageElement;
                             // 카테고리별로 다른 Unsplash 폴백 이미지 사용

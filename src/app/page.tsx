@@ -637,8 +637,7 @@ const ImageGallerySection = () => {
                           fill
                           className="object-cover"
                           sizes="(max-width: 768px) 100vw, 33vw"
-                          loading="lazy"
-                          priority={imageIndex === 0}
+                          {...(imageIndex === 0 ? { priority: true } : { loading: "lazy" })}
                           onError={(e) => {
                             const target = e.target as HTMLImageElement;
                             // 이미 fallback으로 변경되었다면 더 이상 변경하지 않음
