@@ -117,13 +117,13 @@ export default function HeroSplit() {
                     }}
                   >
                     {images.map((image, index) => (
-                      <div key={image.id} className="w-full h-full flex-shrink-0 relative">
+                      <div key={image.id} className="w-full h-full flex-shrink-0 relative bg-gray-100">
                         <Image
                           src={image.webformatURL || '/api/placeholder/720/520?text=안전점검'}
                           alt={`현장 안전 점검 장면 ${index + 1}`}
                           fill
                           sizes="(min-width:1024px) 720px, 100vw"
-                          className="object-cover"
+                          className="object-contain"
                           priority={index === 0}
                           loading={index === 0 ? "eager" : "lazy"}
                           onError={(e) => {
