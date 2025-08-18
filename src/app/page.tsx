@@ -6,13 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import HeroSplit from '@/components/HeroSplit';
-// import { motion } from 'framer-motion'; // 애니메이션 완전 비활성화
-// motion 대신 일반 div 사용 (애니메이션 완전 제거)
-const motion = {
-  div: ({ children, className, initial, animate, whileInView, transition, viewport, ...props }: any) => (
-    <div className={className} {...props}>{children}</div>
-  )
-};
+import { motion } from 'framer-motion';
 
 // Dynamically import ScheduleCalendarComponent to prevent SSR issues
 const ScheduleCalendarComponent = dynamic(() => import('../components/ScheduleCalendarComponent'), {
@@ -226,16 +220,34 @@ export default function HomePage() {
           </div>
 
           <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
-            <div className="text-center mb-12">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+              className="text-center mb-12"
+            >
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">담당자 소개</h2>
               <p className="text-lg text-gray-600">학교 안전보건 전담 컨설턴트</p>
-            </div>
+            </motion.div>
 
-            <div className="max-w-6xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              viewport={{ once: true }}
+              className="max-w-6xl mx-auto"
+            >
               <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 md:p-12 shadow-2xl border border-white/20 hover:shadow-3xl transition-all duration-500">
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 md:gap-12 items-start">
                   
-                  <div className="text-center lg:text-left">
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.6, delay: 0.4 }}
+                    viewport={{ once: true }}
+                    className="text-center lg:text-left"
+                  >
                     <div className="relative inline-block">
                       <div className="w-48 h-64 md:w-56 md:h-72 rounded-3xl overflow-hidden shadow-2xl ring-4 ring-blue-500/20">
                         <Image
@@ -247,9 +259,15 @@ export default function HomePage() {
                       </div>
                       <div className="absolute -top-2 -right-2 w-8 h-8 bg-green-500 rounded-full border-4 border-white"></div>
                     </div>
-                  </div>
+                  </motion.div>
 
-                  <div className="lg:col-span-3 text-center lg:text-left">
+                  <motion.div 
+                    initial={{ opacity: 0, x: -30 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.6, delay: 0.6 }}
+                    viewport={{ once: true }}
+                    className="lg:col-span-3 text-center lg:text-left"
+                  >
                     <div className="mb-8">
                       <h3 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">강성훈</h3>
                       <p className="text-xl md:text-2xl text-blue-600 font-semibold mb-6">인천광역시학교안전공제회 산업안전팀 대리</p>
@@ -281,7 +299,7 @@ export default function HomePage() {
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
                 </div>
 
                 <div className="mt-6 p-4 bg-yellow-50 rounded-xl border-l-4 border-yellow-400">
@@ -291,7 +309,7 @@ export default function HomePage() {
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
           </div>
         </section>
       );
@@ -346,7 +364,13 @@ export default function HomePage() {
 
         {/* Content */}
         <div className="relative z-10 container mx-auto px-4 sm:px-6 text-center">
-          <div className="max-w-3xl md:max-w-4xl mx-auto scale-90 md:scale-95 lg:scale-100 origin-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="max-w-3xl md:max-w-4xl mx-auto scale-90 md:scale-95 lg:scale-100 origin-center"
+          >
             <h1 className="text-[clamp(2rem,5vw,3.5rem)] font-bold text-white mb-6 leading-[1.2] [text-wrap:balance] break-keep">
         체계적인 학교 안전보건 시스템 구축,
         <span className="block text-blue-300 mt-3">
@@ -354,7 +378,13 @@ export default function HomePage() {
         </span>
       </h1>
 
-            <div className="text-base md:text-lg text-gray-300 mb-8 leading-relaxed">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              viewport={{ once: true }}
+              className="text-base md:text-lg text-gray-300 mb-8 leading-relaxed"
+            >
               <p className="font-semibold text-emerald-300 mb-3">
                 법규 준수부터 재해 예방까지, 원스톱 학교 안전 솔루션
               </p>
@@ -362,9 +392,15 @@ export default function HomePage() {
         {`복잡한 중대재해처벌법과 산업안전보건법, 교육 현장의 수많은 업무와 병행하기에 어려움이 많으셨을 겁니다.
       학생과 교직원의 안전을 책임져야 한다는 막중한 부담감, 이제 안전공제회 산업안전팀이 함께 나누겠습니다.`}
       </p>
-            </div>
+            </motion.div>
 
-              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 max-w-4xl mx-auto border border-white/20">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.8, delay: 0.6 }}
+                viewport={{ once: true }}
+                className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 max-w-4xl mx-auto border border-white/20"
+              >
                 <p className="text-gray-200 leading-relaxed">
                   저희는 안전한 학교를 위한 맞춤형 안전보건 관리체계 구축을 약속합니다. 
                   매월 전문 담당자가 학교 현장을 직접 방문하여 법적 요구사항 이행 여부를 정밀하게 진단하고 
@@ -374,8 +410,8 @@ export default function HomePage() {
                   이를 통해 관리감독자(학교장)에게는 명확한 의무 이행 로드맵을, 
                   안전보건실무자(행정실장, 행정주무관, 영양교사 등)에게는 과도한 실무 부담의 감소를 목표합니다.
                 </p>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           </div>
         </section>
       );
@@ -613,6 +649,250 @@ export default function HomePage() {
         );
       };
 
+      // Image Gallery Section with 3 Categories and Slide Animation
+      const ImageGallerySection = () => {
+        // 3개 카테고리별 이미지 3장씩 총 9장 (실제 업로드된 이미지 사용)
+        const galleryCategories = [
+          {
+            id: 'education',
+            title: '현장교육',
+            description: '안전보건 교육 및 훈련',
+            images: [
+              {
+                id: 1,
+                src: '/images/gallery/education-1.jpg',
+                alt: '안전보건 교육 현장'
+              },
+              {
+                id: 2,
+                src: '/images/gallery/education-2.jpg',
+                alt: 'PPE 착용 교육'
+              },
+              {
+                id: 3,
+                src: '/images/gallery/education-3.jpg',
+                alt: '화재 대피 훈련'
+              }
+            ]
+          },
+          {
+            id: 'inspection',
+            title: '측정점검',
+            description: '장비 활용 안전점검',
+            images: [
+              {
+                id: 4,
+                src: '/images/gallery/inspection-1.jpg',
+                alt: '시설 안전 점검'
+              },
+              {
+                id: 5,
+                src: '/images/gallery/inspection-2.jpg',
+                alt: '환경 측정 활동'
+              },
+              {
+                id: 6,
+                src: '/images/gallery/inspection-3.jpg',
+                alt: '위험요소 점검'
+              }
+            ]
+          },
+          {
+            id: 'improvement',
+            title: '조치개선',
+            description: '위험요소 개선 및 조치',
+            images: [
+              {
+                id: 7,
+                src: '/images/gallery/improvement-1.jpg',
+                alt: '안전시설 개선'
+              },
+              {
+                id: 8,
+                src: '/images/gallery/improvement-2.jpg',
+                alt: '환경 개선 작업'
+              },
+              {
+                id: 9,
+                src: '/images/gallery/improvement-3.jpg',
+                alt: '안전장비 설치'
+              }
+            ]
+          }
+        ];
+
+        // 각 카테고리별 현재 이미지 인덱스 상태
+        const [currentImageIndex, setCurrentImageIndex] = useState({
+          education: 0,
+          inspection: 0,
+          improvement: 0
+        });
+
+        // 자동 슬라이드 효과
+        useEffect(() => {
+          const interval = setInterval(() => {
+            setCurrentImageIndex(prev => ({
+              education: (prev.education + 1) % 3,
+              inspection: (prev.inspection + 1) % 3,
+              improvement: (prev.improvement + 1) % 3
+            }));
+          }, 2500); // 2.5초마다 변경
+
+          return () => clearInterval(interval);
+        }, []);
+
+        // 수동 이미지 변경 함수
+        const handleImageChange = (categoryId: string, direction: 'prev' | 'next') => {
+          setCurrentImageIndex(prev => {
+            const currentIndex = prev[categoryId as keyof typeof prev];
+            const newIndex = direction === 'next' 
+              ? (currentIndex + 1) % 3 
+              : (currentIndex - 1 + 3) % 3;
+            
+            return {
+              ...prev,
+              [categoryId]: newIndex
+            };
+          });
+        };
+
+        return (
+          <section className="py-20 bg-gradient-to-br from-gray-50 via-blue-50 to-gray-100">
+            <div className="container mx-auto px-6">
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
+                viewport={{ once: true }}
+                className="text-center mb-16"
+              >
+                <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
+                  현장 활동 갤러리
+                </h2>
+                <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                  실제 학교 현장에서의 안전관리 활동 모습들
+                </p>
+              </motion.div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                {galleryCategories.map((category, categoryIndex) => (
+                  <motion.div
+                    key={category.id}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: categoryIndex * 0.2 }}
+                    viewport={{ once: true }}
+                    className="group"
+                  >
+                    <div className="bg-white/80 backdrop-blur-sm rounded-2xl overflow-hidden shadow-xl border border-white/20 hover:shadow-2xl transition-all duration-500">
+                      {/* 카테고리 제목 */}
+                      <div className="p-6 border-b border-gray-100">
+                        <h3 className="text-xl font-bold text-gray-800 text-center mb-2">
+                          {category.title}
+                        </h3>
+                        <p className="text-sm text-gray-600 text-center">
+                          {category.description}
+                        </p>
+                      </div>
+
+                      {/* 이미지 슬라이더 */}
+                      <div className="relative w-full h-64 md:h-72 overflow-hidden rounded-lg">
+                        <div 
+                          className="flex transition-transform duration-500 ease-in-out h-full"
+                          style={{ 
+                            transform: `translateX(-${currentImageIndex[category.id as keyof typeof currentImageIndex] * 100}%)` 
+                          }}
+                        >
+                          {category.images.map((image, imageIndex) => (
+                            <div key={image.id} className="w-full h-full flex-shrink-0 relative">
+                              <Image
+                                src={image.src}
+                                alt={image.alt}
+                                fill
+                                className="object-cover"
+                                sizes="(max-width: 768px) 100vw, 33vw"
+                                loading="lazy"
+                                priority={imageIndex === 0}
+                                onError={(e) => {
+                                  const target = e.target as HTMLImageElement;
+                                  // 카테고리별로 다른 Unsplash 폴백 이미지 사용
+                                  const fallbackImages = {
+                                    education: [
+                                      'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=640&h=360&q=80',
+                                      'https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&w=640&h=360&q=80',
+                                      'https://images.unsplash.com/photo-1584464491033-06628f3a6b7b?auto=format&fit=crop&w=640&h=360&q=80'
+                                    ],
+                                    inspection: [
+                                      'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=640&h=360&q=80',
+                                      'https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=640&h=360&q=80',
+                                      'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&w=640&h=360&q=80'
+                                    ],
+                                    improvement: [
+                                      'https://images.unsplash.com/photo-1554774853-6cb5d0ad4c99?auto=format&fit=crop&w=640&h=360&q=80',
+                                      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=640&h=360&q=80',
+                                      'https://images.unsplash.com/photo-1585121040688-64164503dd8c?auto=format&fit=crop&w=640&h=360&q=80'
+                                    ]
+                                  };
+                                  const fallbacks = fallbackImages[category.id as keyof typeof fallbackImages];
+                                  target.src = fallbacks[imageIndex] || fallbacks[0];
+                                }}
+                              />
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* 네비게이션 버튼 */}
+                        <div className="absolute bottom-4 left-4 flex space-x-2 bg-white/90 backdrop-blur-sm rounded-lg p-2 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          <button 
+                            onClick={() => handleImageChange(category.id, 'prev')}
+                            className="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded transition-colors"
+                            aria-label="이전 이미지"
+                          >
+                            ←
+                          </button>
+                          <button 
+                            onClick={() => handleImageChange(category.id, 'next')}
+                            className="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded transition-colors"
+                            aria-label="다음 이미지"
+                          >
+                            →
+                          </button>
+                        </div>
+
+                        {/* 이미지 인디케이터 */}
+                        <div className="absolute bottom-4 right-4 flex space-x-1">
+                          {[0, 1, 2].map((index) => (
+                            <button
+                              key={index}
+                              onClick={() => setCurrentImageIndex(prev => ({
+                                ...prev,
+                                [category.id]: index
+                              }))}
+                              className={`w-2 h-2 rounded-full transition-colors ${
+                                currentImageIndex[category.id as keyof typeof currentImageIndex] === index 
+                                  ? 'bg-blue-500' 
+                                  : 'bg-white/50'
+                              }`}
+                              aria-label={`${index + 1}번째 이미지로 이동`}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+
+              <div className="text-center mt-12">
+                <p className="text-sm text-gray-500">
+                  실제 학교 현장에서의 안전관리 활동 모습들을 확인하실 수 있습니다.
+                </p>
+              </div>
+            </div>
+          </section>
+        );
+      };
+
       // Trust and Compliance Section
       const TrustComplianceSection = () => {
         const regulations = [
@@ -687,6 +967,7 @@ export default function HomePage() {
           <CoreValuesSection />
           <ConsultingAreasSection />
           <MainTasksSection />
+          <ImageGallerySection />
           <TrustComplianceSection />
           <QuickMenuSection />
           <LegalNoticeSection />
