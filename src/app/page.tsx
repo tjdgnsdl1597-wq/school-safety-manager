@@ -11,7 +11,7 @@ import { motion } from 'framer-motion';
 const ScheduleCalendarComponent = dynamic(() => import('../components/ScheduleCalendarComponent'), {
   ssr: false,
   loading: () => (
-    <div className="h-96 flex items-center justify-center text-gray-500 bg-gray-100 rounded-lg animate-pulse">
+    <div className="h-96 flex items-center justify-center text-gray-500 bg-gray-100 rounded-lg">
       <div className="text-center">
         <div className="text-4xl mb-4">📅</div>
         <p>캘린더 로딩 중...</p>

@@ -10,8 +10,8 @@ const PersonalIntroSection = () => (
   <section className="relative py-12 md:py-16 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 overflow-hidden">
     {/* 배경 장식 요소들 */}
     <div className="absolute inset-0 pointer-events-none">
-      <div className="absolute top-10 right-10 w-48 h-48 bg-blue-200/20 rounded-full blur-3xl animate-pulse"></div>
-      <div className="absolute bottom-10 left-10 w-64 h-64 bg-indigo-200/15 rounded-full blur-3xl animate-pulse delay-1000"></div>
+      <div className="absolute top-10 right-10 w-48 h-48 bg-blue-200/20 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-10 left-10 w-64 h-64 bg-indigo-200/15 rounded-full blur-3xl"></div>
     </div>
 
     <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
@@ -61,7 +61,7 @@ const PersonalIntroSection = () => (
                     }}
                   />
                 </div>
-                <div className="absolute -top-2 -right-2 w-8 h-8 bg-green-500 rounded-full border-4 border-white animate-pulse"></div>
+                <div className="absolute -top-2 -right-2 w-8 h-8 bg-green-500 rounded-full border-4 border-white"></div>
               </div>
             </motion.div>
 

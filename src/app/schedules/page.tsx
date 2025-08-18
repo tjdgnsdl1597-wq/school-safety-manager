@@ -9,7 +9,7 @@ import type { DateClickArg } from '@fullcalendar/interaction';
 // 동적으로 import된 캘린더 컴포넌트
 const DynamicScheduleCalendar = dynamic(() => import('../../components/ScheduleCalendarComponent'), {
   ssr: false,
-  loading: () => <div className="h-96 bg-gray-100 rounded-lg animate-pulse flex items-center justify-center text-gray-500">캘린더 로딩 중...</div>
+  loading: () => <div className="h-96 bg-gray-100 rounded-lg flex items-center justify-center text-gray-500">캘린더 로딩 중...</div>
 });
 
 // --- Helper Functions ---
