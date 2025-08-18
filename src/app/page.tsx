@@ -2,33 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/simpleAuth';
-import FullCalendar from '@fullcalendar/react';
-import type { EventContentArg } from '@fullcalendar/core';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import timeGridPlugin from '@fullcalendar/timegrid';
-import interactionPlugin from '@fullcalendar/interaction';
 import Link from 'next/link';
 import Image from 'next/image';
 
 // --- Helper Functions ---
-function renderEventContent(eventInfo: EventContentArg) {
-  const { schoolName, purposes, startTime, schoolAbbreviation } = eventInfo.event.extendedProps;
-
-  const [hour, minute] = startTime.split(':').map(Number);
-  const ampm = hour < 12 ? '오전' : '오후';
-  const displayHour = hour % 12 === 0 ? 12 : hour % 12;
-  const timeString = `${ampm} ${displayHour}` + (minute > 0 ? `:${String(minute).padStart(2, '0')}` : '') + '시';
-  
-  const schoolDisplayName = schoolAbbreviation || schoolName;
-  const detailsString = `[${schoolDisplayName}] - ${purposes}`;
-
-  return (
-    <div className="fc-event-custom-view">
-      <div className="fc-event-time">{timeString}</div>
-      <div className="fc-event-details">{detailsString}</div>
-    </div>
-  );
-}
 
 // --- Interfaces ---
 interface Schedule {
@@ -65,8 +42,6 @@ export default function HomePage() {
   const [latestIndAccidents, setLatestIndAccidents] = useState<Material[]>([]);
   const [todaySchedules, setTodaySchedules] = useState<Schedule[]>([]);
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
-  const [showModal, setShowModal] = useState(false);
-  const [selectedEvent, setSelectedEvent] = useState<Schedule | null>(null);
   const [monthlyPurposeSummary, setMonthlyPurposeSummary] = useState<Record<string, number>>({});
 
   const adminInfo = {
@@ -144,32 +119,6 @@ export default function HomePage() {
     }
   };
 
-  const handleEventClick = (clickInfo: { event: { id: string } }) => {
-    const eventId = clickInfo.event.id;
-    const clickedSchedule = schedules.find(s => s.id === eventId);
-    if (clickedSchedule) {
-      setSelectedEvent(clickedSchedule);
-      setShowModal(true);
-    }
-  };
-
-  const closeModal = () => {
-    setShowModal(false);
-    setSelectedEvent(null);
-  };
-
-  const calendarEvents = schedules.map(schedule => ({
-    id: schedule.id,
-    start: `${new Date(schedule.date).toISOString().split('T')[0]}T${schedule.startTime}`,
-    end: `${new Date(schedule.date).toISOString().split('T')[0]}T${schedule.endTime}`,
-    allDay: false,
-    extendedProps: {
-      schoolName: schedule.school.name,
-      purposes: JSON.parse(schedule.purpose).join(', '),
-      schoolAbbreviation: schedule.school.abbreviation, // Pass abbreviation
-      ...schedule, // Pass full schedule object for modal
-    }
-  }));
 
   const upcomingSchedules = schedules
     .filter(s => new Date(s.date) >= new Date())
@@ -404,48 +353,15 @@ export default function HomePage() {
         </div>
 
         <div className="lg:col-span-2 bg-white/80 backdrop-blur-sm p-4 sm:p-8 rounded-2xl shadow-xl border border-white/20">
-          <FullCalendar
-            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-            initialView="dayGridMonth"
-            headerToolbar={{ 
-              left: 'title', 
-              center: 'prev,next', 
-              right: 'today dayGridMonth,timeGridWeek'
-            }}
-            titleFormat={{ year: 'numeric', month: 'long' }}
-            events={calendarEvents}
-            locale="ko"
-            height="auto"
-            weekends={false}
-            slotMinTime="08:00:00"
-            slotMaxTime="17:30:00"
-            eventClick={handleEventClick}
-            eventContent={renderEventContent}
-            buttonText={{
-              today: '오늘',
-              month: '월',
-              week: '주',
-              day: '일'
-            }}
-            dayMaxEventRows={3}
-            moreLinkClick="popover"
-            eventClassNames="fc-custom-event"
-          />
-        </div>
-
-        {showModal && selectedEvent && (
-          <div className="fixed inset-0 flex items-center justify-center z-50">
-            <div className="bg-gray-200 p-6 rounded-lg shadow-xl w-96 border border-black">
-              <h2 className="text-xl font-bold mb-4 text-blue-700">일정 상세</h2>
-              <p className="mb-2"><strong>학교명:</strong> {selectedEvent.school.name}</p>
-              <p className="mb-2"><strong>날짜:</strong> {new Date(selectedEvent.date).toLocaleDateString()}</p>
-              <p className="mb-2"><strong>시간:</strong> {selectedEvent.startTime} ~ {selectedEvent.endTime} ({selectedEvent.ampm})</p>
-              <p className="mb-2"><strong>방문 목적:</strong> {JSON.parse(selectedEvent.purpose).join(', ')}</p>
-              {selectedEvent.otherReason && <p className="mb-4"><strong>기타 사유:</strong> {selectedEvent.otherReason}</p>}
-              <button onClick={closeModal} className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md w-full">닫기</button>
+          <div className="h-96 flex items-center justify-center text-gray-500 bg-gray-100 rounded-lg">
+            <div className="text-center">
+              <div className="text-4xl mb-4">📅</div>
+              <p>FullCalendar 임시 비활성화</p>
+              <p className="text-sm">디버깅을 위해 캘린더를 일시적으로 제거했습니다</p>
             </div>
           </div>
-        )}
+        </div>
+
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

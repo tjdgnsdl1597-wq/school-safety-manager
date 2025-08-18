@@ -22,8 +22,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   
-  // Debug logging
-  console.log('[AuthProvider] Rendering with user:', user, 'loading:', loading);
+  // Debug logging removed for production
 
   useEffect(() => {
     // Check if user is already logged in
@@ -73,9 +72,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 export function useAuth() {
   const context = useContext(AuthContext);
-  console.log('[useAuth] Context value:', context);
   if (!context) {
-    console.error('[useAuth] No context found! AuthProvider missing?');
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
