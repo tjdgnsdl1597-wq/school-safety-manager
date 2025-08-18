@@ -37,15 +37,17 @@ const HeroSection = ({ title }: { title: string }) => {
   };
 
   useEffect(() => {
-    // 이미지 로드 테스트
-    const testImage = new window.Image();
-    testImage.onload = () => {
-      setImageError(false);
-    };
-    testImage.onerror = () => {
-      setImageError(true);
-    };
-    testImage.src = '/images/hero.jpg';
+    // 이미지 로드 테스트 - TypeScript 호환성 개선
+    if (typeof window !== 'undefined') {
+      const testImage = document.createElement('img');
+      testImage.onload = () => {
+        setImageError(false);
+      };
+      testImage.onerror = () => {
+        setImageError(true);
+      };
+      testImage.src = '/images/hero.jpg';
+    }
   }, []);
 
   return (
