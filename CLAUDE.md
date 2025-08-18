@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a **School Safety Management System** (학교 안전보건 관리 시스템) built for Incheon Metropolitan Office of Education Safety Mutual Aid Association. It's a Next.js 15 application with TypeScript, using Prisma ORM with PostgreSQL database (SQLite for development), and styled with Tailwind CSS v4.
+This is a **School Safety Management System** (학교 안전보건 관리 시스템) built for Incheon Metropolitan Office of Education Safety Mutual Aid Association. It's a Next.js 15 application with TypeScript, using Prisma ORM with PostgreSQL database (SQLite for development), custom React Context authentication, and styled with Tailwind CSS v4.
 
 ## Development Commands
 
@@ -31,10 +31,10 @@ This is a **School Safety Management System** (학교 안전보건 관리 시스
 - **Prisma Client Location**: Generated to `src/generated/prisma` (custom output path)
 - **Database**: PostgreSQL for production, SQLite for development (`prisma/dev.db`)
 - **API Structure**: RESTful routes in `src/app/api/` using Next.js App Router
-- **Frontend**: React Server Components + Client Components with FullCalendar integration
+- **Frontend**: React Server Components + Client Components with dynamic FullCalendar integration
 - **File Storage**: Google Cloud Storage integration for file uploads with public URLs
-- **Authentication**: NextAuth.js v4 with role-based access control (admin vs. public access)
-- **NextAuth Import**: Uses `'next-auth/next'` import for Next.js 15 App Router compatibility
+- **Authentication**: Custom React Context-based authentication with localStorage persistence (replaced NextAuth for stability)
+- **Error Handling**: Comprehensive error boundaries and safe data parsing throughout the application
 
 ### Application Structure
 
@@ -53,13 +53,14 @@ This is a **School Safety Management System** (학교 안전보건 관리 시스
 - `/api/schedules` - Schedule management with school relations
 - `/api/materials` - Multi-file upload/retrieval with category filtering, supports FormData
 - `/api/materials/[id]` - Individual post retrieval for detail pages
-- `/api/auth/[...nextauth]` - NextAuth authentication endpoints
 
 #### Key Components
 - **Navbar**: Navigation with active route highlighting and role-based menu visibility
 - **MaterialManager**: File upload and display with thumbnails, admin-only controls
 - **AuthCheck**: Global authentication wrapper that handles public/private page access
-- **Providers**: NextAuth session provider wrapper
+- **AuthProvider**: Custom React Context provider for authentication state management
+- **ScheduleCalendarComponent**: Dynamically imported FullCalendar with comprehensive error handling
+- **ErrorBoundary**: Application-wide error catching and user-friendly error display
 
 ### Data Patterns
 
@@ -79,8 +80,9 @@ Materials are blog-style posts with title, content, and up to 5 file attachments
 #### Authentication & Authorization
 - **Public Pages**: `/`, `/educational-materials`, `/industrial-accidents`, `/auth/signin` - accessible without login
 - **Admin Pages**: `/schools`, `/schedules` - require admin authentication
-- **Role Check**: `session?.user?.role === 'admin'` determines admin status
+- **Role Check**: `user?.role === 'admin'` from useAuth() hook determines admin status
 - **Auto Redirect**: Non-admin users accessing admin pages → educational materials page
+- **Authentication Flow**: Simple username/password (admin/password123) with localStorage persistence
 
 ## Development Guidelines
 
@@ -95,7 +97,7 @@ npx prisma generate
 All API routes include Prisma error handling for common scenarios (P2002 unique constraint, P2025 not found).
 
 ### Role-Based UI Patterns
-Components check `const { data: session } = useSession()` and `const isAdmin = session?.user?.role === 'admin'` for:
+Components use `const { user, isAuthenticated } = useAuth()` and `const isAdmin = user?.role === 'admin'` for:
 - Conditional rendering of admin-only features (upload buttons, delete controls, checkboxes)
 - Navigation menu items (admin sees all pages, public sees only educational materials and industrial accidents)
 - Page access redirects (handled by individual page components and AuthCheck wrapper)
@@ -119,6 +121,13 @@ Components check `const { data: session } = useSession()` and `const isAdmin = s
 - Responsive design patterns for mobile compatibility
 - Consistent color scheme with blue/indigo gradients and elevated shadows
 
+### Error Handling & Data Safety Patterns
+- **Safe JSON Parsing**: Use `safeParsePurpose()` helper for schedule purpose data
+- **Safe URL Handling**: Use `safeUrl()` helper for Link component hrefs to prevent format errors
+- **Dynamic Imports**: FullCalendar and other heavy components loaded client-side only with error boundaries
+- **Data Validation**: All external data (URLs, JSON, user input) validated before use
+- **SSR Safety**: Use `typeof window !== 'undefined'` and mounting states to prevent hydration mismatches
+
 ## Environment Setup
 
 ### Required Environment Variables
@@ -126,25 +135,23 @@ Components check `const { data: session } = useSession()` and `const isAdmin = s
 **Local Development (.env):**
 ```bash
 DATABASE_URL="file:./dev.db"
-NEXTAUTH_SECRET="your-secret-key-here-change-in-production"
-NEXTAUTH_URL="http://localhost:3000"
 ADMIN_USERNAME="admin"
 ADMIN_PASSWORD="password123"
 GOOGLE_CLOUD_PROJECT_ID="your-project-id"
 GOOGLE_CLOUD_BUCKET_NAME="school-safety-manager"
 GOOGLE_CLOUD_KEY_FILE="path/to/service-account-key.json"
+PIXABAY_KEY="your-pixabay-api-key-for-image-search"
 ```
 
 **Production/Vercel:**
 ```bash
 DATABASE_URL="postgresql://..." # PostgreSQL connection string
-NEXTAUTH_SECRET="production-secret-key"
-NEXTAUTH_URL="https://your-domain.vercel.app"
 ADMIN_USERNAME="admin"
 ADMIN_PASSWORD="password123"
 GOOGLE_CLOUD_PROJECT_ID="your-project-id"
 GOOGLE_CLOUD_BUCKET_NAME="school-safety-manager"
 GOOGLE_CLOUD_CREDENTIALS='{"type":"service_account","project_id":"..."}' # Full JSON string
+PIXABAY_KEY="your-pixabay-api-key"
 ```
 
 ### Google Cloud Storage Setup
@@ -171,12 +178,11 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 
 ### Critical Deployment Notes
 - **Vercel Build Script**: Uses `npm run vercel-build` which includes `--accept-data-loss` flag for Prisma migrations
-- **NextAuth Import**: Must use `import NextAuth from 'next-auth/next'` (not `'next-auth'`) for App Router compatibility
-- **NextAuth Configuration**: authOptions separated to `src/lib/auth.ts` to avoid API route export conflicts
 - **Database Provider**: Production uses PostgreSQL, development uses SQLite - ensure schema.prisma has correct provider
 - **File Upload Limits**: 50MB total per post, maximum 5 files, enforced at API level with proper error handling
-- **Session Management**: Uses client-side only session management to prevent hydration mismatches
-- **Component Mounting**: AuthCheck component uses mounted state to prevent SSR/client rendering differences
+- **Session Management**: Uses custom localStorage-based authentication to prevent hydration mismatches
+- **Component Mounting**: AuthProvider uses mounted state to prevent SSR/client rendering differences
+- **FullCalendar Integration**: Always use dynamic imports with client-side only loading to prevent SSR issues
 
 ## File Type Support
 - **Documents**: PDF, PPT, PPTX, DOC, DOCX, XLS, XLSX, TXT
@@ -186,16 +192,17 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 
 ## Authentication & Session Management
 
-### NextAuth v4 Configuration
-- **Auth Configuration**: Located in `src/lib/auth.ts` using credentials provider
+### Custom Authentication System
+- **Auth Configuration**: Located in `src/lib/simpleAuth.tsx` using React Context
 - **Default Admin**: Username `admin`, password `password123` (configurable via environment variables)
-- **Session Strategy**: JWT-based with role information stored in token
-- **Import Pattern**: Always use `import NextAuth from 'next-auth/next'` for Next.js 15 compatibility
+- **Session Strategy**: localStorage-based with React Context state management
+- **Usage Pattern**: Use `const { user, isAuthenticated, login, logout } = useAuth()` hook
 
-### Common Session Management Issues
-- **Hydration Errors**: Use client-side only session management with mounted state checks
+### Authentication Implementation Details
+- **AuthProvider**: Wraps entire app, manages auth state and localStorage persistence
+- **Client-Side Only**: Uses `typeof window !== 'undefined'` checks and mounted state
 - **AuthCheck Component**: Implements proper mounting detection to prevent SSR/client mismatches
-- **SessionProvider**: Configured with `refetchInterval={0}` and `refetchOnWindowFocus={false}` to prevent unnecessary re-fetches
+- **Error Prevention**: Comprehensive error boundaries prevent auth-related crashes
 
 ## Common Development Workflows
 
@@ -219,3 +226,30 @@ npx prisma migrate dev --name "descriptive_change_name"
 npx prisma generate
 ```
 For deployment, ensure Vercel build script handles schema changes with `--accept-data-loss` flag.
+
+## Critical Error Prevention Patterns
+
+### Safe Data Handling
+Always use these helper functions to prevent runtime errors:
+```typescript
+// For JSON parsing
+const purposes = safeParsePurpose(schedule.purpose); // Returns [] if invalid
+
+// For URL validation
+const href = safeUrl(material.filePath); // Returns '#' if invalid
+
+// For safe event creation
+const calendarEvents = safeCreateCalendarEvents(schedules); // Filters invalid data
+```
+
+### Component Safety Patterns
+- **FullCalendar**: Always use dynamic imports with error boundaries
+- **Link Components**: Always validate URLs before passing to href
+- **Data Rendering**: Wrap all external data access in try-catch blocks
+- **localStorage Access**: Always check `typeof window !== 'undefined'` first
+
+### Common Error Sources to Avoid
+1. **JSON Parsing**: Schedule purpose data can be malformed - always use `safeParsePurpose()`
+2. **URL Formatting**: File paths can be null/invalid - always use `safeUrl()` 
+3. **SSR Hydration**: Client-only components must use mounting states
+4. **Data Access**: External API data should be validated before use

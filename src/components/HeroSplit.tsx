@@ -33,12 +33,12 @@ export default function HeroSplit() {
     setLoading(false);
   }, []);
 
-  // 자동 슬라이드 효과 (3초마다)
+  // 자동 슬라이드 효과 (5초마다)
   useEffect(() => {
     if (images.length > 1) {
       const interval = setInterval(() => {
         setCurrentImage((prev) => (prev + 1) % images.length);
-      }, 3000); // 3초마다 변경
+      }, 5000); // 5초마다 변경
 
       return () => clearInterval(interval);
     }
@@ -101,51 +101,95 @@ export default function HeroSplit() {
               <div className="absolute bottom-8 right-8 w-24 h-24 border border-gray-200 opacity-15 -rotate-6"></div>
             </div>
 
-            <div className="relative w-full h-[320px] md:h-[520px]">
+            <div className="relative w-full h-[320px] md:h-[520px] overflow-hidden rounded-xl">
               {loading ? (
                 <div className="w-full h-full bg-gray-200 rounded-xl flex items-center justify-center">
                   <div className="text-gray-500">이미지 로딩 중...</div>
                 </div>
               ) : (
                 <>
-                  <Image
-                    src={images[currentImage]?.webformatURL || '/api/placeholder/720/520?text=안전점검'}
-                    alt="현장 안전 점검 장면"
-                    fill
-                    sizes="(min-width:1024px) 720px, 100vw"
-                    className="object-cover rounded-xl"
-                    priority
-                    onError={(e) => {
-                      // 이미지 로드 실패시 Unsplash 폴백 이미지로 대체
-                      const target = e.target as HTMLImageElement;
-                      const fallbackImages = [
-                        'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=720&h=520&q=80',
-                        'https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=720&h=520&q=80',
-                        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=720&h=520&q=80'
-                      ];
-                      const imageIndex = currentImage % 3;
-                      target.src = fallbackImages[imageIndex];
+                  {/* 슬라이드 컨테이너 */}
+                  <div 
+                    className="flex transition-transform duration-1000 ease-in-out h-full"
+                    style={{ 
+                      transform: `translateX(-${currentImage * 100}%)`,
+                      width: `${images.length * 100}%`
                     }}
-                  />
+                  >
+                    {images.map((image, index) => (
+                      <div key={image.id} className="w-full h-full flex-shrink-0 relative">
+                        <Image
+                          src={image.webformatURL || '/api/placeholder/720/520?text=안전점검'}
+                          alt={`현장 안전 점검 장면 ${index + 1}`}
+                          fill
+                          sizes="(min-width:1024px) 720px, 100vw"
+                          className="object-cover"
+                          priority={index === 0}
+                          loading={index === 0 ? "eager" : "lazy"}
+                          onError={(e) => {
+                            // 이미지 로드 실패시 Unsplash 폴백 이미지로 대체
+                            const target = e.target as HTMLImageElement;
+                            const fallbackImages = [
+                              'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=720&h=520&q=80',
+                              'https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=720&h=520&q=80',
+                              'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=720&h=520&q=80'
+                            ];
+                            target.src = fallbackImages[index % 3];
+                          }}
+                        />
+                      </div>
+                    ))}
+                  </div>
                   
                   {/* 이미지 슬라이드 네비게이션 (이미지가 2개 이상일 때만 표시) */}
                   {images.length > 1 && (
-                    <div className="absolute bottom-4 left-4 flex space-x-2 bg-white/90 backdrop-blur-sm rounded-lg p-2 shadow-lg">
-                      <button 
-                        onClick={prevImage}
-                        className="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded transition-colors"
-                        aria-label="이전 이미지"
-                      >
-                        ←
-                      </button>
-                      <button 
-                        onClick={nextImage}
-                        className="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded transition-colors"
-                        aria-label="다음 이미지"
-                      >
-                        →
-                      </button>
-                    </div>
+                    <>
+                      {/* 네비게이션 버튼 */}
+                      <div className="absolute bottom-4 left-4 flex space-x-2 bg-white/90 backdrop-blur-sm rounded-lg p-2 shadow-lg opacity-0 hover:opacity-100 transition-opacity duration-300">
+                        <button 
+                          onClick={prevImage}
+                          className="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded transition-colors"
+                          aria-label="이전 이미지"
+                        >
+                          ←
+                        </button>
+                        <button 
+                          onClick={nextImage}
+                          className="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded transition-colors"
+                          aria-label="다음 이미지"
+                        >
+                          →
+                        </button>
+                      </div>
+
+                      {/* 이미지 인디케이터 */}
+                      <div className="absolute bottom-4 right-4 flex space-x-2">
+                        {images.map((_, index) => (
+                          <button
+                            key={index}
+                            onClick={() => setCurrentImage(index)}
+                            className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                              currentImage === index 
+                                ? 'bg-white shadow-lg scale-125' 
+                                : 'bg-white/50 hover:bg-white/75'
+                            }`}
+                            aria-label={`${index + 1}번째 이미지로 이동`}
+                          />
+                        ))}
+                      </div>
+
+                      {/* 진행 표시 바 */}
+                      <div className="absolute top-4 left-4 right-4">
+                        <div className="w-full bg-white/20 h-1 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-white/80 rounded-full transition-all duration-1000 ease-linear"
+                            style={{ 
+                              width: `${((currentImage + 1) / images.length) * 100}%` 
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </>
                   )}
                 </>
               )}

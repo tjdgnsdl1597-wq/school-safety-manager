@@ -386,7 +386,7 @@ const ImageGallerySection = () => {
         inspection: (prev.inspection + 1) % 3,
         improvement: (prev.improvement + 1) % 3
       }));
-    }, 2000); // 2초마다 변경
+    }, 2500); // 2.5초마다 변경
 
     return () => clearInterval(interval);
   }, []);
