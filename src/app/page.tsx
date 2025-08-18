@@ -320,6 +320,7 @@ export default function HomePage() {
           </div>
         </section>
       );
+      };
 
       // Quick Menu Section for Materials
       const QuickMenuSection = () => (
