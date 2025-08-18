@@ -74,7 +74,7 @@ interface Material {
 
 // --- Component ---
 export default function HomePage() {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   
   // 관리자 여부 확인
   const isAdmin = user?.role === 'admin';
@@ -133,6 +133,18 @@ export default function HomePage() {
     setMonthlyPurposeSummary(summary);
 
   }, [schedules]);
+
+  // 로딩 중이면 로딩 표시
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-4xl mb-4">⏳</div>
+          <p>로딩 중...</p>
+        </div>
+      </div>
+    );
+  }
 
   const fetchSchedules = async () => {
     try {
