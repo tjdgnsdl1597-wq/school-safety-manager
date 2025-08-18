@@ -22,7 +22,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const { date, schoolId, ampm, startTime, endTime, purpose, otherReason } = await request.json();
+    const { date, schoolId, ampm, startTime, endTime, purpose, otherReason, isHoliday, holidayReason } = await request.json();
 
     if (!date || !schoolId || !ampm || !startTime || !endTime || !purpose) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -40,6 +40,8 @@ export async function POST(request: Request) {
         endTime,
         purpose: purposeString,
         otherReason,
+        isHoliday: isHoliday || false,
+        holidayReason: holidayReason || null,
       },
     });
     return NextResponse.json(newSchedule, { status: 201 });
@@ -51,7 +53,7 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
   try {
-    const { id, date, schoolId, ampm, startTime, endTime, purpose, otherReason } = await request.json();
+    const { id, date, schoolId, ampm, startTime, endTime, purpose, otherReason, isHoliday, holidayReason } = await request.json();
 
     if (!id || !date || !schoolId || !ampm || !startTime || !endTime || !purpose) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -70,6 +72,8 @@ export async function PUT(request: Request) {
         endTime,
         purpose: purposeString,
         otherReason,
+        isHoliday: isHoliday || false,
+        holidayReason: holidayReason || null,
       },
     });
     return NextResponse.json(updatedSchedule);

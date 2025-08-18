@@ -44,6 +44,8 @@ interface Schedule {
   endTime: string;
   purpose: string;
   otherReason?: string | null;
+  isHoliday?: boolean;
+  holidayReason?: string | null;
 }
 
 const ALL_PURPOSES = ['월점검', '위험성평가', '근골조사', '산업재해', '교육', '기타'];
@@ -71,6 +73,8 @@ export default function SchedulesPage() {
   const [ampm, setAmpm] = useState('AM');
   const [startTime, setStartTime] = useState('09:00');
   const [endTime, setEndTime] = useState('10:00');
+  const [isHoliday, setIsHoliday] = useState(false);
+  const [holidayReason, setHolidayReason] = useState('');
 
   const timeOptions = useMemo(() => generateTimeOptions(), []);
 
@@ -92,6 +96,8 @@ export default function SchedulesPage() {
         setAmpm(editingSchedule.ampm);
         setStartTime(editingSchedule.startTime);
         setEndTime(editingSchedule.endTime);
+        setIsHoliday(editingSchedule.isHoliday || false);
+        setHolidayReason(editingSchedule.holidayReason || '');
       } catch {
         setSelectedPurposes([]);
       }
@@ -146,6 +152,8 @@ export default function SchedulesPage() {
       endTime,
       purpose: JSON.stringify(currentPurposes),
       otherReason: otherReason,
+      isHoliday,
+      holidayReason,
     };
 
     const url = '/api/schedules';
@@ -217,6 +225,8 @@ export default function SchedulesPage() {
     setStartTime('09:00');
     setEndTime('10:00');
     setSelectedPurposes([]);
+    setIsHoliday(false);
+    setHolidayReason('');
   }
 
   const handlePurposeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -229,11 +239,15 @@ export default function SchedulesPage() {
     start: `${new Date(schedule.date).toISOString().split('T')[0]}T${schedule.startTime}`,
     end: `${new Date(schedule.date).toISOString().split('T')[0]}T${schedule.endTime}`,
     allDay: false,
+    backgroundColor: schedule.isHoliday ? '#fbbf24' : '#3b82f6', // 휴무일정은 노란색, 일반일정은 파란색
+    borderColor: schedule.isHoliday ? '#f59e0b' : '#2563eb',
+    textColor: schedule.isHoliday ? '#92400e' : '#ffffff',
     extendedProps: {
       schoolName: schedule.school.name,
-      purposes: JSON.parse(schedule.purpose).join(', '),
+      purposes: schedule.isHoliday ? schedule.holidayReason || '휴무' : JSON.parse(schedule.purpose).join(', '),
       startTime: schedule.startTime,
       schoolAbbreviation: schedule.school.abbreviation, // Pass abbreviation
+      isHoliday: schedule.isHoliday,
     }
   }));
 
@@ -316,6 +330,31 @@ export default function SchedulesPage() {
                             <div>
                                 <label htmlFor="otherReason" className="block text-gray-700 text-sm font-bold mb-2">교육 내용 / 기타 사유</label>
                                 <input type="text" name="otherReason" id="otherReason" key={editingSchedule?.id} defaultValue={editingSchedule?.otherReason || ''} className="shadow appearance-none border rounded w-full py-2 px-3" autoComplete="off" />
+                            </div>
+                        )}
+                        <div>
+                            <label className="flex items-center space-x-2 cursor-pointer">
+                                <input 
+                                    type="checkbox" 
+                                    checked={isHoliday} 
+                                    onChange={e => setIsHoliday(e.target.checked)}
+                                    className="rounded"
+                                />
+                                <span className="text-gray-700 text-sm font-bold">🏖️ 휴무일정</span>
+                            </label>
+                        </div>
+                        {isHoliday && (
+                            <div>
+                                <label htmlFor="holidayReason" className="block text-gray-700 text-sm font-bold mb-2">휴무 사유</label>
+                                <input 
+                                    type="text" 
+                                    id="holidayReason" 
+                                    value={holidayReason} 
+                                    onChange={e => setHolidayReason(e.target.value)}
+                                    className="shadow appearance-none border rounded w-full py-2 px-3" 
+                                    placeholder="휴무 사유를 입력하세요" 
+                                    autoComplete="off" 
+                                />
                             </div>
                         )}
                     </div>

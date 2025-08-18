@@ -114,9 +114,6 @@ Prisma.NullTypes = {
  */
 
 exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
-  ReadUncommitted: 'ReadUncommitted',
-  ReadCommitted: 'ReadCommitted',
-  RepeatableRead: 'RepeatableRead',
   Serializable: 'Serializable'
 });
 
@@ -136,6 +133,8 @@ exports.Prisma.ScheduleScalarFieldEnum = {
   endTime: 'endTime',
   purpose: 'purpose',
   otherReason: 'otherReason',
+  isHoliday: 'isHoliday',
+  holidayReason: 'holidayReason',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -166,11 +165,6 @@ exports.Prisma.MaterialAttachmentScalarFieldEnum = {
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
-};
-
-exports.Prisma.QueryMode = {
-  default: 'default',
-  insensitive: 'insensitive'
 };
 
 exports.Prisma.NullsOrder = {

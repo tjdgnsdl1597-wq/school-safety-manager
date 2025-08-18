@@ -386,36 +386,38 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
                           {material.attachments && material.attachments.length > 0 ? (
                             <div className="space-y-2">
                               {material.attachments.map((attachment, index) => (
-                                <div key={attachment.id} className="flex items-center space-x-2 p-2 bg-gray-50 rounded-lg">
-                                  {attachment.thumbnailPath ? (
-                                    <img src={attachment.thumbnailPath} alt={attachment.filename} className="w-6 h-6 object-cover rounded flex-shrink-0" />
-                                  ) : (
-                                    <span className="text-sm flex-shrink-0">{getFileIcon(attachment.filename)}</span>
-                                  )}
-                                  <div className="flex-1 min-w-0">
-                                    <div className="text-xs text-gray-900 truncate" title={attachment.filename}>
-                                      {attachment.filename}
-                                    </div>
-                                    <div className="text-xs text-gray-500">
-                                      {formatFileSize(attachment.fileSize)}
+                                <div key={attachment.id} className="p-2 bg-gray-50 rounded-lg">
+                                  <div className="flex items-center space-x-2 mb-2">
+                                    {attachment.thumbnailPath ? (
+                                      <img src={attachment.thumbnailPath} alt={attachment.filename} className="w-6 h-6 object-cover rounded flex-shrink-0" />
+                                    ) : (
+                                      <span className="text-sm flex-shrink-0">{getFileIcon(attachment.filename)}</span>
+                                    )}
+                                    <div className="flex-1 min-w-0">
+                                      <div className="text-xs text-gray-900 truncate" title={attachment.filename}>
+                                        {attachment.filename}
+                                      </div>
+                                      <div className="text-xs text-gray-500">
+                                        {formatFileSize(attachment.fileSize)}
+                                      </div>
                                     </div>
                                   </div>
-                                  <div className="flex space-x-1 flex-shrink-0">
+                                  <div className="flex space-x-2 justify-center">
                                     <button
                                       onClick={() => handleDownload(attachment)}
-                                      className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white text-xs px-2 py-1 rounded-md transition-all duration-200 shadow-md hover:shadow-lg flex items-center space-x-1"
+                                      className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white text-xs px-3 py-1.5 rounded-md transition-all duration-200 shadow-md hover:shadow-lg flex items-center space-x-1"
                                       title="다운로드"
                                     >
                                       <span>⬇️</span>
-                                      <span>다운</span>
+                                      <span>다운로드</span>
                                     </button>
                                     <button
                                       onClick={() => handlePreview(attachment)}
-                                      className="bg-gradient-to-r from-gray-400 to-gray-500 hover:from-gray-500 hover:to-gray-600 text-white text-xs px-2 py-1 rounded-md transition-all duration-200 shadow-md hover:shadow-lg flex items-center space-x-1"
+                                      className="bg-gradient-to-r from-gray-400 to-gray-500 hover:from-gray-500 hover:to-gray-600 text-white text-xs px-3 py-1.5 rounded-md transition-all duration-200 shadow-md hover:shadow-lg flex items-center space-x-1"
                                       title="미리보기"
                                     >
                                       <span>👁️</span>
-                                      <span>보기</span>
+                                      <span>미리보기</span>
                                     </button>
                                   </div>
                                 </div>
