@@ -32,16 +32,16 @@ export default function HeroSplit() {
     setLoading(false);
   }, []);
 
-  // 자동 슬라이드 효과 (5초마다) - 일시 비활성화
-  // useEffect(() => {
-  //   if (images.length > 1) {
-  //     const interval = setInterval(() => {
-  //       setCurrentImage((prev) => (prev + 1) % images.length);
-  //     }, 5000);
+  // 자동 슬라이드 효과 (5초마다)
+  useEffect(() => {
+    if (images.length > 1) {
+      const interval = setInterval(() => {
+        setCurrentImage((prev) => (prev + 1) % images.length);
+      }, 5000);
 
-  //     return () => clearInterval(interval);
-  //   }
-  // }, [images.length]);
+      return () => clearInterval(interval);
+    }
+  }, [images.length]);
 
   const nextImage = () => {
     setCurrentImage((prev) => (prev + 1) % images.length);

@@ -221,15 +221,17 @@ export default function HomePage() {
       
       // Personal Introduction Section Component
       const PersonalIntroSection = () => {
-        const [isVisible, setIsVisible] = useState(false);
+        const [hasAnimated, setHasAnimated] = useState(false);
         
         useEffect(() => {
-          // 컴포넌트가 마운트된 후 잠깐 후에 애니메이션 실행
-          const timer = setTimeout(() => {
-            setIsVisible(true);
-          }, 100);
-          return () => clearTimeout(timer);
-        }, []);
+          // 컴포넌트가 마운트된 후 한 번만 애니메이션 실행
+          if (!hasAnimated) {
+            const timer = setTimeout(() => {
+              setHasAnimated(true);
+            }, 200);
+            return () => clearTimeout(timer);
+          }
+        }, [hasAnimated]);
         
         return (
         <section className="relative py-12 md:py-16 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 overflow-hidden">
@@ -241,7 +243,7 @@ export default function HomePage() {
           <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: isVisible ? 1 : 0, y: isVisible ? 0 : 30 }}
+              animate={{ opacity: hasAnimated ? 1 : 0, y: hasAnimated ? 0 : 30 }}
               transition={{ duration: 0.8 }}
               className="text-center mb-12"
             >
@@ -251,7 +253,7 @@ export default function HomePage() {
 
             <motion.div
               initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: isVisible ? 1 : 0, y: isVisible ? 0 : 50 }}
+              animate={{ opacity: hasAnimated ? 1 : 0, y: hasAnimated ? 0 : 50 }}
               transition={{ duration: 0.8, delay: 0.2 }}
               className="max-w-6xl mx-auto"
             >
@@ -260,7 +262,7 @@ export default function HomePage() {
                   
                   <motion.div 
                     initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: isVisible ? 1 : 0, scale: isVisible ? 1 : 0.8 }}
+                    animate={{ opacity: hasAnimated ? 1 : 0, scale: hasAnimated ? 1 : 0.8 }}
                     transition={{ duration: 0.6, delay: 0.4 }}
                     className="text-center lg:text-left"
                   >
@@ -279,7 +281,7 @@ export default function HomePage() {
 
                   <motion.div 
                     initial={{ opacity: 0, x: -30 }}
-                    animate={{ opacity: isVisible ? 1 : 0, x: isVisible ? 0 : -30 }}
+                    animate={{ opacity: hasAnimated ? 1 : 0, x: hasAnimated ? 0 : -30 }}
                     transition={{ duration: 0.6, delay: 0.6 }}
                     className="lg:col-span-3 text-center lg:text-left"
                   >
@@ -744,18 +746,18 @@ export default function HomePage() {
           improvement: 0
         });
 
-        // 자동 슬라이드 효과 (일시 비활성화)
-        // useEffect(() => {
-        //   const interval = setInterval(() => {
-        //     setCurrentImageIndex(prev => ({
-        //       education: (prev.education + 1) % 3,
-        //       inspection: (prev.inspection + 1) % 3,
-        //       improvement: (prev.improvement + 1) % 3
-        //     }));
-        //   }, 2500); // 2.5초마다 변경
+        // 자동 슬라이드 효과
+        useEffect(() => {
+          const interval = setInterval(() => {
+            setCurrentImageIndex(prev => ({
+              education: (prev.education + 1) % 3,
+              inspection: (prev.inspection + 1) % 3,
+              improvement: (prev.improvement + 1) % 3
+            }));
+          }, 2500); // 2.5초마다 변경
 
-        //   return () => clearInterval(interval);
-        // }, []);
+          return () => clearInterval(interval);
+        }, []);
 
         // 수동 이미지 변경 함수
         const handleImageChange = (categoryId: string, direction: 'prev' | 'next') => {
