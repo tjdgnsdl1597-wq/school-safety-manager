@@ -21,21 +21,30 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
   
   // Debug logging removed for production
 
   useEffect(() => {
-    // Check if user is already logged in
-    const savedUser = localStorage.getItem('auth-user');
-    if (savedUser) {
-      try {
-        setUser(JSON.parse(savedUser));
-      } catch (e) {
-        localStorage.removeItem('auth-user');
+    // Mark component as mounted and check for saved user
+    setMounted(true);
+    if (typeof window !== 'undefined') {
+      const savedUser = localStorage.getItem('auth-user');
+      if (savedUser) {
+        try {
+          setUser(JSON.parse(savedUser));
+        } catch (e) {
+          localStorage.removeItem('auth-user');
+        }
       }
     }
     setLoading(false);
   }, []);
+
+  // Prevent hydration mismatch by not rendering until mounted
+  if (!mounted) {
+    return <div>Loading...</div>;
+  }
 
   const login = async (username: string, password: string): Promise<boolean> => {
     // Simple admin check
@@ -46,7 +55,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         role: 'admin'
       };
       setUser(newUser);
-      localStorage.setItem('auth-user', JSON.stringify(newUser));
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('auth-user', JSON.stringify(newUser));
+      }
       return true;
     }
     return false;
@@ -54,7 +65,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('auth-user');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('auth-user');
+    }
   };
 
   return (
