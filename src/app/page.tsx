@@ -4,6 +4,20 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/simpleAuth';
 import Link from 'next/link';
 import Image from 'next/image';
+import dynamic from 'next/dynamic';
+
+// Dynamically import ScheduleCalendarComponent to prevent SSR issues
+const ScheduleCalendarComponent = dynamic(() => import('../components/ScheduleCalendarComponent'), {
+  ssr: false,
+  loading: () => (
+    <div className="h-96 flex items-center justify-center text-gray-500 bg-gray-100 rounded-lg animate-pulse">
+      <div className="text-center">
+        <div className="text-4xl mb-4">📅</div>
+        <p>캘린더 로딩 중...</p>
+      </div>
+    </div>
+  )
+});
 
 // --- Helper Functions ---
 function safeParsePurpose(purpose: string): string[] {
@@ -68,6 +82,8 @@ export default function HomePage() {
   const [latestIndAccidents, setLatestIndAccidents] = useState<Material[]>([]);
   const [todaySchedules, setTodaySchedules] = useState<Schedule[]>([]);
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
+  const [showModal, setShowModal] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<Schedule | null>(null);
   const [monthlyPurposeSummary, setMonthlyPurposeSummary] = useState<Record<string, number>>({});
 
   const adminInfo = {
@@ -141,6 +157,47 @@ export default function HomePage() {
     }
   };
 
+  const handleEventClick = (clickInfo: { event: { id: string } }) => {
+    try {
+      const eventId = clickInfo.event.id;
+      const clickedSchedule = schedules.find(s => s.id === eventId);
+      if (clickedSchedule) {
+        setSelectedEvent(clickedSchedule);
+        setShowModal(true);
+      }
+    } catch (error) {
+      console.warn('Error handling event click:', error);
+    }
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setSelectedEvent(null);
+  };
+
+  const safeCreateCalendarEvents = (schedules: Schedule[]) => {
+    try {
+      return schedules
+        .filter(schedule => schedule && schedule.id && schedule.date && schedule.startTime && schedule.endTime)
+        .map(schedule => ({
+          id: schedule.id,
+          start: `${new Date(schedule.date).toISOString().split('T')[0]}T${schedule.startTime}`,
+          end: `${new Date(schedule.date).toISOString().split('T')[0]}T${schedule.endTime}`,
+          allDay: false,
+          extendedProps: {
+            schoolName: schedule.school?.name || '알 수 없는 학교',
+            purposes: safeParsePurpose(schedule.purpose).join(', '),
+            schoolAbbreviation: schedule.school?.abbreviation,
+            ...schedule,
+          }
+        }));
+    } catch (error) {
+      console.warn('Error creating calendar events:', error);
+      return [];
+    }
+  };
+
+  const calendarEvents = safeCreateCalendarEvents(schedules);
 
   const upcomingSchedules = schedules
     .filter(s => new Date(s.date) >= new Date())
@@ -375,13 +432,11 @@ export default function HomePage() {
         </div>
 
         <div className="lg:col-span-2 bg-white/80 backdrop-blur-sm p-4 sm:p-8 rounded-2xl shadow-xl border border-white/20">
-          <div className="h-96 flex items-center justify-center text-gray-500 bg-gray-100 rounded-lg">
-            <div className="text-center">
-              <div className="text-4xl mb-4">📅</div>
-              <p>FullCalendar 임시 비활성화</p>
-              <p className="text-sm">디버깅을 위해 캘린더를 일시적으로 제거했습니다</p>
-            </div>
-          </div>
+          <ScheduleCalendarComponent 
+            events={calendarEvents}
+            onEventClick={handleEventClick}
+            onDateClick={() => {}} // Empty handler for main page
+          />
         </div>
 
       </div>
@@ -441,6 +496,26 @@ export default function HomePage() {
           )}
         </div>
       </div>
+
+      {/* Schedule Detail Modal */}
+      {showModal && selectedEvent && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-xl w-96 border border-gray-200 max-w-[90vw]">
+            <h2 className="text-xl font-bold mb-4 text-blue-700">일정 상세</h2>
+            <p className="mb-2"><strong>학교명:</strong> {selectedEvent.school?.name || '알 수 없는 학교'}</p>
+            <p className="mb-2"><strong>날짜:</strong> {new Date(selectedEvent.date).toLocaleDateString()}</p>
+            <p className="mb-2"><strong>시간:</strong> {selectedEvent.startTime} ~ {selectedEvent.endTime} ({selectedEvent.ampm})</p>
+            <p className="mb-2"><strong>방문 목적:</strong> {safeParsePurpose(selectedEvent.purpose).join(', ')}</p>
+            {selectedEvent.otherReason && <p className="mb-4"><strong>기타 사유:</strong> {selectedEvent.otherReason}</p>}
+            <button 
+              onClick={closeModal} 
+              className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md w-full transition-colors"
+            >
+              닫기
+            </button>
+          </div>
+        </div>
+      )}
       </div>
     </div>
   );

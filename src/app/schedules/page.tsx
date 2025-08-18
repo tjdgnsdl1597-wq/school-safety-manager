@@ -4,7 +4,7 @@ import { useState, useEffect, FormEvent, useMemo } from 'react';
 import { useAuth } from '@/lib/simpleAuth';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
-// DateClickArg type removed due to FullCalendar removal
+import type { DateClickArg } from '@fullcalendar/interaction';
 
 // 동적으로 import된 캘린더 컴포넌트
 const DynamicScheduleCalendar = dynamic(() => import('../../components/ScheduleCalendarComponent'), {
@@ -186,7 +186,7 @@ export default function SchedulesPage() {
     }
   };
 
-  const handleDateClick = (arg: any) => {
+  const handleDateClick = (arg: DateClickArg) => {
     setSelectedDate(arg.dateStr);
     handleCancelEdit();
   };
