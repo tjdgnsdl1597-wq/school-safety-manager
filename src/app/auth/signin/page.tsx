@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { signIn, getSession } from 'next-auth/react';
+import { useAuth } from '@/lib/simpleAuth';
 import { useRouter } from 'next/navigation';
 
 export default function SignIn() {
@@ -9,6 +9,7 @@ export default function SignIn() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const { login } = useAuth();
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -17,21 +18,13 @@ export default function SignIn() {
     setError('');
 
     try {
-      const result = await signIn('credentials', {
-        username,
-        password,
-        redirect: false,
-      });
+      const success = await login(username, password);
 
-      if (result?.error) {
-        setError('아이디 또는 비밀번호가 올바르지 않습니다.');
+      if (success) {
+        router.push('/');
+        router.refresh();
       } else {
-        // 로그인 성공 시 세션 확인 후 리다이렉트
-        const session = await getSession();
-        if (session) {
-          router.push('/');
-          router.refresh();
-        }
+        setError('아이디 또는 비밀번호가 올바르지 않습니다.');
       }
     } catch {
       setError('로그인 중 오류가 발생했습니다.');

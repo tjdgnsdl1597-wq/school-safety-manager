@@ -1,6 +1,6 @@
 'use client';
 
-import { SessionProvider } from 'next-auth/react';
+import { AuthProvider } from '@/lib/simpleAuth';
 
 export default function Providers({
   children,
@@ -8,11 +8,8 @@ export default function Providers({
   children: React.ReactNode;
 }) {
   return (
-    <SessionProvider
-      refetchInterval={0}
-      refetchOnWindowFocus={false}
-    >
+    <AuthProvider>
       {children}
-    </SessionProvider>
+    </AuthProvider>
   );
 }

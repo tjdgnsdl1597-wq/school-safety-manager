@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { useSession } from 'next-auth/react';
+import { useAuth } from '@/lib/simpleAuth';
 import Image from 'next/image';
 
 // Interface for MaterialAttachment
@@ -35,8 +35,8 @@ const ITEMS_PER_PAGE = 10;
 
 export default function MaterialManager({ category, title }: MaterialManagerProps) {
   // Auth session
-  const { data: session } = useSession();
-  const isAdmin = (session?.user as any)?.role === 'admin';
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'admin';
 
   // State variables
   const [materials, setMaterials] = useState<Material[]>([]);

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
+import { useAuth } from '@/lib/simpleAuth';
 import Link from 'next/link';
 
 // Interface for MaterialAttachment
@@ -29,8 +29,8 @@ interface Material {
 export default function EducationalMaterialDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const { data: session } = useSession();
-  const isAdmin = (session?.user as any)?.role === 'admin';
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'admin';
   
   const [material, setMaterial] = useState<Material | null>(null);
   const [loading, setLoading] = useState(true);

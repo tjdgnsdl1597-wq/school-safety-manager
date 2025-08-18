@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, FormEvent } from 'react';
-import { useSession } from 'next-auth/react';
+import { useAuth } from '@/lib/simpleAuth';
 import { useRouter } from 'next/navigation';
 
 interface School {
@@ -12,15 +12,15 @@ interface School {
 }
 
 export default function SchoolsPage() {
-  const { data: session } = useSession();
+  const { user } = useAuth();
   const router = useRouter();
   
   // 관리자가 아닌 경우 교육자료 페이지로 리다이렉트
   useEffect(() => {
-    if (session && (session.user as any)?.role !== 'admin') {
+    if (user && user.role !== 'admin') {
       router.push('/educational-materials');
     }
-  }, [session, router]);
+  }, [user, router]);
 
   const [schools, setSchools] = useState<School[]>([]);
   const [isLoading, setIsLoading] = useState(true);

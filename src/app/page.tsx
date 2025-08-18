@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
+import { useAuth } from '@/lib/simpleAuth';
 import FullCalendar from '@fullcalendar/react';
 import type { EventContentArg } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
@@ -55,10 +55,10 @@ interface Material {
 
 // --- Component ---
 export default function HomePage() {
-  const { data: session } = useSession();
+  const { user } = useAuth();
   
   // 관리자 여부 확인
-  const isAdmin = (session?.user as any)?.role === 'admin';
+  const isAdmin = user?.role === 'admin';
 
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [latestEduMaterials, setLatestEduMaterials] = useState<Material[]>([]);

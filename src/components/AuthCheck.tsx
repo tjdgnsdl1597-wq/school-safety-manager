@@ -1,8 +1,8 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
+import { useAuth } from '@/lib/simpleAuth';
 import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 // 공개 페이지 리스트 (상수로 분리)
 const PUBLIC_PAGES = [
@@ -14,33 +14,25 @@ const PUBLIC_PAGES = [
 ];
 
 export default function AuthCheck({ children }: { children: React.ReactNode }) {
-  const { data: session, status } = useSession();
+  const { isAuthenticated, loading } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
-  const [mounted, setMounted] = useState(false);
 
+  // 공개 페이지인지 확인
+  const isPublicPage = PUBLIC_PAGES.some(page => pathname.startsWith(page));
+  
   useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (!mounted || status === 'loading') return;
-
-    // 공개 페이지인지 확인
-    const isPublicPage = PUBLIC_PAGES.some(page => pathname.startsWith(page));
-    
-    if (isPublicPage) {
-      return;
-    }
-
-    // 관리자 페이지이고 로그인하지 않은 경우
-    if (!session) {
+    if (!loading && !isPublicPage && !isAuthenticated) {
       router.push('/auth/signin');
     }
-  }, [mounted, session, status, pathname, router]);
+  }, [loading, isPublicPage, isAuthenticated, router, pathname]);
 
-  // 마운트되지 않았거나 로딩 중
-  if (!mounted || status === 'loading') {
+  if (isPublicPage) {
+    return <>{children}</>;
+  }
+
+  // 로딩 중
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -51,15 +43,8 @@ export default function AuthCheck({ children }: { children: React.ReactNode }) {
     );
   }
 
-  // 공개 페이지인지 확인
-  const isPublicPage = PUBLIC_PAGES.some(page => pathname.startsWith(page));
-  
-  if (isPublicPage) {
-    return <>{children}</>;
-  }
-
   // 로그인하지 않은 경우
-  if (!session) {
+  if (!isAuthenticated) {
     return null;
   }
 

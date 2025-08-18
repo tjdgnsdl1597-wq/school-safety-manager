@@ -2,12 +2,12 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useSession, signOut } from 'next-auth/react';
+import { useAuth } from '@/lib/simpleAuth';
 import { useState } from 'react';
 
 export default function Navbar() {
   const pathname = usePathname();
-  const { data: session } = useSession();
+  const { user, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   // 관리자용 네비게이션 메뉴
@@ -28,7 +28,7 @@ export default function Navbar() {
   ];
 
   // 로그인하지 않은 사용자는 고객 메뉴 표시
-  const isAdmin = (session?.user as any)?.role === 'admin';
+  const isAdmin = user?.role === 'admin';
   const navItems = isAdmin ? adminNavItems : customerNavItems;
 
   return (
@@ -62,7 +62,7 @@ export default function Navbar() {
             ))}
             
             <div className="ml-4 lg:ml-6 flex items-center space-x-2 lg:space-x-3">
-              {session ? (
+              {user ? (
                 <>
                   <div className="hidden lg:flex items-center space-x-2 px-3 py-1 bg-white/10 rounded-full">
                     <div className="w-2 h-2 bg-green-400 rounded-full"></div>
@@ -71,7 +71,7 @@ export default function Navbar() {
                     </span>
                   </div>
                   <button
-                    onClick={() => signOut({ callbackUrl: '/auth/signin' })}
+                    onClick={logout}
                     className="px-3 lg:px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white text-sm font-medium rounded-lg transition-all duration-300 shadow-lg shadow-red-500/25 hover:shadow-red-500/40"
                   >
                     로그아웃
@@ -90,7 +90,7 @@ export default function Navbar() {
 
           {/* 모바일 햄버거 메뉴 */}
           <div className="md:hidden flex items-center space-x-2">
-            {session && (
+            {user && (
               <div className="flex items-center space-x-1 px-2 py-1 bg-white/10 rounded-full">
                 <div className="w-2 h-2 bg-green-400 rounded-full"></div>
                 <span className="text-gray-300 text-xs">
@@ -133,11 +133,11 @@ export default function Navbar() {
               ))}
               
               <div className="border-t border-white/10 pt-4 mt-4">
-                {session ? (
+                {user ? (
                   <button
                     onClick={() => {
                       setIsMenuOpen(false);
-                      signOut({ callbackUrl: '/auth/signin' });
+                      logout();
                     }}
                     className="w-full px-4 py-3 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white text-sm font-medium rounded-lg transition-all duration-300 shadow-lg shadow-red-500/25 hover:shadow-red-500/40"
                   >

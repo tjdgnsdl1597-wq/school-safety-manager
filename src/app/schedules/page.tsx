@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, FormEvent, useMemo } from 'react';
-import { useSession } from 'next-auth/react';
+import { useAuth } from '@/lib/simpleAuth';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import type { DateClickArg } from '@fullcalendar/interaction';
@@ -50,15 +50,15 @@ const ALL_PURPOSES = ['월점검', '위험성평가', '근골조사', '산업재
 
 // --- Component ---
 export default function SchedulesPage() {
-  const { data: session } = useSession();
+  const { user } = useAuth();
   const router = useRouter();
   
   // 관리자가 아닌 경우 교육자료 페이지로 리다이렉트
   useEffect(() => {
-    if (session && (session.user as any)?.role !== 'admin') {
+    if (user && user.role !== 'admin') {
       router.push('/educational-materials');
     }
-  }, [session, router]);
+  }, [user, router]);
 
   // --- State ---
   const [schedules, setSchedules] = useState<Schedule[]>([]);
