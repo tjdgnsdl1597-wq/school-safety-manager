@@ -319,29 +319,29 @@ export default function SchedulesPage() {
                             </div>
                         )}
                     </div>
-                    <div className="flex flex-col sm:flex-row items-center justify-between mt-8 space-y-3 sm:space-y-0">
+                    <div className="flex flex-wrap items-center justify-between mt-6 gap-2">
                         {editingSchedule && (
                           <button 
                             type="button" 
                             onClick={() => handleDelete(editingSchedule.id)} 
-                            className="w-full sm:w-auto bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
+                            className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg text-sm"
                           >
                             🗑️ 삭제
                           </button>
                         )}
-                        <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 w-full sm:w-auto">
+                        <div className="flex gap-2 ml-auto">
                           <button 
                             type="button" 
                             onClick={handleCancelEdit} 
-                            className="w-full sm:w-auto bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
+                            className="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg text-sm"
                           >
                             ✕ 취소
                           </button>
                           <button 
                             type="submit" 
-                            className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl"
+                            className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl text-sm"
                           >
-                            {editingSchedule ? '✏️ 수정하기' : '💾 저장하기'}
+                            {editingSchedule ? '✏️ 수정' : '💾 저장'}
                           </button>
                         </div>
                     </div>
