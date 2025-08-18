@@ -100,11 +100,11 @@ export default function HomePage() {
     fetchLatestMaterials('교육자료', setLatestEduMaterials);
     fetchLatestMaterials('산업재해', setLatestIndAccidents);
 
-    const timer = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
+    // const timer = setInterval(() => {
+    //   setCurrentTime(new Date());
+    // }, 1000);
 
-    return () => clearInterval(timer);
+    // return () => clearInterval(timer);
   }, []);
 
   useEffect(() => {
@@ -135,9 +135,17 @@ export default function HomePage() {
   }, [schedules]);
 
   const fetchSchedules = async () => {
-    const res = await fetch('/api/schedules');
-    const data = await res.json();
-    setSchedules(data);
+    try {
+      const res = await fetch('/api/schedules');
+      if (!res.ok) {
+        throw new Error('Failed to fetch schedules');
+      }
+      const data = await res.json();
+      setSchedules(data);
+    } catch (error) {
+      console.error('Error fetching schedules:', error);
+      setSchedules([]); // 에러 시 빈 배열로 설정
+    }
   };
 
   const fetchLatestMaterials = async (category: string, setter: React.Dispatch<React.SetStateAction<Material[]>>) => {
@@ -736,18 +744,18 @@ export default function HomePage() {
           improvement: 0
         });
 
-        // 자동 슬라이드 효과
-        useEffect(() => {
-          const interval = setInterval(() => {
-            setCurrentImageIndex(prev => ({
-              education: (prev.education + 1) % 3,
-              inspection: (prev.inspection + 1) % 3,
-              improvement: (prev.improvement + 1) % 3
-            }));
-          }, 2500); // 2.5초마다 변경
+        // 자동 슬라이드 효과 (일시 비활성화)
+        // useEffect(() => {
+        //   const interval = setInterval(() => {
+        //     setCurrentImageIndex(prev => ({
+        //       education: (prev.education + 1) % 3,
+        //       inspection: (prev.inspection + 1) % 3,
+        //       improvement: (prev.improvement + 1) % 3
+        //     }));
+        //   }, 2500); // 2.5초마다 변경
 
-          return () => clearInterval(interval);
-        }, []);
+        //   return () => clearInterval(interval);
+        // }, []);
 
         // 수동 이미지 변경 함수
         const handleImageChange = (categoryId: string, direction: 'prev' | 'next') => {
