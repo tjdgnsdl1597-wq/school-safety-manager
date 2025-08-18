@@ -43,18 +43,18 @@ const PersonalIntroSection = () => (
               className="text-center lg:text-left"
             >
               <div className="relative inline-block">
-                <div className="w-48 h-64 md:w-56 md:h-72 rounded-2xl overflow-hidden shadow-2xl ring-4 ring-blue-500/20">
+                <div className="w-48 h-64 md:w-56 md:h-72 rounded-3xl overflow-hidden shadow-2xl ring-4 ring-blue-500/20">
                   <Image
                     src="/images/admin_profile.png"
                     alt="강성훈 대리 프로필"
                     fill
-                    className="object-cover object-center"
+                    className="object-cover object-center rounded-3xl"
                     onError={(e) => {
                       // 이미지 로드 실패시 대체
                       const target = e.target as HTMLImageElement;
                       target.style.display = 'none';
                       target.parentElement!.innerHTML = `
-                        <div class="w-full h-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-3xl font-bold">
+                        <div class="w-full h-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-3xl font-bold rounded-3xl">
                           강성훈
                         </div>
                       `;
