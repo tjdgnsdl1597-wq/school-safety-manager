@@ -985,7 +985,6 @@ export default function HomePage() {
       </div>
     );
   }
-  }
 
   // 관리자용 대시보드
   return (
