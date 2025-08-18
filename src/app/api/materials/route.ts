@@ -11,7 +11,7 @@ export async function GET(request: Request) {
     const searchTerm = searchParams.get('searchTerm');
     const searchBy = searchParams.get('searchBy');
     const page = parseInt(searchParams.get('page') || '1', 10);
-    const limit = parseInt(searchParams.get('limit') || '10', 10);
+    const limit = parseInt(searchParams.get('limit') || '12', 10);
 
     if (!category) {
       return NextResponse.json({ error: 'Category is required' }, { status: 400 });
@@ -85,16 +85,16 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Title and category are required' }, { status: 400 });
     }
 
-    // 파일 개수 검증 (최대 5개)
-    if (files.length > 5) {
-      return NextResponse.json({ error: '최대 5개의 파일만 업로드할 수 있습니다.' }, { status: 400 });
+    // 파일 개수 검증 (최대 15개)
+    if (files.length > 15) {
+      return NextResponse.json({ error: '최대 15개의 파일만 업로드할 수 있습니다.' }, { status: 400 });
     }
 
-    // 전체 파일 크기 검증 (합계 50MB)
+    // 전체 파일 크기 검증 (합계 100MB)
     const totalSize = files.reduce((sum, file) => sum + (file?.size || 0), 0);
-    const maxTotalSize = 50 * 1024 * 1024;
+    const maxTotalSize = 100 * 1024 * 1024;
     if (totalSize > maxTotalSize) {
-      return NextResponse.json({ error: '전체 파일 크기가 50MB를 초과할 수 없습니다.' }, { status: 400 });
+      return NextResponse.json({ error: '전체 파일 크기가 100MB를 초과할 수 없습니다.' }, { status: 400 });
     }
 
     // 파일들이 있는 경우에만 업로드 처리
@@ -220,16 +220,16 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: 'ID, title and category are required' }, { status: 400 });
     }
 
-    // 파일 개수 검증 (최대 5개)
-    if (files.length > 5) {
-      return NextResponse.json({ error: '최대 5개의 파일만 업로드할 수 있습니다.' }, { status: 400 });
+    // 파일 개수 검증 (최대 15개)
+    if (files.length > 15) {
+      return NextResponse.json({ error: '최대 15개의 파일만 업로드할 수 있습니다.' }, { status: 400 });
     }
 
-    // 전체 파일 크기 검증 (합계 50MB)
+    // 전체 파일 크기 검증 (합계 100MB)
     const totalSize = files.reduce((sum, file) => sum + (file?.size || 0), 0);
-    const maxTotalSize = 50 * 1024 * 1024;
+    const maxTotalSize = 100 * 1024 * 1024;
     if (totalSize > maxTotalSize) {
-      return NextResponse.json({ error: '전체 파일 크기가 50MB를 초과할 수 없습니다.' }, { status: 400 });
+      return NextResponse.json({ error: '전체 파일 크기가 100MB를 초과할 수 없습니다.' }, { status: 400 });
     }
 
     // 기존 게시글 조회

@@ -258,7 +258,7 @@ export default function PhotoCardManager({ category, title }: PhotoCardManagerPr
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
             {materials.map((material, index) => (
               <motion.div
                 key={material.id}
