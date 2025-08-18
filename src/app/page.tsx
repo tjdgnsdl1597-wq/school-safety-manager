@@ -218,7 +218,7 @@ export default function HomePage() {
                 <span className="block text-blue-300">관리 시스템</span>
               </h1>
               <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-                인천광역시 학교안전공제회에서 제공하는 안전보건 교육자료와 산업재해 정보를 확인하세요
+                인천광역시 학교안전공제회에서 제공하는 안전보건 교육자료와 중대재해 정보를 확인하세요
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link
@@ -231,7 +231,7 @@ export default function HomePage() {
                   href="/industrial-accidents"
                   className="px-8 py-4 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-red-500/25 hover:shadow-red-500/40 hover:scale-105"
                 >
-                  산업재해 정보
+                  중대재해 알리미
                 </Link>
               </div>
             </div>
@@ -306,7 +306,7 @@ export default function HomePage() {
                   <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center mr-4">
                     <span className="text-white text-xl font-bold">⚠️</span>
                   </div>
-                  <h2 className="text-2xl font-bold text-gray-800">산업재해 정보</h2>
+                  <h2 className="text-2xl font-bold text-gray-800">중대재해 알리미</h2>
                 </div>
                 
                 {latestIndAccidents.length > 0 ? (
@@ -332,7 +332,7 @@ export default function HomePage() {
                 ) : (
                   <div className="text-center py-8 text-gray-500">
                     <div className="text-4xl mb-4">📋</div>
-                    <p>등록된 산업재해 정보가 없습니다.</p>
+                    <p>등록된 중대재해 정보가 없습니다.</p>
                   </div>
                 )}
                 
@@ -361,7 +361,7 @@ export default function HomePage() {
                 <h3 className="text-2xl font-bold text-white">학교 안전보건 관리 시스템</h3>
               </div>
               <p className="text-blue-100 text-lg leading-relaxed">
-                학교 안전보건과 관련된 최신 교육자료와 산업재해 정보를 제공합니다. 
+                학교 안전보건과 관련된 최신 교육자료와 중대재해 정보를 제공합니다. 
                 안전한 교육 환경 조성을 위해 필요한 자료를 다운로드하여 활용하시기 바랍니다.
               </p>
             </div>
@@ -478,9 +478,9 @@ export default function HomePage() {
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow-md border border-gray-300">
-          <h2 className="text-xl font-bold mb-4 text-blue-700">최신 산업재해 정보 (5개)</h2>
+          <h2 className="text-xl font-bold mb-4 text-blue-700">최신 중대재해 정보 (5개)</h2>
           {latestIndAccidents.length === 0 ? (
-            <p className="text-gray-500">등록된 산업재해 정보가 없습니다.</p>
+            <p className="text-gray-500">등록된 중대재해 정보가 없습니다.</p>
           ) : (
             <ul>
               {latestIndAccidents.map(material => (

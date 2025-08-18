@@ -179,8 +179,41 @@ export default function PhotoCardManager({ category, title }: PhotoCardManagerPr
           className="text-center mb-12"
         >
           <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">{title}</h1>
-          <p className="text-xl text-gray-600">산업재해 사례 및 예방 자료</p>
+          <p className="text-xl text-gray-600">학교 현장 중대재해 예방 자료</p>
         </motion.div>
+
+        {/* 방문자용 소개글 */}
+        {!isAdmin && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="bg-white/90 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-orange-200 mb-12"
+          >
+            <div className="flex items-start mb-6">
+              <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
+                <span className="text-white text-xl">⚠️</span>
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold text-gray-800 mb-3">중대재해 알리미 소개</h2>
+                <div className="text-gray-700 leading-relaxed space-y-3">
+                  <p>
+                    본 자료는 <span className="font-semibold text-orange-600">고용노동부 중대재해 사이렌</span>에서 
+                    학교 현장에서 발생할 수 있는 다양한 안전사고 사례를 선별하여 제공합니다.
+                  </p>
+                  <p>
+                    학교 관계자와 교육 현장 종사자들이 중대재해를 미리 예방하고 안전한 교육 환경을 조성할 수 있도록 
+                    실제 사례를 바탕으로 한 예방 자료를 지속적으로 업데이트하고 있습니다.
+                  </p>
+                  <p className="text-sm text-gray-600 mt-4 p-3 bg-gray-50 rounded-lg">
+                    <span className="font-semibold">💡 활용 방법:</span> 각 자료를 클릭하여 상세 내용을 확인하고, 
+                    해당 사례의 예방책과 안전 수칙을 숙지하여 현장에 적용해 주시기 바랍니다.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
 
         {/* 업로드 섹션 (관리자만) */}
         {isAdmin && (

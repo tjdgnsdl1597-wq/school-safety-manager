@@ -17,14 +17,14 @@ export default function Navbar() {
     { name: '일정 관리', href: '/schedules' },
     { name: '학교 안전보건', href: '/school-safety' },
     { name: '교육 자료', href: '/educational-materials' },
-    { name: '산업 재해', href: '/industrial-accidents' },
+    { name: '중대재해 알리미', href: '/industrial-accidents' },
   ];
 
   // 고객용 네비게이션 메뉴 (교육자료, 산업재해만)
   const customerNavItems = [
     { name: '학교 안전보건', href: '/school-safety' },
     { name: '교육 자료', href: '/educational-materials' },
-    { name: '산업 재해', href: '/industrial-accidents' },
+    { name: '중대재해 알리미', href: '/industrial-accidents' },
   ];
 
   // 로그인하지 않은 사용자는 고객 메뉴 표시

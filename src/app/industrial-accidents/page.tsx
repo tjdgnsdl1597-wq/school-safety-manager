@@ -6,7 +6,7 @@ export default function IndustrialAccidentsPage() {
   return (
     <PhotoCardManager 
       category="산업재해" 
-      title="산업재해 정보"
+      title="중대재해 알리미"
     />
   );
 }
