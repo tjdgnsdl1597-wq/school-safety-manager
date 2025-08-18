@@ -28,6 +28,102 @@ interface PhotoCardManagerProps {
   title: string;
 }
 
+// 히어로 섹션 컴포넌트
+const HeroSection = ({ title }: { title: string }) => {
+  const [imageError, setImageError] = useState(false);
+
+  const handleImageError = () => {
+    setImageError(true);
+  };
+
+  useEffect(() => {
+    // 이미지 로드 테스트
+    const testImage = new Image();
+    testImage.onload = () => {
+      setImageError(false);
+    };
+    testImage.onerror = () => {
+      setImageError(true);
+    };
+    testImage.src = '/images/hero.jpg';
+  }, []);
+
+  return (
+    <section 
+      className={`
+        relative w-full overflow-hidden
+        ${imageError ? 'bg-slate-900' : ''}
+      `}
+      style={{
+        height: 'clamp(220px, 24vw, 360px)',
+        backgroundImage: imageError 
+          ? 'linear-gradient(180deg, rgba(8,12,28,.65) 0%, rgba(8,12,28,.35) 55%, rgba(8,12,28,.85) 100%)'
+          : 'linear-gradient(180deg, rgba(8,12,28,.65) 0%, rgba(8,12,28,.35) 55%, rgba(8,12,28,.85) 100%), url(/images/hero.jpg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}
+      role="banner"
+      aria-label="중대재해 알리미 메인 배너"
+    >
+      {/* 이미지 로드 테스트용 숨겨진 img 태그 */}
+      <img 
+        src="/images/hero.jpg" 
+        alt="학교 안전 현장" 
+        style={{ display: 'none' }} 
+        onError={handleImageError}
+      />
+      
+      {/* 이미지 오류 시 대체 텍스트 */}
+      {imageError && (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span className="text-white/40 text-sm">이미지를 불러올 수 없습니다</span>
+        </div>
+      )}
+
+      {/* 히어로 컨텐츠 */}
+      <div className="relative z-10 h-full flex items-end">
+        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 md:pb-12">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            {/* 섹션 라벨 */}
+            <div className="inline-flex items-center bg-white/10 backdrop-blur-sm px-3 py-1.5 rounded-full text-xs font-medium text-white mb-3 border border-white/20">
+              <span className="mr-2">⚠️</span>
+              안전 정보
+            </div>
+            
+            {/* 메인 제목 */}
+            <h1 
+              className="text-white font-bold mb-2 leading-tight"
+              style={{ 
+                fontSize: 'clamp(28px, 5vw, 48px)',
+                textShadow: '2px 2px 8px rgba(0, 0, 0, 0.7)'
+              }}
+            >
+              {title}
+            </h1>
+            
+            {/* 서브 텍스트 */}
+            <p 
+              className="text-white/90 font-normal leading-relaxed"
+              style={{ 
+                fontSize: 'clamp(14px, 2.5vw, 18px)',
+                textShadow: '1px 1px 4px rgba(0, 0, 0, 0.6)'
+              }}
+            >
+              학교 현장 중대재해 예방 자료
+            </p>
+          </motion.div>
+        </div>
+      </div>
+
+    </section>
+  );
+};
+
 export default function PhotoCardManager({ category, title }: PhotoCardManagerProps) {
   const { user, isAuthenticated } = useAuth();
   const isAdmin = user?.role === 'admin';
@@ -174,19 +270,11 @@ export default function PhotoCardManager({ category, title }: PhotoCardManagerPr
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 py-8">
-      <div className="container mx-auto px-6">
-        {/* 헤더 */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-12"
-        >
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">{title}</h1>
-          <p className="text-xl text-gray-600">학교 현장 중대재해 예방 자료</p>
-        </motion.div>
-
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+      {/* 히어로 섹션 */}
+      <HeroSection title={title} />
+      
+      <div className="container mx-auto px-6 py-8">
         {/* 방문자용 소개글 */}
         {!isAdmin && (
           <motion.div
