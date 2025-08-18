@@ -220,18 +220,20 @@ export default function EducationalMaterialDetailPage() {
                             </div>
                           </div>
                         </div>
-                        <div className="flex space-x-2">
+                        <div className="flex space-x-3">
                           <button
                             onClick={() => handleDownload(attachment)}
-                            className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
+                            className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-2.5 rounded-lg font-medium text-sm transition-all duration-200 shadow-lg hover:shadow-xl flex items-center space-x-2"
                           >
-                            다운로드
+                            <span>⬇️</span>
+                            <span>다운로드</span>
                           </button>
                           <button
                             onClick={() => handlePreview(attachment)}
-                            className="px-4 py-2 bg-gray-600 text-white text-sm rounded-lg hover:bg-gray-700 transition-colors"
+                            className="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-6 py-2.5 rounded-lg font-medium text-sm transition-all duration-200 shadow-lg hover:shadow-xl flex items-center space-x-2"
                           >
-                            미리보기
+                            <span>👁️</span>
+                            <span>미리보기</span>
                           </button>
                         </div>
                       </div>

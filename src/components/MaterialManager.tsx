@@ -401,20 +401,22 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
                                   {formatFileSize(attachment.fileSize)}
                                 </div>
                               </div>
-                              <div className="flex space-x-1 flex-shrink-0">
+                              <div className="flex space-x-2 flex-shrink-0">
                                 <button
                                   onClick={() => handleDownload(attachment)}
-                                  className="text-blue-600 hover:text-blue-900 text-xs px-1 py-1 rounded hover:bg-blue-100"
+                                  className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white text-xs px-3 py-1.5 rounded-md transition-all duration-200 shadow-md hover:shadow-lg flex items-center space-x-1"
                                   title="다운로드"
                                 >
-                                  ⬇
+                                  <span>⬇️</span>
+                                  <span>다운로드</span>
                                 </button>
                                 <button
                                   onClick={() => handlePreview(attachment)}
-                                  className="text-gray-600 hover:text-gray-900 text-xs px-1 py-1 rounded hover:bg-gray-100"
+                                  className="bg-gradient-to-r from-gray-400 to-gray-500 hover:from-gray-500 hover:to-gray-600 text-white text-xs px-3 py-1.5 rounded-md transition-all duration-200 shadow-md hover:shadow-lg flex items-center space-x-1"
                                   title="미리보기"
                                 >
-                                  👁
+                                  <span>👁️</span>
+                                  <span>미리보기</span>
                                 </button>
                               </div>
                             </div>
