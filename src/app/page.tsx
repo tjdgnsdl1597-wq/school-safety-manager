@@ -212,7 +212,18 @@ export default function HomePage() {
     const SchoolSafetyContent = () => {
       
       // Personal Introduction Section Component
-      const PersonalIntroSection = () => (
+      const PersonalIntroSection = () => {
+        const [isVisible, setIsVisible] = useState(false);
+        
+        useEffect(() => {
+          // 컴포넌트가 마운트된 후 잠깐 후에 애니메이션 실행
+          const timer = setTimeout(() => {
+            setIsVisible(true);
+          }, 100);
+          return () => clearTimeout(timer);
+        }, []);
+        
+        return (
         <section className="relative py-12 md:py-16 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 overflow-hidden">
           <div className="absolute inset-0 pointer-events-none">
             <div className="absolute top-10 right-10 w-48 h-48 bg-blue-200/20 rounded-full blur-3xl"></div>
@@ -222,9 +233,8 @@ export default function HomePage() {
           <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              animate={{ opacity: isVisible ? 1 : 0, y: isVisible ? 0 : 30 }}
               transition={{ duration: 0.8 }}
-              viewport={{ once: true }}
               className="text-center mb-12"
             >
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">담당자 소개</h2>
@@ -233,9 +243,8 @@ export default function HomePage() {
 
             <motion.div
               initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              animate={{ opacity: isVisible ? 1 : 0, y: isVisible ? 0 : 50 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              viewport={{ once: true }}
               className="max-w-6xl mx-auto"
             >
               <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 md:p-12 shadow-2xl border border-white/20 hover:shadow-3xl transition-all duration-500">
@@ -243,9 +252,8 @@ export default function HomePage() {
                   
                   <motion.div 
                     initial={{ opacity: 0, scale: 0.8 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
+                    animate={{ opacity: isVisible ? 1 : 0, scale: isVisible ? 1 : 0.8 }}
                     transition={{ duration: 0.6, delay: 0.4 }}
-                    viewport={{ once: true }}
                     className="text-center lg:text-left"
                   >
                     <div className="relative inline-block">
@@ -263,9 +271,8 @@ export default function HomePage() {
 
                   <motion.div 
                     initial={{ opacity: 0, x: -30 }}
-                    whileInView={{ opacity: 1, x: 0 }}
+                    animate={{ opacity: isVisible ? 1 : 0, x: isVisible ? 0 : -30 }}
                     transition={{ duration: 0.6, delay: 0.6 }}
-                    viewport={{ once: true }}
                     className="lg:col-span-3 text-center lg:text-left"
                   >
                     <div className="mb-8">
