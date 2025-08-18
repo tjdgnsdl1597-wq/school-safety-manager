@@ -23,17 +23,19 @@ model School {
 }
 
 model Schedule {
-  id          String   @id @default(uuid())
-  date        DateTime
-  schoolId    String
-  school      School   @relation(fields: [schoolId], references: [id])
-  ampm        String // "AM" or "PM"
-  startTime   String // e.g., "08:00"
-  endTime     String // e.g., "09:00"
-  purpose     String // Store as JSON string, e.g., "["월점검", "교육"]"
-  otherReason String? // Only if "기타" or "교육" is selected
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            String   @id @default(uuid())
+  date          DateTime
+  schoolId      String
+  school        School   @relation(fields: [schoolId], references: [id])
+  ampm          String // "AM" or "PM"
+  startTime     String // e.g., "08:00"
+  endTime       String // e.g., "09:00"
+  purpose       String // Store as JSON string, e.g., "["월점검", "교육"]"
+  otherReason   String? // Only if "기타" or "교육" is selected
+  isHoliday     Boolean  @default(false) // 휴무일정 여부
+  holidayReason String? // 휴무 사유
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 model Material {
