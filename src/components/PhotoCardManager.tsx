@@ -352,7 +352,7 @@ export default function PhotoCardManager({ category, title }: PhotoCardManagerPr
                           src={material.attachments[0].filePath}
                           alt={material.title}
                           fill
-                          className="object-cover"
+                          className="object-contain"
                           unoptimized={true}
                           onLoad={() => {
                             console.log('Image loaded successfully:', material.attachments[0].filePath);
