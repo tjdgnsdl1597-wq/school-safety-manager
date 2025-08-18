@@ -169,7 +169,7 @@ export default function PhotoCardManager({ category, title }: PhotoCardManagerPr
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 py-8">
       <div className="container mx-auto px-6">
         {/* 헤더 */}
         <motion.div
@@ -178,8 +178,8 @@ export default function PhotoCardManager({ category, title }: PhotoCardManagerPr
           transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">{title}</h1>
-          <p className="text-xl text-gray-400">산업재해 사례 및 예방 자료</p>
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">{title}</h1>
+          <p className="text-xl text-gray-600">산업재해 사례 및 예방 자료</p>
         </motion.div>
 
         {/* 업로드 섹션 (관리자만) */}
@@ -188,10 +188,10 @@ export default function PhotoCardManager({ category, title }: PhotoCardManagerPr
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="bg-gray-800/80 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-gray-700 mb-12"
+            className="bg-white/90 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-blue-200 mb-12"
           >
-            <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
-              <span className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center mr-3">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+              <span className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center mr-3">
                 <span className="text-white text-lg">📸</span>
               </span>
               새 자료 업로드
@@ -204,15 +204,15 @@ export default function PhotoCardManager({ category, title }: PhotoCardManagerPr
               onDrop={handleDrop}
               className={`border-2 border-dashed rounded-xl p-8 text-center transition-all duration-300 ${
                 isDragOver 
-                  ? 'border-blue-400 bg-blue-500/10' 
-                  : 'border-gray-600 bg-gray-700/50'
+                  ? 'border-blue-400 bg-blue-50' 
+                  : 'border-blue-300 bg-blue-50/50'
               }`}
             >
               <div className="text-6xl mb-4">{uploading ? '⏳' : isDragOver ? '📤' : '📁'}</div>
-              <p className="text-white text-lg mb-2">
+              <p className="text-gray-700 text-lg mb-2">
                 {uploading ? '업로드 중...' : isDragOver ? '파일을 여기에 놓으세요' : '이미지를 드래그하여 업로드'}
               </p>
-              <p className="text-gray-400 text-sm">
+              <p className="text-gray-500 text-sm">
                 파일을 드롭하면 자동으로 업로드됩니다
               </p>
             </div>
@@ -234,7 +234,7 @@ export default function PhotoCardManager({ category, title }: PhotoCardManagerPr
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 className="group relative"
               >
-                <div className="bg-gray-800 rounded-2xl overflow-hidden shadow-xl border border-gray-700 hover:border-gray-600 transition-all duration-300 hover:scale-[1.02]">
+                <div className="bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-200 hover:border-blue-300 hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
                   {/* 4:5 비율 썸네일 */}
                   <div className="relative w-full" style={{ aspectRatio: '4/5' }}>
                     {material.attachments.length > 0 ? (
@@ -250,12 +250,12 @@ export default function PhotoCardManager({ category, title }: PhotoCardManagerPr
                           }}
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-gray-700 text-gray-400 text-6xl">
+                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 text-gray-400 text-6xl">
                           {getFileIcon(material.attachments[0].mimeType)}
                         </div>
                       )
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-gray-700 text-gray-400 text-6xl">
+                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 text-gray-400 text-6xl">
                         📁
                       </div>
                     )}
@@ -274,11 +274,11 @@ export default function PhotoCardManager({ category, title }: PhotoCardManagerPr
 
                   {/* 카드 정보 */}
                   <div className="p-4">
-                    <h3 className="font-bold text-white text-sm mb-2 line-clamp-2 leading-tight">
+                    <h3 className="font-bold text-gray-800 text-sm mb-2 line-clamp-2 leading-tight">
                       {material.title}
                     </h3>
                     
-                    <div className="text-xs text-gray-400 flex items-center justify-between">
+                    <div className="text-xs text-gray-500 flex items-center justify-between">
                       <span>{new Date(material.uploadedAt).toLocaleDateString('ko-KR', { 
                         year: 'numeric', 
                         month: '2-digit', 
@@ -300,7 +300,7 @@ export default function PhotoCardManager({ category, title }: PhotoCardManagerPr
             className="text-center py-20"
           >
             <div className="text-6xl mb-4">📂</div>
-            <h3 className="text-xl font-semibold text-gray-300 mb-2">
+            <h3 className="text-xl font-semibold text-gray-700 mb-2">
               등록된 자료가 없습니다
             </h3>
             <p className="text-gray-500">
