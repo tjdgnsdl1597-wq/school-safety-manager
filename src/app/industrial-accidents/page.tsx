@@ -1,12 +1,12 @@
 'use client';
 
-import MaterialManager from '../../components/MaterialManager';
+import PhotoCardManager from '../../components/PhotoCardManager';
 
 export default function IndustrialAccidentsPage() {
   return (
-    <MaterialManager 
+    <PhotoCardManager 
       category="산업재해" 
-      title="산업재해 정보 관리"
+      title="산업재해 정보"
     />
   );
 }
