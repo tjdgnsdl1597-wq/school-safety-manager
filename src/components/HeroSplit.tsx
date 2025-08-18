@@ -101,45 +101,38 @@ export default function HeroSplit() {
               <div className="absolute bottom-8 right-8 w-24 h-24 border border-gray-200 opacity-15 -rotate-6"></div>
             </div>
 
-            <div className="relative w-full h-[320px] md:h-[520px] overflow-hidden rounded-xl">
+            <div className="relative w-full h-[320px] md:h-[520px]">
               {loading ? (
                 <div className="w-full h-full bg-gray-200 rounded-xl flex items-center justify-center">
                   <div className="text-gray-500">이미지 로딩 중...</div>
                 </div>
               ) : (
                 <>
-                  {/* 슬라이드 컨테이너 */}
-                  <div 
-                    className="flex transition-transform duration-1000 ease-in-out h-full"
-                    style={{ 
-                      transform: `translateX(-${currentImage * 100}%)`,
-                      width: `${images.length * 100}%`
-                    }}
-                  >
-                    {images.map((image, index) => (
-                      <div key={image.id} className="w-full h-full flex-shrink-0 relative bg-gray-100">
-                        <Image
-                          src={image.webformatURL || '/api/placeholder/720/520?text=안전점검'}
-                          alt={`현장 안전 점검 장면 ${index + 1}`}
-                          fill
-                          sizes="(min-width:1024px) 720px, 100vw"
-                          className="object-contain"
-                          priority={index === 0}
-                          loading={index === 0 ? "eager" : "lazy"}
-                          onError={(e) => {
-                            // 이미지 로드 실패시 Unsplash 폴백 이미지로 대체
-                            const target = e.target as HTMLImageElement;
-                            const fallbackImages = [
-                              'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=720&h=520&q=80',
-                              'https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=720&h=520&q=80',
-                              'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=720&h=520&q=80'
-                            ];
-                            target.src = fallbackImages[index % 3];
-                          }}
-                        />
-                      </div>
-                    ))}
-                  </div>
+                  {/* 이미지들을 겹쳐서 배치하고 opacity로 전환 */}
+                  {images.map((image, index) => (
+                    <Image
+                      key={image.id}
+                      src={image.webformatURL || '/api/placeholder/720/520?text=안전점검'}
+                      alt={`현장 안전 점검 장면 ${index + 1}`}
+                      fill
+                      sizes="(min-width:1024px) 720px, 100vw"
+                      className={`object-cover rounded-xl transition-opacity duration-1000 ease-in-out ${
+                        currentImage === index ? 'opacity-100' : 'opacity-0'
+                      }`}
+                      priority={index === 0}
+                      loading={index === 0 ? "eager" : "lazy"}
+                      onError={(e) => {
+                        // 이미지 로드 실패시 Unsplash 폴백 이미지로 대체
+                        const target = e.target as HTMLImageElement;
+                        const fallbackImages = [
+                          'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=720&h=520&q=80',
+                          'https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=720&h=520&q=80',
+                          'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=720&h=520&q=80'
+                        ];
+                        target.src = fallbackImages[index % 3];
+                      }}
+                    />
+                  ))}
                   
                   {/* 이미지 슬라이드 네비게이션 (이미지가 2개 이상일 때만 표시) */}
                   {images.length > 1 && (
