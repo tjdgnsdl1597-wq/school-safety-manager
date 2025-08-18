@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from '../components/Navbar';
 import Providers from '../components/Providers';
 import AuthCheck from '../components/AuthCheck';
+import ErrorBoundary from '../components/ErrorBoundary';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,14 +32,16 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Providers>
-          <AuthCheck>
-            <Navbar />
-            <main className="pt-4">
-              {children}
-            </main>
-          </AuthCheck>
-        </Providers>
+        <ErrorBoundary>
+          <Providers>
+            <AuthCheck>
+              <Navbar />
+              <main className="pt-4">
+                {children}
+              </main>
+            </AuthCheck>
+          </Providers>
+        </ErrorBoundary>
       </body>
     </html>
   );
