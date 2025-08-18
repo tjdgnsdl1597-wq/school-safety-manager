@@ -47,8 +47,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const login = async (username: string, password: string): Promise<boolean> => {
-    // Simple admin check
-    if (username === 'admin' && password === 'password123') {
+    // Simple admin check using environment variables
+    const adminUsername = process.env.NEXT_PUBLIC_ADMIN_USERNAME || 'admin';
+    const adminPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'rkddkwl12.';
+    
+    if (username === adminUsername && password === adminPassword) {
       const newUser = {
         id: '1',
         name: '관리자',
