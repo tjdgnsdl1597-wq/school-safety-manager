@@ -221,17 +221,16 @@ export default function HomePage() {
       
       // Personal Introduction Section Component
       const PersonalIntroSection = () => {
-        const [hasAnimated, setHasAnimated] = useState(false);
+        const [isAnimated, setIsAnimated] = useState(false);
         
         useEffect(() => {
-          // 컴포넌트가 마운트된 후 한 번만 애니메이션 실행
-          if (!hasAnimated) {
-            const timer = setTimeout(() => {
-              setHasAnimated(true);
-            }, 200);
-            return () => clearTimeout(timer);
-          }
-        }, [hasAnimated]);
+          // 컴포넌트 마운트 시 단 한 번만 실행
+          const timer = setTimeout(() => {
+            setIsAnimated(true);
+          }, 300);
+          
+          return () => clearTimeout(timer);
+        }, []); // 빈 의존성 배열로 한 번만 실행
         
         return (
         <section className="relative py-12 md:py-16 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 overflow-hidden">
@@ -243,7 +242,7 @@ export default function HomePage() {
           <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: hasAnimated ? 1 : 0, y: hasAnimated ? 0 : 30 }}
+              animate={{ opacity: isAnimated ? 1 : 0, y: isAnimated ? 0 : 30 }}
               transition={{ duration: 0.8 }}
               className="text-center mb-12"
             >
@@ -253,7 +252,7 @@ export default function HomePage() {
 
             <motion.div
               initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: hasAnimated ? 1 : 0, y: hasAnimated ? 0 : 50 }}
+              animate={{ opacity: isAnimated ? 1 : 0, y: isAnimated ? 0 : 50 }}
               transition={{ duration: 0.8, delay: 0.2 }}
               className="max-w-6xl mx-auto"
             >
@@ -262,7 +261,7 @@ export default function HomePage() {
                   
                   <motion.div 
                     initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: hasAnimated ? 1 : 0, scale: hasAnimated ? 1 : 0.8 }}
+                    animate={{ opacity: isAnimated ? 1 : 0, scale: isAnimated ? 1 : 0.8 }}
                     transition={{ duration: 0.6, delay: 0.4 }}
                     className="text-center lg:text-left"
                   >
@@ -281,7 +280,7 @@ export default function HomePage() {
 
                   <motion.div 
                     initial={{ opacity: 0, x: -30 }}
-                    animate={{ opacity: hasAnimated ? 1 : 0, x: hasAnimated ? 0 : -30 }}
+                    animate={{ opacity: isAnimated ? 1 : 0, x: isAnimated ? 0 : -30 }}
                     transition={{ duration: 0.6, delay: 0.6 }}
                     className="lg:col-span-3 text-center lg:text-left"
                   >
