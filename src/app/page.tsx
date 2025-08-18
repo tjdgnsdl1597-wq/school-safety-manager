@@ -5,6 +5,7 @@ import { useAuth } from '@/lib/simpleAuth';
 import Link from 'next/link';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
+import HeroSplit from '@/components/HeroSplit';
 // import { motion } from 'framer-motion'; // 애니메이션 완전 비활성화
 // motion 대신 일반 div 사용 (애니메이션 완전 제거)
 const motion = {
@@ -681,6 +682,7 @@ export default function HomePage() {
       return (
         <div className="min-h-screen">
           <PersonalIntroSection />
+          <HeroSplit />
           <HeroSection />
           <CoreValuesSection />
           <ConsultingAreasSection />
