@@ -20,9 +20,8 @@ export default function Navbar() {
     { name: '중대재해 알리미', href: '/industrial-accidents' },
   ];
 
-  // 고객용 네비게이션 메뉴 (교육자료, 산업재해만)
+  // 고객용 네비게이션 메뉴 (교육자료, 중대재해만)
   const customerNavItems = [
-    { name: '학교 안전보건', href: '/school-safety' },
     { name: '교육 자료', href: '/educational-materials' },
     { name: '중대재해 알리미', href: '/industrial-accidents' },
   ];

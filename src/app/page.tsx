@@ -5,6 +5,7 @@ import { useAuth } from '@/lib/simpleAuth';
 import Link from 'next/link';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
+import { motion } from 'framer-motion';
 
 // Dynamically import ScheduleCalendarComponent to prevent SSR issues
 const ScheduleCalendarComponent = dynamic(() => import('../components/ScheduleCalendarComponent'), {
@@ -204,175 +205,157 @@ export default function HomePage() {
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
     .slice(0, 5);
 
-  // 관리자가 아닌 경우 공개 콘텐츠 표시
+  // 관리자가 아닌 경우 학교안전보건 콘텐츠 표시
   if (!isAdmin) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100">
-        {/* Hero Section */}
-        <div className="relative overflow-hidden bg-gradient-to-r from-blue-900 via-slate-900 to-blue-900">
-          <div className="absolute inset-0 bg-black/20"></div>
-          <div className="relative container mx-auto px-6 py-16">
-            <div className="text-center">
-              <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
-                학교 안전보건
-                <span className="block text-blue-300">관리 시스템</span>
-              </h1>
-              <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-                인천광역시 학교안전공제회에서 제공하는 안전보건 교육자료와 중대재해 정보를 확인하세요
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link
-                  href="/educational-materials"
-                  className="px-8 py-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:scale-105"
-                >
-                  교육자료 보기
-                </Link>
-                <Link
-                  href="/industrial-accidents"
-                  className="px-8 py-4 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-red-500/25 hover:shadow-red-500/40 hover:scale-105"
-                >
-                  중대재해 알리미
-                </Link>
-              </div>
-            </div>
+    // 학교안전보건 페이지 내용을 직접 렌더링
+    const SchoolSafetyContent = () => {
+      
+      // Personal Introduction Section Component
+      const PersonalIntroSection = () => (
+        <section className="relative py-12 md:py-16 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 overflow-hidden">
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute top-10 right-10 w-48 h-48 bg-blue-200/20 rounded-full blur-3xl animate-pulse"></div>
+            <div className="absolute bottom-10 left-10 w-64 h-64 bg-indigo-200/15 rounded-full blur-3xl animate-pulse delay-1000"></div>
           </div>
-          
-          {/* Decorative Elements */}
-          <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
-            <div className="absolute top-10 left-10 w-20 h-20 bg-blue-400/10 rounded-full blur-xl"></div>
-            <div className="absolute top-32 right-20 w-32 h-32 bg-white/5 rounded-full blur-xl"></div>
-            <div className="absolute bottom-20 left-1/3 w-24 h-24 bg-blue-300/10 rounded-full blur-xl"></div>
-          </div>
-        </div>
 
-        {/* Content Section */}
-        <div className="container mx-auto px-6 py-16">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
-            {/* 교육자료 섹션 */}
-            <div className="group">
-              <div className="bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-xl border border-white/20 hover:shadow-2xl transition-all duration-500 hover:scale-[1.02]">
-                <div className="flex items-center mb-6">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mr-4">
-                    <span className="text-white text-xl font-bold">📚</span>
-                  </div>
-                  <h2 className="text-2xl font-bold text-gray-800">최신 교육자료</h2>
-                </div>
-                
-                {latestEduMaterials.length > 0 ? (
-                  <div className="space-y-4">
-                    {latestEduMaterials.map((material) => (
-                      <div key={material.id} className="group/item p-4 rounded-xl bg-gradient-to-r from-blue-50 to-transparent hover:from-blue-100 hover:shadow-md transition-all duration-300">
-                        <a 
-                          href={safeUrl(material.filePath)} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="block"
-                        >
-                          <h3 className="font-semibold text-gray-800 group-hover/item:text-blue-600 transition-colors mb-2">
-                            {material.filename}
-                          </h3>
-                          <p className="text-sm text-gray-500">
-                            {new Date(material.uploadedAt).toLocaleDateString('ko-KR')}
-                          </p>
-                        </a>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-8 text-gray-500">
-                    <div className="text-4xl mb-4">📄</div>
-                    <p>등록된 교육자료가 없습니다.</p>
-                  </div>
-                )}
-                
-                <div className="mt-8">
-                  <Link 
-                    href="/educational-materials" 
-                    className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 group"
+          <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="text-center mb-12"
+            >
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">담당자 소개</h2>
+              <p className="text-lg text-gray-600">학교 안전보건 전담 컨설턴트</p>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="max-w-6xl mx-auto"
+            >
+              <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 md:p-12 shadow-2xl border border-white/20 hover:shadow-3xl transition-all duration-500">
+                <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 md:gap-12 items-start">
+                  
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.6, delay: 0.4 }}
+                    className="text-center lg:text-left"
                   >
-                    전체 보기
-                    <svg className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </Link>
-                </div>
-              </div>
-            </div>
-
-            {/* 산업재해 섹션 */}
-            <div className="group">
-              <div className="bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-xl border border-white/20 hover:shadow-2xl transition-all duration-500 hover:scale-[1.02]">
-                <div className="flex items-center mb-6">
-                  <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center mr-4">
-                    <span className="text-white text-xl font-bold">⚠️</span>
-                  </div>
-                  <h2 className="text-2xl font-bold text-gray-800">중대재해 알리미</h2>
-                </div>
-                
-                {latestIndAccidents.length > 0 ? (
-                  <div className="space-y-4">
-                    {latestIndAccidents.map((material) => (
-                      <div key={material.id} className="group/item p-4 rounded-xl bg-gradient-to-r from-red-50 to-transparent hover:from-red-100 hover:shadow-md transition-all duration-300">
-                        <a 
-                          href={safeUrl(material.filePath)} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="block"
-                        >
-                          <h3 className="font-semibold text-gray-800 group-hover/item:text-red-600 transition-colors mb-2">
-                            {material.filename}
-                          </h3>
-                          <p className="text-sm text-gray-500">
-                            {new Date(material.uploadedAt).toLocaleDateString('ko-KR')}
-                          </p>
-                        </a>
+                    <div className="relative inline-block">
+                      <div className="w-48 h-64 md:w-56 md:h-72 rounded-3xl overflow-hidden shadow-2xl ring-4 ring-blue-500/20">
+                        <Image
+                          src="/images/admin_profile.png"
+                          alt="강성훈 대리 프로필"
+                          fill
+                          className="object-cover object-center rounded-3xl"
+                        />
                       </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-8 text-gray-500">
-                    <div className="text-4xl mb-4">📋</div>
-                    <p>등록된 중대재해 정보가 없습니다.</p>
-                  </div>
-                )}
-                
-                <div className="mt-8">
-                  <Link 
-                    href="/industrial-accidents" 
-                    className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-red-500/25 hover:shadow-red-500/40 group"
-                  >
-                    전체 보기
-                    <svg className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
+                      <div className="absolute -top-2 -right-2 w-8 h-8 bg-green-500 rounded-full border-4 border-white animate-pulse"></div>
+                    </div>
+                  </motion.div>
 
-          {/* 안내 메시지 */}
-          <div className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 rounded-2xl p-8 shadow-2xl">
-            <div className="relative z-10">
-              <div className="flex items-center mb-4">
-                <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center mr-4">
-                  <span className="text-white text-lg">🛡️</span>
+                  <motion.div 
+                    initial={{ opacity: 0, x: -30 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.6, delay: 0.6 }}
+                    className="lg:col-span-3 text-center lg:text-left"
+                  >
+                    <div className="mb-8">
+                      <h3 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">강성훈</h3>
+                      <p className="text-xl md:text-2xl text-blue-600 font-semibold mb-6">인천광역시학교안전공제회 산업안전팀 대리</p>
+                      
+                      <div className="p-6 md:p-8 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl border-l-4 border-blue-500 mb-8">
+                        <p className="text-gray-800 text-lg md:text-xl leading-relaxed font-medium">
+                          현업근로자와 교직원의 안전을 현장의 목소리와 표준 절차로 지키는 것이 저의 일입니다.
+                        </p>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+                        <div className="flex items-center justify-center lg:justify-start space-x-4 p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-200">
+                          <div className="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center shadow-lg">
+                            <span className="text-white text-lg">📞</span>
+                          </div>
+                          <div>
+                            <p className="text-sm text-gray-600">연락처</p>
+                            <p className="text-gray-900 font-bold text-lg">010-8764-2428</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-center lg:justify-start space-x-4 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl border border-blue-200">
+                          <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center shadow-lg">
+                            <span className="text-white text-lg">✉️</span>
+                          </div>
+                          <div>
+                            <p className="text-sm text-gray-600">이메일</p>
+                            <p className="text-gray-900 font-bold text-lg">safe08@ssif.or.kr</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
                 </div>
-                <h3 className="text-2xl font-bold text-white">학교 안전보건 관리 시스템</h3>
+
+                <div className="mt-6 p-4 bg-yellow-50 rounded-xl border-l-4 border-yellow-400">
+                  <div className="text-sm text-gray-700 text-center">
+                    <p><strong>기본 응대:</strong> 평일 08:30–17:00</p>
+                    <p><strong>긴급 상황:</strong> 즉시 연락 바랍니다</p>
+                  </div>
+                </div>
               </div>
-              <p className="text-blue-100 text-lg leading-relaxed">
-                학교 안전보건과 관련된 최신 교육자료와 중대재해 정보를 제공합니다. 
-                안전한 교육 환경 조성을 위해 필요한 자료를 다운로드하여 활용하시기 바랍니다.
-              </p>
+            </motion.div>
+          </div>
+        </section>
+      );
+
+      // Quick Menu Section for Materials
+      const QuickMenuSection = () => (
+        <section className="py-16 bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100">
+          <div className="container mx-auto px-6">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-6">안전자료 바로가기</h2>
+              <p className="text-xl text-gray-600">필요한 안전보건 자료를 쉽고 빠르게 찾아보세요</p>
             </div>
             
-            {/* Background decoration */}
-            <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-xl"></div>
-            <div className="absolute bottom-0 left-0 w-24 h-24 bg-blue-300/10 rounded-full blur-xl"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+              <Link href="/educational-materials" className="group">
+                <div className="bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-xl border border-white/20 hover:shadow-2xl transition-all duration-500 hover:scale-105">
+                  <div className="text-center">
+                    <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                      <span className="text-white text-3xl">📚</span>
+                    </div>
+                    <h3 className="text-2xl font-bold text-gray-800 mb-4">교육 자료</h3>
+                    <p className="text-gray-600 leading-relaxed">안전보건 교육에 필요한 다양한 자료와 매뉴얼을 확인하실 수 있습니다.</p>
+                  </div>
+                </div>
+              </Link>
+              
+              <Link href="/industrial-accidents" className="group">
+                <div className="bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-xl border border-white/20 hover:shadow-2xl transition-all duration-500 hover:scale-105">
+                  <div className="text-center">
+                    <div className="w-20 h-20 bg-gradient-to-r from-red-500 to-red-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                      <span className="text-white text-3xl">⚠️</span>
+                    </div>
+                    <h3 className="text-2xl font-bold text-gray-800 mb-4">중대재해 알리미</h3>
+                    <p className="text-gray-600 leading-relaxed">학교 현장에서 발생할 수 있는 중대재해 예방을 위한 사례와 정보를 제공합니다.</p>
+                  </div>
+                </div>
+              </Link>
+            </div>
           </div>
+        </section>
+      );
+
+      return (
+        <div className="min-h-screen">
+          <PersonalIntroSection />
+          <QuickMenuSection />
         </div>
-      </div>
-    );
+      );
+    };
+
+    return <SchoolSafetyContent />;
   }
 
   // 관리자용 대시보드
