@@ -69,7 +69,7 @@ export default function PhotoCardManager({ category, title }: PhotoCardManagerPr
     setIsDragOver(false);
   };
 
-  const handleDrop = (e: React.DragEvent) => {
+  const handleDrop = async (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragOver(false);
     
@@ -78,51 +78,55 @@ export default function PhotoCardManager({ category, title }: PhotoCardManagerPr
     );
     
     if (files.length > 0) {
-      setSelectedFiles(files);
-    }
-  };
+      const shouldUpload = confirm(`${files.length}개의 이미지를 업로드 하시겠습니까?`);
+      
+      if (shouldUpload) {
+        setUploading(true);
+        
+        for (const file of files) {
+          const formData = new FormData();
+          const title = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
+          formData.append('title', title);
+          formData.append('category', category);
+          formData.append('content', '');
+          formData.append('files', file);
 
-  const handleUpload = async () => {
-    if (!selectedFiles.length) return;
+          try {
+            await fetch('/api/materials', {
+              method: 'POST',
+              body: formData,
+            });
+          } catch (error) {
+            console.error('Upload error:', error);
+          }
+        }
 
-    setUploading(true);
-    
-    for (const file of selectedFiles) {
-      const formData = new FormData();
-      // 파일명에서 확장자 제거하여 제목으로 사용
-      const title = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
-      formData.append('title', title);
-      formData.append('category', category);
-      formData.append('content', '');
-      formData.append('files', file);
-
-      try {
-        await fetch('/api/materials', {
-          method: 'POST',
-          body: formData,
-        });
-      } catch (error) {
-        console.error('Upload error:', error);
+        fetchMaterials();
+        setUploading(false);
       }
     }
-
-    setSelectedFiles([]);
-    fetchMaterials();
-    setUploading(false);
   };
+
 
   const handleDelete = async (id: string) => {
     if (!confirm('정말 삭제하시겠습니까?')) return;
 
     try {
+      console.log('Attempting to delete material with ID:', id);
       const response = await fetch(`/api/materials/${id}`, {
         method: 'DELETE',
       });
 
+      console.log('Delete response status:', response.status);
+      
       if (response.ok) {
-        fetchMaterials();
+        console.log('Delete successful, refreshing materials...');
+        await fetchMaterials();
+        alert('삭제되었습니다.');
       } else {
-        alert('삭제에 실패했습니다.');
+        const errorData = await response.json().catch(() => ({}));
+        console.error('Delete failed:', errorData);
+        alert(`삭제에 실패했습니다: ${errorData.error || '알 수 없는 오류'}`);
       }
     } catch (error) {
       console.error('Delete error:', error);
@@ -193,59 +197,24 @@ export default function PhotoCardManager({ category, title }: PhotoCardManagerPr
               새 자료 업로드
             </h2>
             
-            <div className="space-y-6">
-              {/* 드래그 앤 드롭 영역 */}
-              <div
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-                className={`border-2 border-dashed rounded-xl p-8 text-center transition-all duration-300 ${
-                  isDragOver 
-                    ? 'border-blue-400 bg-blue-500/10' 
-                    : 'border-gray-600 bg-gray-700/50'
-                }`}
-              >
-                <div className="text-6xl mb-4">{isDragOver ? '📤' : '📁'}</div>
-                <p className="text-white text-lg mb-2">
-                  {isDragOver ? '파일을 여기에 놓으세요' : '이미지를 드래그하여 업로드'}
-                </p>
-                <p className="text-gray-400 text-sm">
-                  또는 클릭하여 파일 선택
-                </p>
-                <input
-                  type="file"
-                  multiple
-                  accept="image/*"
-                  onChange={(e) => handleFileSelect(Array.from(e.target.files || []))}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                />
-              </div>
-
-              {/* 선택된 파일 미리보기 */}
-              {selectedFiles.length > 0 && (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {selectedFiles.map((file, index) => (
-                    <div key={index} className="relative">
-                      <img
-                        src={URL.createObjectURL(file)}
-                        alt={file.name}
-                        className="w-full h-24 object-cover rounded-lg"
-                      />
-                      <div className="absolute bottom-1 left-1 bg-black/70 text-white text-xs px-2 py-1 rounded">
-                        {file.name}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              <button
-                onClick={handleUpload}
-                disabled={uploading || !selectedFiles.length}
-                className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {uploading ? '업로드 중...' : `업로드 (${selectedFiles.length}개 파일)`}
-              </button>
+            {/* 드래그 앤 드롭 영역 */}
+            <div
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              className={`border-2 border-dashed rounded-xl p-8 text-center transition-all duration-300 ${
+                isDragOver 
+                  ? 'border-blue-400 bg-blue-500/10' 
+                  : 'border-gray-600 bg-gray-700/50'
+              }`}
+            >
+              <div className="text-6xl mb-4">{uploading ? '⏳' : isDragOver ? '📤' : '📁'}</div>
+              <p className="text-white text-lg mb-2">
+                {uploading ? '업로드 중...' : isDragOver ? '파일을 여기에 놓으세요' : '이미지를 드래그하여 업로드'}
+              </p>
+              <p className="text-gray-400 text-sm">
+                파일을 드롭하면 자동으로 업로드됩니다
+              </p>
             </div>
           </motion.div>
         )}
