@@ -299,7 +299,7 @@ export default function SchedulesPage() {
                             <div>
                                 <label htmlFor="endTime" className="block text-gray-700 text-sm font-bold mb-2">종료 시간</label>
                                 <select name="endTime" id="endTime" value={endTime} onChange={e => setEndTime(e.target.value)} className="shadow appearance-none border rounded w-full py-2 px-3" required>
-                                    {filteredTimeOptions.map(time => <option key={time} value={time}>{time}</option>)}
+                                    {timeOptions.map(time => <option key={time} value={time}>{time}</option>)}
                                 </select>
                             </div>
                         </div>
