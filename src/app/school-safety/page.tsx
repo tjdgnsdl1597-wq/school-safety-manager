@@ -5,6 +5,157 @@ import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import HeroSplit from '@/components/HeroSplit';
 
+// Personal Introduction Section Component
+const PersonalIntroSection = () => (
+  <section className="relative py-12 md:py-16 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 overflow-hidden">
+    {/* 배경 장식 요소들 */}
+    <div className="absolute inset-0 pointer-events-none">
+      <div className="absolute top-10 right-10 w-48 h-48 bg-blue-200/20 rounded-full blur-3xl animate-pulse"></div>
+      <div className="absolute bottom-10 left-10 w-64 h-64 bg-indigo-200/15 rounded-full blur-3xl animate-pulse delay-1000"></div>
+    </div>
+
+    <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        className="text-center mb-12"
+      >
+        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">담당자 소개</h2>
+        <p className="text-lg text-gray-600">학교 안전보건 전담 컨설턴트</p>
+      </motion.div>
+
+      {/* 담당자 소개 카드 */}
+      <motion.div
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.2 }}
+        className="max-w-5xl mx-auto"
+      >
+        <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 md:p-12 shadow-2xl border border-white/20 hover:shadow-3xl transition-all duration-500">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-12 items-center">
+            
+            {/* 프로필 사진 */}
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="text-center lg:text-left"
+            >
+              <div className="relative inline-block">
+                <div className="w-32 h-32 md:w-40 md:h-40 rounded-3xl overflow-hidden shadow-2xl ring-4 ring-blue-500/20">
+                  <Image
+                    src="/images/admin_profile.png"
+                    alt="강성훈 대리 프로필"
+                    fill
+                    className="object-cover"
+                    onError={(e) => {
+                      // 이미지 로드 실패시 대체
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                      target.parentElement!.innerHTML = `
+                        <div class="w-full h-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-2xl font-bold">
+                          강성훈
+                        </div>
+                      `;
+                    }}
+                  />
+                </div>
+                <div className="absolute -top-2 -right-2 w-8 h-8 bg-green-500 rounded-full border-4 border-white animate-pulse"></div>
+              </div>
+            </motion.div>
+
+            {/* 기본 정보 */}
+            <motion.div 
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.6 }}
+              className="lg:col-span-2 text-center lg:text-left"
+            >
+              <div className="mb-6">
+                <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">강성훈</h3>
+                <p className="text-lg md:text-xl text-blue-600 font-semibold mb-4">인천광역시학교안전공제회 산업안전팀 대리</p>
+                
+                {/* 한 줄 요약 */}
+                <div className="p-4 md:p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl border-l-4 border-blue-500 mb-6">
+                  <p className="text-gray-800 text-base md:text-lg leading-relaxed font-medium">
+                    현업근로자와 교직원의 안전을 현장의 목소리와 표준 절차로 지키는 것이 저의 일입니다.
+                  </p>
+                </div>
+
+                {/* 연락처 */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-center lg:justify-start space-x-3">
+                    <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
+                      <span className="text-white text-sm">📞</span>
+                    </div>
+                    <span className="text-gray-700 font-semibold">010-8764-2428</span>
+                  </div>
+                  <div className="flex items-center justify-center lg:justify-start space-x-3">
+                    <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+                      <span className="text-white text-sm">✉️</span>
+                    </div>
+                    <span className="text-gray-700 font-semibold">safe08@ssif.or.kr</span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* 주요 업무 */}
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.8 }}
+            className="mt-8 md:mt-12 pt-8 border-t border-gray-200"
+          >
+            <h4 className="text-xl font-bold text-gray-900 mb-6 text-center flex items-center justify-center">
+              <span className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center mr-3">
+                <span className="text-white text-sm">🛡️</span>
+              </span>
+              주요 업무
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[
+                '정기적인 현장 방문 및 안전점검 실시',
+                '맞춤형 산업안전보건 교육 기획·운영',
+                '위험요인 발굴 및 개선방안 컨설팅',
+                '산안법·중대재해처벌법 준수 지원',
+                '위험성평가 실시 및 관리체계 구축',
+                '사고예방 및 안전문화 정착 지원'
+              ].map((item, index) => (
+                <motion.div 
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 1.0 + index * 0.1, duration: 0.5 }}
+                  className="flex items-center space-x-3 p-3 rounded-xl hover:bg-blue-50 transition-colors group"
+                >
+                  <div className="w-2 h-2 bg-blue-500 rounded-full group-hover:scale-125 transition-transform flex-shrink-0"></div>
+                  <span className="text-gray-700 text-sm font-medium">{item}</span>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* 업무 시간 및 긴급연락 */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 1.2 }}
+            className="mt-6 p-4 bg-yellow-50 rounded-xl border-l-4 border-yellow-400"
+          >
+            <div className="text-sm text-gray-700 text-center">
+              <p><strong>기본 응대:</strong> 평일 08:30–17:00</p>
+              <p><strong>긴급 상황:</strong> 즉시 연락 바랍니다</p>
+            </div>
+          </motion.div>
+        </div>
+      </motion.div>
+    </div>
+  </section>
+);
+
 // Hero Section Component
 const HeroSection = () => (
   <section className="relative min-h-[65vh] py-16 md:py-20 flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800">
@@ -613,6 +764,7 @@ const LegalNoticeSection = () => (
 export default function SchoolSafetyPage() {
   return (
     <div className="min-h-screen">
+      <PersonalIntroSection />
       <HeroSplit />
       <CoreValuesSection />
       <ConsultingAreasSection />
