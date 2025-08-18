@@ -6,6 +6,16 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 // --- Helper Functions ---
+function safeParsePurpose(purpose: string): string[] {
+  try {
+    if (!purpose) return [];
+    const parsed = JSON.parse(purpose);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (e) {
+    console.warn('Failed to parse purpose JSON:', purpose);
+    return [];
+  }
+}
 
 // --- Interfaces ---
 interface Schedule {
@@ -80,14 +90,10 @@ export default function HomePage() {
     schedules.forEach(s => {
       const scheduleDate = new Date(s.date);
       if (scheduleDate.getMonth() === currentMonth && scheduleDate.getFullYear() === currentYear) {
-        try {
-          const purposes = JSON.parse(s.purpose);
-          purposes.forEach((p: string) => {
-            summary[p] = (summary[p] || 0) + 1;
-          });
-        } catch (e) {
-          console.error("Failed to parse purpose JSON:", s.purpose, e);
-        }
+        const purposes = safeParsePurpose(s.purpose);
+        purposes.forEach((p: string) => {
+          summary[p] = (summary[p] || 0) + 1;
+        });
       }
     });
     setMonthlyPurposeSummary(summary);
@@ -328,7 +334,7 @@ export default function HomePage() {
                 <ul>
                   {todaySchedules.map(schedule => (
                     <li key={schedule.id} className="mb-1 text-sm text-gray-700">
-                      <span className="font-medium">{schedule.startTime} ~ {schedule.endTime}</span> - {schedule.school.abbreviation || schedule.school.name} ({JSON.parse(schedule.purpose).join(', ')})
+                      <span className="font-medium">{schedule.startTime} ~ {schedule.endTime}</span> - {schedule.school.abbreviation || schedule.school.name} ({safeParsePurpose(schedule.purpose).join(', ')})
                     </li>
                   ))}
                 </ul>
@@ -374,7 +380,7 @@ export default function HomePage() {
               {upcomingSchedules.map(schedule => (
                 <li key={schedule.id} className="mb-2 pb-2 border-b border-gray-200 last:border-b-0">
                   <p className="font-medium text-gray-800">{new Date(schedule.date).toLocaleDateString()} - {schedule.school.abbreviation || schedule.school.name}</p>
-                  <p className="text-sm text-gray-600">{JSON.parse(schedule.purpose).join(', ')} ({schedule.startTime} ~ {schedule.endTime})</p>
+                  <p className="text-sm text-gray-600">{safeParsePurpose(schedule.purpose).join(', ')} ({schedule.startTime} ~ {schedule.endTime})</p>
                 </li>
               ))}
             </ul>
