@@ -5,7 +5,13 @@ import { useAuth } from '@/lib/simpleAuth';
 import Link from 'next/link';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
-import { motion } from 'framer-motion';
+// import { motion } from 'framer-motion'; // 애니메이션 완전 비활성화
+// motion 대신 일반 div 사용 (애니메이션 완전 제거)
+const motion = {
+  div: ({ children, className, initial, animate, whileInView, transition, viewport, ...props }: any) => (
+    <div className={className} {...props}>{children}</div>
+  )
+};
 
 // Dynamically import ScheduleCalendarComponent to prevent SSR issues
 const ScheduleCalendarComponent = dynamic(() => import('../components/ScheduleCalendarComponent'), {
@@ -219,34 +225,16 @@ export default function HomePage() {
           </div>
 
           <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: true }}
-              className="text-center mb-12"
-            >
+            <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">담당자 소개</h2>
               <p className="text-lg text-gray-600">학교 안전보건 전담 컨설턴트</p>
-            </motion.div>
+            </div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              viewport={{ once: true }}
-              className="max-w-6xl mx-auto"
-            >
+            <div className="max-w-6xl mx-auto">
               <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 md:p-12 shadow-2xl border border-white/20 hover:shadow-3xl transition-all duration-500">
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 md:gap-12 items-start">
                   
-                  <motion.div 
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.6, delay: 0.4 }}
-                    viewport={{ once: true }}
-                    className="text-center lg:text-left"
-                  >
+                  <div className="text-center lg:text-left">
                     <div className="relative inline-block">
                       <div className="w-48 h-64 md:w-56 md:h-72 rounded-3xl overflow-hidden shadow-2xl ring-4 ring-blue-500/20">
                         <Image
@@ -258,15 +246,9 @@ export default function HomePage() {
                       </div>
                       <div className="absolute -top-2 -right-2 w-8 h-8 bg-green-500 rounded-full border-4 border-white"></div>
                     </div>
-                  </motion.div>
+                  </div>
 
-                  <motion.div 
-                    initial={{ opacity: 0, x: -30 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.6, delay: 0.6 }}
-                    viewport={{ once: true }}
-                    className="lg:col-span-3 text-center lg:text-left"
-                  >
+                  <div className="lg:col-span-3 text-center lg:text-left">
                     <div className="mb-8">
                       <h3 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">강성훈</h3>
                       <p className="text-xl md:text-2xl text-blue-600 font-semibold mb-6">인천광역시학교안전공제회 산업안전팀 대리</p>
@@ -298,7 +280,7 @@ export default function HomePage() {
                         </div>
                       </div>
                     </div>
-                  </motion.div>
+                  </div>
                 </div>
 
                 <div className="mt-6 p-4 bg-yellow-50 rounded-xl border-l-4 border-yellow-400">
@@ -308,7 +290,7 @@ export default function HomePage() {
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </div>
           </div>
         </section>
       );
@@ -363,13 +345,7 @@ export default function HomePage() {
 
         {/* Content */}
         <div className="relative z-10 container mx-auto px-4 sm:px-6 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="max-w-3xl md:max-w-4xl mx-auto scale-90 md:scale-95 lg:scale-100 origin-center"
-          >
+          <div className="max-w-3xl md:max-w-4xl mx-auto scale-90 md:scale-95 lg:scale-100 origin-center">
             <h1 className="text-[clamp(2rem,5vw,3.5rem)] font-bold text-white mb-6 leading-[1.2] [text-wrap:balance] break-keep">
         체계적인 학교 안전보건 시스템 구축,
         <span className="block text-blue-300 mt-3">
@@ -377,13 +353,7 @@ export default function HomePage() {
         </span>
       </h1>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              viewport={{ once: true }}
-              className="text-base md:text-lg text-gray-300 mb-8 leading-relaxed"
-            >
+            <div className="text-base md:text-lg text-gray-300 mb-8 leading-relaxed">
               <p className="font-semibold text-emerald-300 mb-3">
                 법규 준수부터 재해 예방까지, 원스톱 학교 안전 솔루션
               </p>
@@ -391,15 +361,9 @@ export default function HomePage() {
         {`복잡한 중대재해처벌법과 산업안전보건법, 교육 현장의 수많은 업무와 병행하기에 어려움이 많으셨을 겁니다.
       학생과 교직원의 안전을 책임져야 한다는 막중한 부담감, 이제 안전공제회 산업안전팀이 함께 나누겠습니다.`}
       </p>
-            </motion.div>
+            </div>
 
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.8, delay: 0.6 }}
-                viewport={{ once: true }}
-                className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 max-w-4xl mx-auto border border-white/20"
-              >
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 max-w-4xl mx-auto border border-white/20">
                 <p className="text-gray-200 leading-relaxed">
                   저희는 안전한 학교를 위한 맞춤형 안전보건 관리체계 구축을 약속합니다. 
                   매월 전문 담당자가 학교 현장을 직접 방문하여 법적 요구사항 이행 여부를 정밀하게 진단하고 
@@ -409,8 +373,8 @@ export default function HomePage() {
                   이를 통해 관리감독자(학교장)에게는 명확한 의무 이행 로드맵을, 
                   안전보건실무자(행정실장, 행정주무관, 영양교사 등)에게는 과도한 실무 부담의 감소를 목표합니다.
                 </p>
-              </motion.div>
-            </motion.div>
+              </div>
+            </div>
           </div>
         </section>
       );
