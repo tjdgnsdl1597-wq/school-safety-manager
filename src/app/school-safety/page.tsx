@@ -30,10 +30,10 @@ const PersonalIntroSection = () => (
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 0.2 }}
-        className="max-w-5xl mx-auto"
+        className="max-w-6xl mx-auto"
       >
         <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 md:p-12 shadow-2xl border border-white/20 hover:shadow-3xl transition-all duration-500">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 md:gap-12 items-start">
             
             {/* 프로필 사진 */}
             <motion.div 
@@ -43,18 +43,18 @@ const PersonalIntroSection = () => (
               className="text-center lg:text-left"
             >
               <div className="relative inline-block">
-                <div className="w-32 h-32 md:w-40 md:h-40 rounded-3xl overflow-hidden shadow-2xl ring-4 ring-blue-500/20">
+                <div className="w-48 h-64 md:w-56 md:h-72 rounded-2xl overflow-hidden shadow-2xl ring-4 ring-blue-500/20">
                   <Image
                     src="/images/admin_profile.png"
                     alt="강성훈 대리 프로필"
                     fill
-                    className="object-cover"
+                    className="object-cover object-center"
                     onError={(e) => {
                       // 이미지 로드 실패시 대체
                       const target = e.target as HTMLImageElement;
                       target.style.display = 'none';
                       target.parentElement!.innerHTML = `
-                        <div class="w-full h-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-2xl font-bold">
+                        <div class="w-full h-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-3xl font-bold">
                           강성훈
                         </div>
                       `;
@@ -70,32 +70,38 @@ const PersonalIntroSection = () => (
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.6 }}
-              className="lg:col-span-2 text-center lg:text-left"
+              className="lg:col-span-3 text-center lg:text-left"
             >
-              <div className="mb-6">
-                <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">강성훈</h3>
-                <p className="text-lg md:text-xl text-blue-600 font-semibold mb-4">인천광역시학교안전공제회 산업안전팀 대리</p>
+              <div className="mb-8">
+                <h3 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">강성훈</h3>
+                <p className="text-xl md:text-2xl text-blue-600 font-semibold mb-6">인천광역시학교안전공제회 산업안전팀 대리</p>
                 
                 {/* 한 줄 요약 */}
-                <div className="p-4 md:p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl border-l-4 border-blue-500 mb-6">
-                  <p className="text-gray-800 text-base md:text-lg leading-relaxed font-medium">
+                <div className="p-6 md:p-8 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl border-l-4 border-blue-500 mb-8">
+                  <p className="text-gray-800 text-lg md:text-xl leading-relaxed font-medium">
                     현업근로자와 교직원의 안전을 현장의 목소리와 표준 절차로 지키는 것이 저의 일입니다.
                   </p>
                 </div>
 
                 {/* 연락처 */}
-                <div className="space-y-3">
-                  <div className="flex items-center justify-center lg:justify-start space-x-3">
-                    <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
-                      <span className="text-white text-sm">📞</span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+                  <div className="flex items-center justify-center lg:justify-start space-x-4 p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-200">
+                    <div className="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center shadow-lg">
+                      <span className="text-white text-lg">📞</span>
                     </div>
-                    <span className="text-gray-700 font-semibold">010-8764-2428</span>
+                    <div>
+                      <p className="text-sm text-gray-600">연락처</p>
+                      <p className="text-gray-900 font-bold text-lg">010-8764-2428</p>
+                    </div>
                   </div>
-                  <div className="flex items-center justify-center lg:justify-start space-x-3">
-                    <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
-                      <span className="text-white text-sm">✉️</span>
+                  <div className="flex items-center justify-center lg:justify-start space-x-4 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl border border-blue-200">
+                    <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center shadow-lg">
+                      <span className="text-white text-lg">✉️</span>
                     </div>
-                    <span className="text-gray-700 font-semibold">safe08@ssif.or.kr</span>
+                    <div>
+                      <p className="text-sm text-gray-600">이메일</p>
+                      <p className="text-gray-900 font-bold text-lg">safe08@ssif.or.kr</p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -109,30 +115,71 @@ const PersonalIntroSection = () => (
             transition={{ duration: 0.6, delay: 0.8 }}
             className="mt-8 md:mt-12 pt-8 border-t border-gray-200"
           >
-            <h4 className="text-xl font-bold text-gray-900 mb-6 text-center flex items-center justify-center">
-              <span className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center mr-3">
-                <span className="text-white text-sm">🛡️</span>
-              </span>
-              주요 업무
-            </h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="text-center mb-8">
+              <h4 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3 flex items-center justify-center">
+                <span className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center mr-4 shadow-lg">
+                  <span className="text-white text-xl">🛡️</span>
+                </span>
+                주요 업무
+              </h4>
+              <p className="text-gray-600 text-lg">안전한 교육환경 조성을 위한 전문 컨설팅 서비스</p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[
-                '정기적인 현장 방문 및 안전점검 실시',
-                '맞춤형 산업안전보건 교육 기획·운영',
-                '위험요인 발굴 및 개선방안 컨설팅',
-                '산안법·중대재해처벌법 준수 지원',
-                '위험성평가 실시 및 관리체계 구축',
-                '사고예방 및 안전문화 정착 지원'
+                { 
+                  title: '현장 방문 점검', 
+                  desc: '정기적인 현장 방문 및 안전점검 실시',
+                  icon: '🔍',
+                  color: 'from-blue-500 to-blue-600'
+                },
+                { 
+                  title: '안전보건 교육', 
+                  desc: '맞춤형 산업안전보건 교육 기획·운영',
+                  icon: '📚',
+                  color: 'from-emerald-500 to-emerald-600'
+                },
+                { 
+                  title: '위험요인 컨설팅', 
+                  desc: '위험요인 발굴 및 개선방안 컨설팅',
+                  icon: '⚠️',
+                  color: 'from-orange-500 to-orange-600'
+                },
+                { 
+                  title: '법령 준수 지원', 
+                  desc: '산안법·중대재해처벌법 준수 지원',
+                  icon: '⚖️',
+                  color: 'from-purple-500 to-purple-600'
+                },
+                { 
+                  title: '위험성평가', 
+                  desc: '위험성평가 실시 및 관리체계 구축',
+                  icon: '📊',
+                  color: 'from-indigo-500 to-indigo-600'
+                },
+                { 
+                  title: '안전문화 정착', 
+                  desc: '사고예방 및 안전문화 정착 지원',
+                  icon: '🏛️',
+                  color: 'from-teal-500 to-teal-600'
+                }
               ].map((item, index) => (
                 <motion.div 
                   key={index}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 1.0 + index * 0.1, duration: 0.5 }}
-                  className="flex items-center space-x-3 p-3 rounded-xl hover:bg-blue-50 transition-colors group"
+                  className="group"
                 >
-                  <div className="w-2 h-2 bg-blue-500 rounded-full group-hover:scale-125 transition-transform flex-shrink-0"></div>
-                  <span className="text-gray-700 text-sm font-medium">{item}</span>
+                  <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/40 hover:shadow-xl hover:bg-white/80 transition-all duration-300 hover:scale-[1.02] h-full">
+                    <div className="flex flex-col items-center text-center">
+                      <div className={`w-16 h-16 bg-gradient-to-r ${item.color} rounded-2xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                        <span className="text-white text-2xl">{item.icon}</span>
+                      </div>
+                      <h5 className="text-lg font-bold text-gray-900 mb-3">{item.title}</h5>
+                      <p className="text-gray-600 text-sm leading-relaxed">{item.desc}</p>
+                    </div>
+                  </div>
                 </motion.div>
               ))}
             </div>
