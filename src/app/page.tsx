@@ -76,6 +76,11 @@ interface Material {
 export default function HomePage() {
   const { user, loading } = useAuth();
   
+  // 디버깅: user 상태 변화 감지
+  useEffect(() => {
+    console.log('HomePage - user state changed:', { user: user?.role, loading });
+  }, [user, loading]);
+  
   // 관리자 여부 확인
   const isAdmin = user?.role === 'admin';
 
@@ -234,6 +239,14 @@ export default function HomePage() {
       // Personal Introduction Section Component
       const PersonalIntroSection = () => {
         // useState와 useEffect 제거하고 whileInView 사용
+        
+        // 컴포넌트 마운트 감지를 위한 디버깅
+        useEffect(() => {
+          console.log('PersonalIntroSection mounted at:', new Date().toISOString());
+          return () => {
+            console.log('PersonalIntroSection unmounted at:', new Date().toISOString());
+          };
+        }, []);
         
         return (
         <section className="relative py-12 md:py-16 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 overflow-hidden">
