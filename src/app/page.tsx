@@ -17,6 +17,22 @@ function safeParsePurpose(purpose: string): string[] {
   }
 }
 
+function safeUrl(url: string | null | undefined): string {
+  if (!url || typeof url !== 'string') {
+    return '#';
+  }
+  try {
+    // Check if it's a valid URL or path
+    if (url.startsWith('http') || url.startsWith('/')) {
+      return url;
+    }
+    return '#';
+  } catch (e) {
+    console.warn('Invalid URL:', url);
+    return '#';
+  }
+}
+
 // --- Interfaces ---
 interface Schedule {
   id: string;
@@ -190,7 +206,7 @@ export default function HomePage() {
                     {latestEduMaterials.map((material) => (
                       <div key={material.id} className="group/item p-4 rounded-xl bg-gradient-to-r from-blue-50 to-transparent hover:from-blue-100 hover:shadow-md transition-all duration-300">
                         <a 
-                          href={material.filePath} 
+                          href={safeUrl(material.filePath)} 
                           target="_blank" 
                           rel="noopener noreferrer"
                           className="block"
@@ -241,7 +257,7 @@ export default function HomePage() {
                     {latestIndAccidents.map((material) => (
                       <div key={material.id} className="group/item p-4 rounded-xl bg-gradient-to-r from-red-50 to-transparent hover:from-red-100 hover:shadow-md transition-all duration-300">
                         <a 
-                          href={material.filePath} 
+                          href={safeUrl(material.filePath)} 
                           target="_blank" 
                           rel="noopener noreferrer"
                           className="block"
@@ -397,7 +413,7 @@ export default function HomePage() {
                 <li key={material.id} className="mb-2 pb-2 border-b border-gray-200 last:border-b-0 flex items-center">
                   {material.thumbnailPath && <Image src={material.thumbnailPath} alt={material.filename} width={40} height={40} className="object-cover mr-3 rounded" />}
                   <div>
-                    <Link href={material.filePath} target="_blank" rel="noopener noreferrer" className="font-medium text-blue-600 hover:underline">{material.filename}</Link>
+                    <Link href={safeUrl(material.filePath)} target="_blank" rel="noopener noreferrer" className="font-medium text-blue-600 hover:underline">{material.filename}</Link>
                     <p className="text-sm text-gray-600">{new Date(material.uploadedAt).toLocaleDateString()}</p>
                   </div>
                 </li>
@@ -416,7 +432,7 @@ export default function HomePage() {
                 <li key={material.id} className="mb-2 pb-2 border-b border-gray-200 last:border-b-0 flex items-center">
                   {material.thumbnailPath && <Image src={material.thumbnailPath} alt={material.filename} width={40} height={40} className="object-cover mr-3 rounded" />}
                   <div>
-                    <Link href={material.filePath} target="_blank" rel="noopener noreferrer" className="font-medium text-blue-600 hover:underline">{material.filename}</Link>
+                    <Link href={safeUrl(material.filePath)} target="_blank" rel="noopener noreferrer" className="font-medium text-blue-600 hover:underline">{material.filename}</Link>
                     <p className="text-sm text-gray-600">{new Date(material.uploadedAt).toLocaleDateString()}</p>
                   </div>
                 </li>
