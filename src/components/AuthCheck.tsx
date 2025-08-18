@@ -2,7 +2,16 @@
 
 import { useSession } from 'next-auth/react';
 import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
+
+// 공개 페이지 리스트 (상수로 분리)
+const PUBLIC_PAGES = [
+  '/',
+  '/auth/signin',
+  '/school-safety',
+  '/educational-materials',
+  '/industrial-accidents'
+];
 
 export default function AuthCheck({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession();
@@ -10,33 +19,25 @@ export default function AuthCheck({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
 
-  // 로그인이 필요하지 않은 페이지들 (일반 방문자 접근 가능)
-  const publicPages = useMemo(() => [
-    '/',
-    '/auth/signin',
-    '/school-safety',
-    '/educational-materials',
-    '/industrial-accidents'
-  ], []);
-
   useEffect(() => {
     setMounted(true);
   }, []);
 
   useEffect(() => {
-    if (!mounted || status === 'loading') return; // 마운트되지 않았거나 로딩 중에는 아무것도 하지 않음
+    if (!mounted || status === 'loading') return;
 
-    // 공개 페이지는 로그인 체크 없이 접근 허용
-    if (publicPages.some(page => pathname.startsWith(page))) {
+    // 공개 페이지인지 확인
+    const isPublicPage = PUBLIC_PAGES.some(page => pathname.startsWith(page));
+    
+    if (isPublicPage) {
       return;
     }
 
-    // 관리자 페이지 접근 시
+    // 관리자 페이지이고 로그인하지 않은 경우
     if (!session) {
-      // 로그인하지 않은 경우 → 로그인 페이지로
       router.push('/auth/signin');
     }
-  }, [mounted, session, status, pathname, router, publicPages]);
+  }, [mounted, session, status, pathname, router]);
 
   // 마운트되지 않았거나 로딩 중
   if (!mounted || status === 'loading') {
@@ -50,14 +51,16 @@ export default function AuthCheck({ children }: { children: React.ReactNode }) {
     );
   }
 
-  // 공개 페이지는 그대로 표시 (동적 경로 포함)
-  if (publicPages.some(page => pathname.startsWith(page))) {
+  // 공개 페이지인지 확인
+  const isPublicPage = PUBLIC_PAGES.some(page => pathname.startsWith(page));
+  
+  if (isPublicPage) {
     return <>{children}</>;
   }
 
   // 로그인하지 않은 경우
   if (!session) {
-    return null; // 리다이렉트 중이므로 아무것도 표시하지 않음
+    return null;
   }
 
   // 로그인한 경우 정상 표시

@@ -172,11 +172,50 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 ### Critical Deployment Notes
 - **Vercel Build Script**: Uses `npm run vercel-build` which includes `--accept-data-loss` flag for Prisma migrations
 - **NextAuth Import**: Must use `import NextAuth from 'next-auth/next'` (not `'next-auth'`) for App Router compatibility
+- **NextAuth Configuration**: authOptions separated to `src/lib/auth.ts` to avoid API route export conflicts
 - **Database Provider**: Production uses PostgreSQL, development uses SQLite - ensure schema.prisma has correct provider
 - **File Upload Limits**: 50MB total per post, maximum 5 files, enforced at API level with proper error handling
+- **Session Management**: Uses client-side only session management to prevent hydration mismatches
+- **Component Mounting**: AuthCheck component uses mounted state to prevent SSR/client rendering differences
 
 ## File Type Support
 - **Documents**: PDF, PPT, PPTX, DOC, DOCX, XLS, XLSX, TXT
 - **Images**: JPG, JPEG, PNG, GIF, WEBP (with thumbnail generation)
 - **Videos**: MP4, WEBM
 - **Upload Pattern**: `{category}/{timestamp}_{filename}` in GCS bucket
+
+## Authentication & Session Management
+
+### NextAuth v4 Configuration
+- **Auth Configuration**: Located in `src/lib/auth.ts` using credentials provider
+- **Default Admin**: Username `admin`, password `password123` (configurable via environment variables)
+- **Session Strategy**: JWT-based with role information stored in token
+- **Import Pattern**: Always use `import NextAuth from 'next-auth/next'` for Next.js 15 compatibility
+
+### Common Session Management Issues
+- **Hydration Errors**: Use client-side only session management with mounted state checks
+- **AuthCheck Component**: Implements proper mounting detection to prevent SSR/client mismatches
+- **SessionProvider**: Configured with `refetchInterval={0}` and `refetchOnWindowFocus={false}` to prevent unnecessary re-fetches
+
+## Common Development Workflows
+
+### Adding New Material Categories
+1. Update the category validation in `/api/materials` route
+2. Add new category to MaterialManager component dropdown
+3. Update AuthCheck component publicPages array if needed
+4. Create new page route following existing pattern (`/[category]/page.tsx`)
+
+### File Upload Process
+1. Files validated at client-side (count, size, type)
+2. FormData sent to `/api/materials` with multiple files
+3. Files uploaded to GCS with structured naming
+4. Database records created for Material and MaterialAttachment
+5. UI updates with new post and file thumbnails
+
+### Database Schema Updates
+Always use Prisma migrations for production compatibility:
+```bash
+npx prisma migrate dev --name "descriptive_change_name"
+npx prisma generate
+```
+For deployment, ensure Vercel build script handles schema changes with `--accept-data-loss` flag.

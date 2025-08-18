@@ -3,11 +3,14 @@
 import { useState, useEffect, FormEvent, useMemo } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import FullCalendar from '@fullcalendar/react';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import timeGridPlugin from '@fullcalendar/timegrid';
-import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction';
-import type { EventContentArg } from '@fullcalendar/core';
+import dynamic from 'next/dynamic';
+import type { DateClickArg } from '@fullcalendar/interaction';
+
+// 동적으로 import된 캘린더 컴포넌트
+const DynamicScheduleCalendar = dynamic(() => import('../../components/ScheduleCalendarComponent'), {
+  ssr: false,
+  loading: () => <div className="h-96 bg-gray-100 rounded-lg animate-pulse flex items-center justify-center text-gray-500">캘린더 로딩 중...</div>
+});
 
 // --- Helper Functions ---
 const generateTimeOptions = () => {
@@ -23,24 +26,6 @@ const generateTimeOptions = () => {
   return options;
 };
 
-function renderEventContent(eventInfo: EventContentArg) {
-  const { schoolName, purposes, startTime, schoolAbbreviation } = eventInfo.event.extendedProps;
-
-  const [hour, minute] = startTime.split(':').map(Number);
-  const ampm = hour < 12 ? '오전' : '오후';
-  const displayHour = hour % 12 === 0 ? 12 : hour % 12;
-  const timeString = `${ampm} ${displayHour}` + (minute > 0 ? `:${String(minute).padStart(2, '0')}` : '') + '시';
-  
-  const schoolDisplayName = schoolAbbreviation || schoolName;
-  const detailsString = `[${schoolDisplayName}] - ${purposes}`;
-
-  return (
-    <div className="fc-event-custom-view">
-      <div className="fc-event-time">{timeString}</div>
-      <div className="fc-event-details">{detailsString}</div>
-    </div>
-  );
-}
 
 // --- Interfaces ---
 interface School {
@@ -271,32 +256,10 @@ export default function SchedulesPage() {
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
             <div className="lg:col-span-2 bg-white/80 backdrop-blur-sm p-4 sm:p-6 rounded-xl shadow-xl border border-white/20">
-                <FullCalendar 
-                    plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]} 
-                    initialView="dayGridMonth" 
-                    headerToolbar={{ 
-                      left: 'title', 
-                      center: 'prev,next', 
-                      right: 'today dayGridMonth,timeGridWeek'
-                    }}
-                    titleFormat={{ year: 'numeric', month: 'long' }}
-                    events={calendarEvents} 
-                    locale="ko" 
-                    height="auto" 
-                    weekends={false} 
-                    dateClick={handleDateClick}
-                    buttonText={{
-                      today: '오늘',
-                      month: '월',
-                      week: '주'
-                    }}
-                    dayMaxEventRows={3}
-                    moreLinkClick="popover"
-                    eventClassNames="fc-custom-event" 
-                    eventClick={handleEventClick} 
-                    slotMinTime="08:00:00" 
-                    slotMaxTime="17:30:00"
-                    eventContent={renderEventContent}
+                <DynamicScheduleCalendar
+                    events={calendarEvents}
+                    onEventClick={handleEventClick}
+                    onDateClick={handleDateClick}
                 />
             </div>
             <div className="bg-white/80 backdrop-blur-sm p-6 rounded-xl shadow-xl border border-white/20">

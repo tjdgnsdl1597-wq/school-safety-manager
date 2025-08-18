@@ -2,33 +2,18 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import FullCalendar from '@fullcalendar/react';
+import dynamic from 'next/dynamic';
 import type { EventContentArg } from '@fullcalendar/core';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import timeGridPlugin from '@fullcalendar/timegrid';
-import interactionPlugin from '@fullcalendar/interaction';
 import Link from 'next/link';
 import Image from 'next/image';
 
+// FullCalendar 전체를 하나의 컴포넌트로 동적 import
+const DynamicCalendar = dynamic(() => import('../components/CalendarComponent'), {
+  ssr: false,
+  loading: () => <div className="h-96 bg-gray-100 rounded-lg animate-pulse flex items-center justify-center text-gray-500">캘린더 로딩 중...</div>
+});
+
 // --- Helper Functions ---
-function renderEventContent(eventInfo: EventContentArg) {
-  const { schoolName, purposes, startTime, schoolAbbreviation } = eventInfo.event.extendedProps;
-
-  const [hour, minute] = startTime.split(':').map(Number);
-  const ampm = hour < 12 ? '오전' : '오후';
-  const displayHour = hour % 12 === 0 ? 12 : hour % 12;
-  const timeString = `${ampm} ${displayHour}` + (minute > 0 ? `:${String(minute).padStart(2, '0')}` : '') + '시';
-  
-  const schoolDisplayName = schoolAbbreviation || schoolName;
-  const detailsString = `[${schoolDisplayName}] - ${purposes}`;
-
-  return (
-    <div className="fc-event-custom-view">
-      <div className="fc-event-time">{timeString}</div>
-      <div className="fc-event-details">{detailsString}</div>
-    </div>
-  );
-}
 
 // --- Interfaces ---
 interface Schedule {
@@ -404,32 +389,9 @@ export default function HomePage() {
         </div>
 
         <div className="lg:col-span-2 bg-white/80 backdrop-blur-sm p-4 sm:p-8 rounded-2xl shadow-xl border border-white/20">
-          <FullCalendar
-            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-            initialView="dayGridMonth"
-            headerToolbar={{ 
-              left: 'title', 
-              center: 'prev,next', 
-              right: 'today dayGridMonth,timeGridWeek'
-            }}
-            titleFormat={{ year: 'numeric', month: 'long' }}
+          <DynamicCalendar
             events={calendarEvents}
-            locale="ko"
-            height="auto"
-            weekends={false}
-            slotMinTime="08:00:00"
-            slotMaxTime="17:30:00"
-            eventClick={handleEventClick}
-            eventContent={renderEventContent}
-            buttonText={{
-              today: '오늘',
-              month: '월',
-              week: '주',
-              day: '일'
-            }}
-            dayMaxEventRows={3}
-            moreLinkClick="popover"
-            eventClassNames="fc-custom-event"
+            onEventClick={handleEventClick}
           />
         </div>
 
