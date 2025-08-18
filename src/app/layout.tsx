@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from '../components/Navbar';
@@ -17,9 +17,14 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "학교 안전보건 관리 시스템", // Updated title
-  description: "학교 안전보건 관리를 위한 시스템입니다.", // Updated description
-  viewport: "width=device-width, initial-scale=1, maximum-scale=1",
+  title: "학교 안전보건 관리 시스템",
+  description: "학교 안전보건 관리를 위한 시스템입니다.",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
 };
 
 export default function RootLayout({
