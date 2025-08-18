@@ -38,18 +38,22 @@ export default function PhotoCardManager({ category, title }: PhotoCardManagerPr
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [imageErrors, setImageErrors] = useState<Set<string>>(new Set());
   const [isDragOver, setIsDragOver] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const itemsPerPage = 15;
 
-  const fetchMaterials = useCallback(async () => {
+  const fetchMaterials = useCallback(async (page: number = currentPage) => {
     try {
-      const response = await fetch(`/api/materials?category=${encodeURIComponent(category)}`);
+      const response = await fetch(`/api/materials?category=${encodeURIComponent(category)}&page=${page}&limit=${itemsPerPage}`);
       const data = await response.json();
       setMaterials(data.data || []);
+      setTotalCount(data.totalCount || 0);
     } catch (error) {
       console.error('Failed to fetch materials:', error);
     } finally {
       setLoading(false);
     }
-  }, [category]);
+  }, [category, currentPage, itemsPerPage]);
 
   useEffect(() => {
     fetchMaterials();
@@ -101,7 +105,8 @@ export default function PhotoCardManager({ category, title }: PhotoCardManagerPr
           }
         }
 
-        fetchMaterials();
+        setCurrentPage(1);
+        fetchMaterials(1);
         setUploading(false);
       }
     }
@@ -121,7 +126,7 @@ export default function PhotoCardManager({ category, title }: PhotoCardManagerPr
       
       if (response.ok) {
         console.log('Delete successful, refreshing materials...');
-        await fetchMaterials();
+        await fetchMaterials(currentPage);
         alert('삭제되었습니다.');
       } else {
         const errorData = await response.json().catch(() => ({}));
@@ -258,7 +263,7 @@ export default function PhotoCardManager({ category, title }: PhotoCardManagerPr
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
             {materials.map((material, index) => (
               <motion.div
                 key={material.id}
@@ -323,6 +328,76 @@ export default function PhotoCardManager({ category, title }: PhotoCardManagerPr
                 </div>
               </motion.div>
             ))}
+          </div>
+        )}
+
+        {/* 페이지네이션 */}
+        {!loading && totalCount > itemsPerPage && (
+          <div className="flex justify-center items-center mt-12 space-x-2">
+            {/* 이전 페이지 버튼 */}
+            <button
+              onClick={() => {
+                const prevPage = currentPage - 1;
+                setCurrentPage(prevPage);
+                fetchMaterials(prevPage);
+              }}
+              disabled={currentPage === 1}
+              className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                currentPage === 1
+                  ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                  : 'bg-blue-500 text-white hover:bg-blue-600 shadow-md hover:shadow-lg'
+              }`}
+            >
+              ← 이전
+            </button>
+
+            {/* 페이지 번호들 */}
+            {(() => {
+              const totalPages = Math.ceil(totalCount / itemsPerPage);
+              const pages = [];
+              
+              // 현재 페이지 주변의 페이지들만 표시
+              const startPage = Math.max(1, currentPage - 2);
+              const endPage = Math.min(totalPages, currentPage + 2);
+
+              for (let i = startPage; i <= endPage; i++) {
+                pages.push(
+                  <button
+                    key={i}
+                    onClick={() => {
+                      setCurrentPage(i);
+                      fetchMaterials(i);
+                    }}
+                    className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                      currentPage === i
+                        ? 'bg-blue-600 text-white shadow-lg'
+                        : 'bg-white text-blue-600 border border-blue-300 hover:bg-blue-50'
+                    }`}
+                  >
+                    {i}
+                  </button>
+                );
+              }
+              
+              return pages;
+            })()}
+
+            {/* 다음 페이지 버튼 */}
+            <button
+              onClick={() => {
+                const nextPage = currentPage + 1;
+                setCurrentPage(nextPage);
+                fetchMaterials(nextPage);
+              }}
+              disabled={currentPage >= Math.ceil(totalCount / itemsPerPage)}
+              className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                currentPage >= Math.ceil(totalCount / itemsPerPage)
+                  ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                  : 'bg-blue-500 text-white hover:bg-blue-600 shadow-md hover:shadow-lg'
+              }`}
+            >
+              다음 →
+            </button>
           </div>
         )}
 
