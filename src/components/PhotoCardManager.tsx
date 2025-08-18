@@ -38,7 +38,7 @@ const HeroSection = ({ title }: { title: string }) => {
 
   useEffect(() => {
     // 이미지 로드 테스트
-    const testImage = new Image();
+    const testImage = new window.Image();
     testImage.onload = () => {
       setImageError(false);
     };
