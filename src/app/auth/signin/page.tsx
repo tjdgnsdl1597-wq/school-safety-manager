@@ -92,9 +92,6 @@ export default function SignIn() {
             </button>
           </div>
 
-          <div className="text-center text-sm text-gray-600">
-            <p>기본 계정: admin / rkddkwl12.</p>
-          </div>
         </form>
       </div>
     </div>
