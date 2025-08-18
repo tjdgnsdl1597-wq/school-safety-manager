@@ -39,6 +39,7 @@ export default function PhotoCardManager({ category, title }: PhotoCardManagerPr
   const [uploadTitle, setUploadTitle] = useState('');
   const [selectedMaterials, setSelectedMaterials] = useState<Set<string>>(new Set());
   const [isSelectMode, setIsSelectMode] = useState(false);
+  const [imageErrors, setImageErrors] = useState<Set<string>>(new Set());
 
   const fetchMaterials = useCallback(async () => {
     try {
@@ -346,20 +347,19 @@ export default function PhotoCardManager({ category, title }: PhotoCardManagerPr
                   {/* 썸네일 또는 첫 번째 이미지 */}
                   <div className="relative w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200">
                     {material.attachments.length > 0 ? (
-                      material.attachments[0].mimeType.startsWith('image/') ? (
+                      material.attachments[0].mimeType.startsWith('image/') && !imageErrors.has(material.attachments[0].id) ? (
                         <Image
                           src={material.attachments[0].filePath}
                           alt={material.title}
                           fill
                           className="object-cover"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.style.display = 'none';
-                            target.parentElement!.innerHTML = `
-                              <div class="w-full h-full flex items-center justify-center text-gray-400 text-6xl">
-                                ${getFileIcon(material.attachments[0].mimeType)}
-                              </div>
-                            `;
+                          unoptimized={true}
+                          onLoad={() => {
+                            console.log('Image loaded successfully:', material.attachments[0].filePath);
+                          }}
+                          onError={() => {
+                            console.error('Image failed to load:', material.attachments[0].filePath, material.attachments[0].mimeType);
+                            setImageErrors(prev => new Set([...prev, material.attachments[0].id]));
                           }}
                         />
                       ) : (
