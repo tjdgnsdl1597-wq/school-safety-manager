@@ -37,6 +37,8 @@ export default function PhotoCardManager({ category, title }: PhotoCardManagerPr
   const [uploading, setUploading] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [uploadTitle, setUploadTitle] = useState('');
+  const [selectedMaterials, setSelectedMaterials] = useState<Set<string>>(new Set());
+  const [isSelectMode, setIsSelectMode] = useState(false);
 
   const fetchMaterials = useCallback(async () => {
     try {
@@ -57,6 +59,13 @@ export default function PhotoCardManager({ category, title }: PhotoCardManagerPr
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     setSelectedFiles(files);
+    
+    // 첫 번째 파일명을 제목으로 자동 설정 (확장자 제거)
+    if (files.length > 0 && !uploadTitle.trim()) {
+      const firstFileName = files[0].name;
+      const nameWithoutExtension = firstFileName.substring(0, firstFileName.lastIndexOf('.')) || firstFileName;
+      setUploadTitle(nameWithoutExtension);
+    }
   };
 
   const handleUpload = async (e: React.FormEvent) => {
@@ -85,7 +94,10 @@ export default function PhotoCardManager({ category, title }: PhotoCardManagerPr
         fetchMaterials();
         // 파일 입력 초기화
         const fileInput = document.getElementById('file-upload') as HTMLInputElement;
-        if (fileInput) fileInput.value = '';
+        if (fileInput) {
+          fileInput.value = '';
+          fileInput.files = null;
+        }
       } else {
         const error = await response.json();
         alert(error.error || '업로드에 실패했습니다.');
@@ -117,12 +129,68 @@ export default function PhotoCardManager({ category, title }: PhotoCardManagerPr
     }
   };
 
+  const handleSelectMaterial = (id: string) => {
+    const newSelected = new Set(selectedMaterials);
+    if (newSelected.has(id)) {
+      newSelected.delete(id);
+    } else {
+      newSelected.add(id);
+    }
+    setSelectedMaterials(newSelected);
+  };
+
+  const handleSelectAll = () => {
+    if (selectedMaterials.size === materials.length) {
+      setSelectedMaterials(new Set());
+    } else {
+      setSelectedMaterials(new Set(materials.map(m => m.id)));
+    }
+  };
+
+  const handleDeleteSelected = async () => {
+    if (selectedMaterials.size === 0) return;
+    
+    const count = selectedMaterials.size;
+    if (!confirm(`선택한 ${count}개의 자료를 삭제하시겠습니까?`)) return;
+
+    const deletePromises = Array.from(selectedMaterials).map(id =>
+      fetch(`/api/materials/${id}`, { method: 'DELETE' })
+    );
+
+    try {
+      await Promise.all(deletePromises);
+      setSelectedMaterials(new Set());
+      setIsSelectMode(false);
+      fetchMaterials();
+      alert(`${count}개의 자료가 삭제되었습니다.`);
+    } catch (error) {
+      console.error('Bulk delete error:', error);
+      alert('일부 자료 삭제에 실패했습니다.');
+    }
+  };
+
   const getFileIcon = (mimeType: string) => {
-    if (mimeType.startsWith('image/')) return '🖼️';
+    // 이미지 파일들
+    if (mimeType.startsWith('image/') || 
+        mimeType.includes('jpeg') || 
+        mimeType.includes('jpg') || 
+        mimeType.includes('png') || 
+        mimeType.includes('gif') || 
+        mimeType.includes('webp')) return '🖼️';
+    
+    // 문서 파일들
     if (mimeType.includes('pdf')) return '📄';
-    if (mimeType.includes('word')) return '📝';
+    if (mimeType.includes('word') || mimeType.includes('document')) return '📝';
     if (mimeType.includes('excel') || mimeType.includes('spreadsheet')) return '📊';
-    if (mimeType.includes('powerpoint') || mimeType.includes('presentation')) return '📊';
+    if (mimeType.includes('powerpoint') || mimeType.includes('presentation')) return '📈';
+    if (mimeType.includes('text')) return '📝';
+    
+    // 비디오 파일들
+    if (mimeType.startsWith('video/')) return '🎥';
+    
+    // 오디오 파일들
+    if (mimeType.startsWith('audio/')) return '🎵';
+    
     return '📁';
   };
 
@@ -147,6 +215,52 @@ export default function PhotoCardManager({ category, title }: PhotoCardManagerPr
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">{title}</h1>
           <p className="text-xl text-gray-600">산업재해 사례 및 예방 자료</p>
         </motion.div>
+
+        {/* 관리자 컨트롤 섹션 */}
+        {isAdmin && materials.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="mb-8"
+          >
+            <div className="flex flex-wrap gap-4 justify-center">
+              {!isSelectMode ? (
+                <button
+                  onClick={() => setIsSelectMode(true)}
+                  className="px-6 py-3 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg"
+                >
+                  📋 자료 선택하여 삭제
+                </button>
+              ) : (
+                <>
+                  <button
+                    onClick={handleSelectAll}
+                    className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-lg transition-all duration-300 shadow-md"
+                  >
+                    {selectedMaterials.size === materials.length ? '전체 해제' : '전체 선택'}
+                  </button>
+                  <button
+                    onClick={handleDeleteSelected}
+                    disabled={selectedMaterials.size === 0}
+                    className="px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold rounded-lg transition-all duration-300 shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    🗑️ 선택 삭제 ({selectedMaterials.size})
+                  </button>
+                  <button
+                    onClick={() => {
+                      setIsSelectMode(false);
+                      setSelectedMaterials(new Set());
+                    }}
+                    className="px-4 py-2 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white font-semibold rounded-lg transition-all duration-300 shadow-md"
+                  >
+                    취소
+                  </button>
+                </>
+              )}
+            </div>
+          </motion.div>
+        )}
 
         {/* 업로드 섹션 (관리자만) */}
         {isAdmin && (
@@ -224,13 +338,17 @@ export default function PhotoCardManager({ category, title }: PhotoCardManagerPr
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 className="group relative"
               >
-                <div className="bg-white/80 backdrop-blur-sm rounded-2xl overflow-hidden shadow-lg border border-white/20 hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
+                <div className={`bg-white/80 backdrop-blur-sm rounded-2xl overflow-hidden shadow-lg border transition-all duration-300 hover:scale-[1.02] ${
+                  isSelectMode && selectedMaterials.has(material.id) 
+                    ? 'border-blue-500 shadow-blue-200' 
+                    : 'border-white/20 hover:shadow-xl'
+                }`}>
                   {/* 썸네일 또는 첫 번째 이미지 */}
                   <div className="relative w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200">
                     {material.attachments.length > 0 ? (
-                      material.attachments[0].thumbnailPath || material.attachments[0].mimeType.startsWith('image/') ? (
+                      material.attachments[0].mimeType.startsWith('image/') ? (
                         <Image
-                          src={material.attachments[0].thumbnailPath || material.attachments[0].filePath}
+                          src={material.attachments[0].filePath}
                           alt={material.title}
                           fill
                           className="object-cover"
@@ -262,8 +380,23 @@ export default function PhotoCardManager({ category, title }: PhotoCardManagerPr
                       </div>
                     )}
 
-                    {/* 관리자 삭제 버튼 */}
-                    {isAdmin && (
+                    {/* 선택 체크박스 (선택 모드일 때) */}
+                    {isAdmin && isSelectMode && (
+                      <button
+                        onClick={() => handleSelectMaterial(material.id)}
+                        className="absolute top-2 left-2 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg transition-all duration-300 hover:scale-110"
+                        title="선택/해제"
+                      >
+                        {selectedMaterials.has(material.id) ? (
+                          <span className="text-blue-600 text-lg font-bold">✓</span>
+                        ) : (
+                          <span className="text-gray-400 text-lg">○</span>
+                        )}
+                      </button>
+                    )}
+
+                    {/* 관리자 개별 삭제 버튼 (일반 모드일 때) */}
+                    {isAdmin && !isSelectMode && (
                       <button
                         onClick={() => handleDelete(material.id)}
                         className="absolute top-2 left-2 w-8 h-8 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300"
@@ -297,10 +430,11 @@ export default function PhotoCardManager({ category, title }: PhotoCardManagerPr
                           <a
                             key={file.id}
                             href={file.filePath}
+                            download={file.filename}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="block text-xs text-blue-600 hover:text-blue-800 truncate transition-colors"
-                            title={file.filename}
+                            className="block text-xs text-blue-600 hover:text-blue-800 truncate transition-colors hover:bg-blue-50 p-1 rounded"
+                            title={`다운로드: ${file.filename}`}
                           >
                             {getFileIcon(file.mimeType)} {file.filename}
                           </a>
