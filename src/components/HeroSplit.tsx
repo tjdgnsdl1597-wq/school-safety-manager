@@ -122,12 +122,16 @@ export default function HeroSplit() {
                       loading={index === 0 ? "eager" : "lazy"}
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
-                        const fallbackImages = [
-                          'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=720&h=520&q=80',
-                          'https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=720&h=520&q=80',
-                          'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=720&h=520&q=80'
-                        ];
-                        target.src = fallbackImages[index % 3];
+                        // 이미 fallback으로 변경되었다면 더 이상 변경하지 않음
+                        if (target.src.includes('data:image') || target.dataset.fallbackUsed) {
+                          return;
+                        }
+                        
+                        // fallback 사용 표시
+                        target.dataset.fallbackUsed = 'true';
+                        
+                        // 단순한 placeholder 이미지로 변경
+                        target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="720" height="520" viewBox="0 0 720 520"%3E%3Crect width="100%25" height="100%25" fill="%23f3f4f6"/%3E%3Ctext x="50%25" y="50%25" font-family="Arial" font-size="18" fill="%236b7280" text-anchor="middle" dy=".3em"%3E이미지 로딩 실패%3C/text%3E%3C/svg%3E';
                       }}
                     />
                   ))}

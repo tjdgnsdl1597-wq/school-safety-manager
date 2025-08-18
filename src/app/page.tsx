@@ -839,26 +839,16 @@ export default function HomePage() {
                                 priority={imageIndex === 0}
                                 onError={(e) => {
                                   const target = e.target as HTMLImageElement;
-                                  // 카테고리별로 다른 Unsplash 폴백 이미지 사용
-                                  const fallbackImages = {
-                                    education: [
-                                      'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=640&h=360&q=80',
-                                      'https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&w=640&h=360&q=80',
-                                      'https://images.unsplash.com/photo-1584464491033-06628f3a6b7b?auto=format&fit=crop&w=640&h=360&q=80'
-                                    ],
-                                    inspection: [
-                                      'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=640&h=360&q=80',
-                                      'https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=640&h=360&q=80',
-                                      'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&w=640&h=360&q=80'
-                                    ],
-                                    improvement: [
-                                      'https://images.unsplash.com/photo-1554774853-6cb5d0ad4c99?auto=format&fit=crop&w=640&h=360&q=80',
-                                      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=640&h=360&q=80',
-                                      'https://images.unsplash.com/photo-1585121040688-64164503dd8c?auto=format&fit=crop&w=640&h=360&q=80'
-                                    ]
-                                  };
-                                  const fallbacks = fallbackImages[category.id as keyof typeof fallbackImages];
-                                  target.src = fallbacks[imageIndex] || fallbacks[0];
+                                  // 이미 fallback으로 변경되었다면 더 이상 변경하지 않음
+                                  if (target.src.includes('data:image') || target.dataset.fallbackUsed) {
+                                    return;
+                                  }
+                                  
+                                  // fallback 사용 표시
+                                  target.dataset.fallbackUsed = 'true';
+                                  
+                                  // 단순한 placeholder 이미지로 변경
+                                  target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360"%3E%3Crect width="100%25" height="100%25" fill="%23f3f4f6"/%3E%3Ctext x="50%25" y="50%25" font-family="Arial" font-size="16" fill="%236b7280" text-anchor="middle" dy=".3em"%3E이미지 로딩 실패%3C/text%3E%3C/svg%3E';
                                 }}
                               />
                             </div>
