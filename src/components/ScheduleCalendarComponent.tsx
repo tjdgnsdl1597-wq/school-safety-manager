@@ -11,32 +11,37 @@ function safeRenderEventContent(eventInfo: EventContentArg) {
   try {
     const { schoolName, purposes, startTime, schoolAbbreviation, isHoliday } = eventInfo.event.extendedProps || {};
     
-    if (!startTime) return <div>일정</div>;
+    if (!startTime) return <div className="text-sm">일정</div>;
     
     const [hour, minute] = startTime.split(':').map(Number);
     const ampm = hour < 12 ? '오전' : '오후';
     const displayHour = hour % 12 === 0 ? 12 : hour % 12;
     const timeString = `${ampm} ${displayHour}` + (minute > 0 ? `:${String(minute).padStart(2, '0')}` : '') + '시';
     
-    let detailsString;
     if (isHoliday) {
-      // 휴무일정인 경우: 학교명 없이 휴무 사유만 표시
-      detailsString = `🏖️ ${purposes || '휴무'}`;
+      // 휴무일정인 경우: 2줄 표시
+      return (
+        <div className="fc-event-custom-view text-sm leading-tight p-1">
+          <div className="font-semibold text-yellow-800">{timeString}</div>
+          <div className="text-yellow-700 truncate">🏖️ {purposes || '휴무'}</div>
+        </div>
+      );
     } else {
-      // 일반 일정인 경우: 기존 방식
+      // 일반 일정인 경우: 3줄 표시
       const schoolDisplayName = schoolAbbreviation || schoolName || '학교';
-      detailsString = `[${schoolDisplayName}] - ${purposes || '일정'}`;
+      const purposeText = purposes || '일정';
+      
+      return (
+        <div className="fc-event-custom-view text-sm leading-tight p-1">
+          <div className="font-semibold text-white">{timeString}</div>
+          <div className="text-white/90 truncate">{schoolDisplayName}</div>
+          <div className="text-white/80 truncate text-xs">{purposeText}</div>
+        </div>
+      );
     }
-
-    return (
-      <div className="fc-event-custom-view">
-        <div className="fc-event-time">{timeString}</div>
-        <div className="fc-event-details">{detailsString}</div>
-      </div>
-    );
   } catch (error) {
     console.warn('Error rendering event content:', error);
-    return <div>일정</div>;
+    return <div className="text-sm">일정</div>;
   }
 }
 

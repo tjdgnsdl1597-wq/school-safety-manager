@@ -835,6 +835,7 @@ export default function HomePage() {
     completed: number;
     upcoming: number;
     schools: string[];
+    schoolsWithStatus: { name: string; isCompleted: boolean }[];
   }>>({});
 
   const adminInfo = {
@@ -875,6 +876,7 @@ export default function HomePage() {
       completed: number;
       upcoming: number;
       schools: string[];
+      schoolsWithStatus: { name: string; isCompleted: boolean }[];
     }> = {};
 
     schedules.forEach(s => {
@@ -897,7 +899,8 @@ export default function HomePage() {
               total: 0,
               completed: 0,
               upcoming: 0,
-              schools: []
+              schools: [],
+              schoolsWithStatus: []
             };
           }
 
@@ -911,6 +914,17 @@ export default function HomePage() {
           // 학교명 추가 (중복 제거)
           if (!detailedSummary[p].schools.includes(schoolName)) {
             detailedSummary[p].schools.push(schoolName);
+          }
+
+          // 학교명과 상태 추가 (중복 허용 - 같은 학교가 여러 번 방문할 수 있음)
+          const existingSchoolStatus = detailedSummary[p].schoolsWithStatus.find(s => s.name === schoolName);
+          if (!existingSchoolStatus) {
+            detailedSummary[p].schoolsWithStatus.push({ name: schoolName, isCompleted });
+          } else {
+            // 이미 있는 학교라면, 완료된 것이 있으면 완료로 우선 처리
+            if (isCompleted) {
+              existingSchoolStatus.isCompleted = true;
+            }
           }
         });
       }
@@ -1084,7 +1098,7 @@ export default function HomePage() {
                       return purposeA.localeCompare(purposeB);
                     })
                     .map(([purpose, data]) => (
-                      <div key={purpose} className="border-l-4 border-blue-200 pl-2 sm:pl-3">
+                      <div key={purpose} className="border-l-4 border-blue-400 pl-3 bg-blue-50/30 rounded-r-lg py-2">
                         <div className="font-medium text-gray-800 mb-1 text-sm sm:text-base">
                           <div className="break-words">
                             {purpose} - {data.total}건
@@ -1093,17 +1107,21 @@ export default function HomePage() {
                             (방문완료 {data.completed}건 / 방문예정 {data.upcoming}건)
                           </div>
                         </div>
-                        {purpose !== '월점검' && data.schools.length > 0 && (
+                        {purpose !== '월점검' && data.schoolsWithStatus.length > 0 && (
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 mt-2">
-                            {data.schools
-                              .sort((a, b) => a.localeCompare(b, 'ko'))
-                              .map((school, index) => (
+                            {data.schoolsWithStatus
+                              .sort((a, b) => a.name.localeCompare(b.name, 'ko'))
+                              .map((schoolStatus, index) => (
                                 <div 
                                   key={index} 
-                                  className="text-xs text-gray-600 bg-gray-50 px-2 py-1 rounded truncate"
-                                  title={school}
+                                  className={`text-xs px-2 py-1 rounded border truncate font-medium ${
+                                    schoolStatus.isCompleted 
+                                      ? 'bg-green-100 text-green-800 border-green-200' // 방문완료 - 연한 연두색
+                                      : 'bg-purple-100 text-purple-800 border-purple-200' // 방문예정 - 연한 자주색
+                                  }`}
+                                  title={schoolStatus.name}
                                 >
-                                  {school}
+                                  {schoolStatus.name}
                                 </div>
                               ))}
                           </div>
