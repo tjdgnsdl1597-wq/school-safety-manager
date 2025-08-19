@@ -189,7 +189,7 @@ body {
   }
   
   .fc-daygrid-day {
-    min-height: 3.5rem !important;
+    min-height: 4.5rem !important;
   }
   
   .fc-daygrid-day-number {
@@ -198,13 +198,19 @@ body {
   }
   
   .fc-event {
-    font-size: 0.55rem !important;
-    min-height: 1.25rem !important;
+    font-size: 0.65rem !important;
+    min-height: 2.5rem !important;
   }
   
   .fc-event-time,
   .fc-event-details {
-    font-size: 0.55rem !important;
+    font-size: 0.6rem !important;
+  }
+  
+  .fc-event-custom-view {
+    min-height: 2.3rem !important;
+    padding: 2px 3px !important;
+    gap: 1px;
   }
   
   .fc-col-header-cell {

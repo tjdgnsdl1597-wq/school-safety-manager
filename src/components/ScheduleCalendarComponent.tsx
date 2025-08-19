@@ -21,9 +21,9 @@ function safeRenderEventContent(eventInfo: EventContentArg) {
     if (isHoliday) {
       // 휴무일정인 경우: 2줄 표시 (검은색 글씨)
       return (
-        <div className="fc-event-custom-view text-sm leading-tight p-1">
-          <div className="font-semibold text-black">{timeString}</div>
-          <div className="text-black truncate">🏖️ {purposes || '휴무'}</div>
+        <div className="fc-event-custom-view text-xs sm:text-sm leading-tight p-1">
+          <div className="font-semibold text-black text-xs sm:text-sm">{timeString}</div>
+          <div className="text-black truncate text-xs sm:text-sm">🏖️ {purposes || '휴무'}</div>
         </div>
       );
     } else {
@@ -32,10 +32,10 @@ function safeRenderEventContent(eventInfo: EventContentArg) {
       const purposeText = purposes || '일정';
       
       return (
-        <div className="fc-event-custom-view text-sm leading-tight p-1">
-          <div className="font-semibold text-white">{timeString}</div>
-          <div className="text-white/90 truncate">{schoolDisplayName}</div>
-          <div className="text-white/80 truncate text-xs">{purposeText}</div>
+        <div className="fc-event-custom-view text-xs sm:text-sm leading-tight p-1">
+          <div className="font-semibold text-white text-xs sm:text-sm">{timeString}</div>
+          <div className="text-white/90 truncate text-xs sm:text-sm">{schoolDisplayName}</div>
+          <div className="text-white/80 truncate text-[10px] sm:text-xs">{purposeText}</div>
         </div>
       );
     }
