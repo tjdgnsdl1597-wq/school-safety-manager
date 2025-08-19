@@ -60,6 +60,8 @@ interface Schedule {
   endTime: string;
   purpose: string; // JSON stringified array
   otherReason?: string;
+  isHoliday?: boolean;
+  holidayReason?: string | null;
 }
 
 interface Material {
