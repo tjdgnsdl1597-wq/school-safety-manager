@@ -22,10 +22,10 @@ This is a **School Safety Management System** (학교 안전보건 관리 시스
 ## Architecture Overview
 
 ### Database Schema (Prisma)
-- **School**: Core entity with name, phoneNumber, contactPerson, linked to schedules
-- **Schedule**: Visit schedules linked to schools with date/time, purpose (JSON array), AM/PM slots
-- **Material**: Blog-style posts with title, content, category, linked to multiple attachments
-- **MaterialAttachment**: Individual files linked to materials (max 5 per post, 50MB total)
+- **School**: Core entity with name, phoneNumber, contactPerson, linked to schedules. Special "휴무일정" dummy school exists for holiday schedules
+- **Schedule**: Visit schedules with date/time, purpose (JSON array), AM/PM slots, and holiday support (isHoliday, holidayReason)
+- **Material**: Blog-style posts with title, content, category ("교육자료" or "산업재해"), linked to multiple attachments
+- **MaterialAttachment**: Individual files linked to materials (max 5 per post, 50MB total, uploaded to GCS)
 
 ### Key Technical Decisions
 - **Prisma Client Location**: Generated to `src/generated/prisma` (custom output path)
@@ -77,12 +77,19 @@ School names have predefined abbreviations defined in `src/lib/schoolUtils.ts` f
 #### Multi-File Upload Structure
 Materials are blog-style posts with title, content, and up to 5 file attachments (50MB total limit). Files support thumbnails for images and type icons for other formats. All files uploaded to Google Cloud Storage with public URLs stored in MaterialAttachment model with uploadOrder for display sequencing.
 
+#### Holiday Schedule System
+- **Holiday Schedules**: Special schedule type with `isHoliday: true` and `holidayReason`
+- **UI Behavior**: When holiday checkbox is checked, school selection is hidden, purpose selection is hidden
+- **Database Handling**: Holiday schedules use dummy school "휴무일정", auto-created via API
+- **Calendar Display**: Holiday schedules show as `🏖️ [holiday reason]` without school name
+- **Color Coding**: Holiday schedules display in yellow (#fbbf24) instead of blue
+
 #### Authentication & Authorization
 - **Public Pages**: `/`, `/educational-materials`, `/industrial-accidents`, `/auth/signin` - accessible without login
 - **Admin Pages**: `/schools`, `/schedules` - require admin authentication
 - **Role Check**: `user?.role === 'admin'` from useAuth() hook determines admin status
 - **Auto Redirect**: Non-admin users accessing admin pages → educational materials page
-- **Authentication Flow**: Simple username/password (admin/password123) with localStorage persistence
+- **Authentication Flow**: Simple username/password (admin/rkddkwl12.) with localStorage persistence
 
 ## Development Guidelines
 
@@ -194,7 +201,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 
 ### Custom Authentication System
 - **Auth Configuration**: Located in `src/lib/simpleAuth.tsx` using React Context
-- **Default Admin**: Username `admin`, password `password123` (configurable via environment variables)
+- **Default Admin**: Username `admin`, password `rkddkwl12.` (configurable via environment variables)
 - **Session Strategy**: localStorage-based with React Context state management
 - **Usage Pattern**: Use `const { user, isAuthenticated, login, logout } = useAuth()` hook
 
@@ -203,6 +210,25 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 - **Client-Side Only**: Uses `typeof window !== 'undefined'` checks and mounted state
 - **AuthCheck Component**: Implements proper mounting detection to prevent SSR/client mismatches
 - **Error Prevention**: Comprehensive error boundaries prevent auth-related crashes
+
+## Dashboard Features
+
+### Monthly Statistics Display
+- **Purpose Prioritization**: 월점검 (monthly inspection) always appears first in statistics
+- **Detailed Breakdown**: Each purpose shows total count with completion status (방문완료/방문예정)
+- **School Name Display**: Non-월점검 purposes show related school names in 2-column grid
+- **Mobile Responsive**: Adapts to single column on mobile, proper text wrapping and truncation
+- **Data Exclusions**: Holiday schedules (휴무일정) are excluded from monthly statistics
+- **Sorting**: School names sorted using Korean locale (`localeCompare(b, 'ko')`)
+
+### Today's Schedule Section
+- Shows current day's schedules with time and school abbreviations
+- Uses safe parsing for schedule purposes to prevent JSON errors
+
+### Admin Dashboard Layout
+- **Left Panel**: Today's schedules and quick links
+- **Center Panel**: Monthly statistics with detailed breakdown
+- **Right Panel**: Upcoming school visits (formerly "미완료 업무")
 
 ## Common Development Workflows
 
@@ -253,3 +279,34 @@ const calendarEvents = safeCreateCalendarEvents(schedules); // Filters invalid d
 2. **URL Formatting**: File paths can be null/invalid - always use `safeUrl()` 
 3. **SSR Hydration**: Client-only components must use mounting states
 4. **Data Access**: External API data should be validated before use
+5. **TypeScript Interfaces**: When adding new schedule fields, update both database schema and TypeScript interfaces
+6. **Holiday Schedule Logic**: Always check `isHoliday` flag when processing schedules to handle different UI/logic paths
+
+## Critical TypeScript Patterns
+
+### Schedule Interface Requirements
+When working with schedules, always include optional holiday fields:
+```typescript
+interface Schedule {
+  id: string;
+  date: string;
+  schoolId: string;
+  school: { name: string; abbreviation?: string | null; };
+  ampm: string;
+  startTime: string;
+  endTime: string;
+  purpose: string; // JSON stringified array
+  otherReason?: string;
+  isHoliday?: boolean;
+  holidayReason?: string | null;
+}
+```
+
+### API Route Parameter Handling (Next.js 15)
+Always destructure params asynchronously in API routes:
+```typescript
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  // use id...
+}
+```
