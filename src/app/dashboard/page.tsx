@@ -366,10 +366,10 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-full mx-auto px-2 sm:px-4 lg:px-6 py-4">
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+      <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="grid grid-cols-1 lg:grid-cols-7 gap-8">
           
-          {/* 좌측: 정보 패널 (2/5로 더 넓게) */}
+          {/* 좌측: 정보 패널 (2/7로 적당한 크기) */}
           <div className="lg:col-span-2 space-y-4">
             
             {/* 사용자 정보/사진 */}
@@ -393,7 +393,9 @@ export default function DashboardPage() {
                 </div>
                 <div className="space-y-2">
                   <div className="text-sm font-medium text-gray-900">{user?.name || '사용자'}</div>
-                  <div className="text-xs text-gray-600">{user?.position || (isAdmin ? '시스템 관리자' : '일반 사용자')}</div>
+                  <div className="text-xs text-gray-600">
+                    [{user?.department || '산업안전팀'} {user?.position || '대리'}]
+                  </div>
                   <div className="text-xs text-gray-600">{user?.phoneNumber || '전화번호 미등록'}</div>
                   <div className="text-xs text-gray-600">{user?.email || '이메일 미등록'}</div>
                 </div>
@@ -540,8 +542,8 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* 우측: 캘린더 + 메모장 (3/5) */}
-          <div className="lg:col-span-3 space-y-4">
+          {/* 우측: 캘린더 + 메모장 (5/7) */}
+          <div className="lg:col-span-5 space-y-4">
             
             {/* 캘린더 - 세로 높이 증가 */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200">
