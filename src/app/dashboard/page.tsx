@@ -64,6 +64,9 @@ export default function DashboardPage() {
   // 메모 관련 state
   const [memos, setMemos] = useState<string>('');
   const [isMemoSaving, setIsMemoSaving] = useState(false);
+  
+  // 현재 시간 state
+  const [currentTime, setCurrentTime] = useState('');
 
   // 인증되지 않은 사용자 리다이렉트
   useEffect(() => {
@@ -138,6 +141,22 @@ export default function DashboardPage() {
       setLoading(false);
     }
   }, [schedulesLoading, schoolsLoading]);
+
+  // 현재 시간 업데이트
+  useEffect(() => {
+    const updateTime = () => {
+      setCurrentTime(new Date().toLocaleTimeString('ko-KR', { 
+        hour: '2-digit', 
+        minute: '2-digit',
+        hour12: false 
+      }));
+    };
+    
+    updateTime(); // 초기 시간 설정
+    const interval = setInterval(updateTime, 1000); // 1초마다 업데이트
+    
+    return () => clearInterval(interval);
+  }, []);
 
   // --- Event Handlers ---
   const handleDateClick = (arg: DateClickArg) => {
@@ -311,32 +330,35 @@ export default function DashboardPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           
-          {/* 좌측: 캘린더 (3/4) */}
-          <div className="lg:col-span-3">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-              <div className="p-6 border-b border-gray-200">
-                <h2 className="text-xl font-semibold text-gray-900">일정 캘린더</h2>
-                {selectedDate && (
-                  <p className="text-sm text-gray-500 mt-1">선택된 날짜: {selectedDate}</p>
-                )}
-              </div>
-              
-              <div className="p-6">
-                <DynamicScheduleCalendar 
-                  events={calendarEvents}
-                  onEventClick={handleEventClick}
-                  onDateClick={handleDateClick}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* 우측: 정보 패널 (1/4) */}
+          {/* 좌측: 정보 패널 (1/4) */}
           <div className="lg:col-span-1 space-y-6">
             
-            {/* 오늘의 일정 */}
+            {/* 사용자 정보/사진 */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">오늘의 일정</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">사용자 정보</h3>
+              <div className="text-center">
+                <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-blue-600 font-semibold text-2xl">
+                    {user?.name?.charAt(0) || 'U'}
+                  </span>
+                </div>
+                <div className="space-y-2">
+                  <div className="text-sm font-medium text-gray-900">{user?.name || '사용자'}</div>
+                  <div className="text-xs text-gray-600">{isAdmin ? '시스템 관리자' : '일반 사용자'}</div>
+                  <div className="text-xs text-gray-600">010-0000-0000</div>
+                  <div className="text-xs text-gray-600">user@example.com</div>
+                </div>
+              </div>
+            </div>
+            
+            {/* 오늘의 일정 - 현재시간 포함 */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-gray-900">오늘의 일정</h3>
+                <div className="text-xs text-gray-500">
+                  {currentTime}
+                </div>
+              </div>
               {todaySchedules.length > 0 ? (
                 <div className="space-y-3">
                   {todaySchedules.map((schedule) => (
@@ -364,7 +386,7 @@ export default function DashboardPage() {
               )}
             </div>
 
-            {/* 이번 달 통계 */}
+            {/* 이번 달 통계 - 3열, 완료된 학교 녹색으로 위에 */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">이번 달 통계</h3>
               {Object.keys(monthlyStats).length > 0 ? (
@@ -393,44 +415,44 @@ export default function DashboardPage() {
                         </div>
                       </div>
                       
-                      {/* 완료된 학교들 */}
+                      {/* 완료된 학교들 - 3열, 녹색, 위에 배치 */}
                       {stats.completedSchools.length > 0 && (
                         <div className="p-3 bg-green-50 border-b border-gray-200">
-                          <div className="text-xs font-medium text-green-800 mb-2">완료된 학교 ({stats.completedSchools.length}개)</div>
-                          <div className="grid grid-cols-1 gap-1">
+                          <div className="text-xs font-medium text-green-800 mb-2">✅ 완료 ({stats.completedSchools.length})</div>
+                          <div className="grid grid-cols-3 gap-1">
                             {stats.completedSchools
                               .sort((a, b) => a.school.name.localeCompare(b.school.name, 'ko'))
-                              .slice(0, 5)
+                              .slice(0, 9)
                               .map((schedule, idx) => (
-                              <div key={schedule.id} className="text-xs text-green-700 px-2 py-1 bg-white rounded">
-                                {schedule.school.abbreviation || schedule.school.name} ({new Date(schedule.date).toLocaleDateString()})
+                              <div key={schedule.id} className="text-xs text-green-700 px-1 py-1 bg-green-100 rounded text-center">
+                                {schedule.school.abbreviation || schedule.school.name}
                               </div>
                             ))}
-                            {stats.completedSchools.length > 5 && (
-                              <div className="text-xs text-green-600 px-2 py-1 italic">
-                                외 {stats.completedSchools.length - 5}개 학교
+                            {stats.completedSchools.length > 9 && (
+                              <div className="text-xs text-green-600 px-1 py-1 text-center italic">
+                                +{stats.completedSchools.length - 9}
                               </div>
                             )}
                           </div>
                         </div>
                       )}
                       
-                      {/* 예정된 학교들 */}
+                      {/* 예정된 학교들 - 3열, 보라색, 아래 배치 */}
                       {stats.upcomingSchools.length > 0 && (
                         <div className="p-3 bg-purple-50">
-                          <div className="text-xs font-medium text-purple-800 mb-2">예정된 학교 ({stats.upcomingSchools.length}개)</div>
-                          <div className="grid grid-cols-1 gap-1">
+                          <div className="text-xs font-medium text-purple-800 mb-2">📅 예정 ({stats.upcomingSchools.length})</div>
+                          <div className="grid grid-cols-3 gap-1">
                             {stats.upcomingSchools
                               .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-                              .slice(0, 5)
+                              .slice(0, 9)
                               .map((schedule, idx) => (
-                              <div key={schedule.id} className="text-xs text-purple-700 px-2 py-1 bg-white rounded">
-                                {schedule.school.abbreviation || schedule.school.name} ({new Date(schedule.date).toLocaleDateString()})
+                              <div key={schedule.id} className="text-xs text-purple-700 px-1 py-1 bg-purple-100 rounded text-center">
+                                {schedule.school.abbreviation || schedule.school.name}
                               </div>
                             ))}
-                            {stats.upcomingSchools.length > 5 && (
-                              <div className="text-xs text-purple-600 px-2 py-1 italic">
-                                외 {stats.upcomingSchools.length - 5}개 학교
+                            {stats.upcomingSchools.length > 9 && (
+                              <div className="text-xs text-purple-600 px-1 py-1 text-center italic">
+                                +{stats.upcomingSchools.length - 9}
                               </div>
                             )}
                           </div>
@@ -444,36 +466,53 @@ export default function DashboardPage() {
               )}
             </div>
 
-            {/* 최근 산업재해 발생 학교 */}
+            {/* 최근 산업재해 발생 학교 - 2열, 날짜-학교명 */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
                 <span className="text-red-500">⚠️</span>
-                <span>최근 산업재해 발생 학교</span>
+                <span>산업재해 발생학교</span>
               </h3>
               {recentAccidentSchedules.length > 0 ? (
-                <div className="space-y-2">
-                  {recentAccidentSchedules.map((schedule) => (
-                    <div key={schedule.id} className="p-3 bg-red-50 rounded-lg border border-red-200">
-                      <div className="text-sm font-medium text-red-900">
+                <div className="grid grid-cols-2 gap-2">
+                  {recentAccidentSchedules.slice(0, 10).map((schedule) => (
+                    <div key={schedule.id} className="p-2 bg-red-50 rounded-lg border border-red-200">
+                      <div className="text-xs text-red-700 font-medium">
+                        {new Date(schedule.date).toLocaleDateString()}
+                      </div>
+                      <div className="text-xs text-red-900 mt-1">
                         {schedule.school.abbreviation || schedule.school.name}
                       </div>
-                      <div className="text-xs text-red-700 mt-1">
-                        방문일: {new Date(schedule.date).toLocaleDateString()}
-                      </div>
-                      {schedule.otherReason && (
-                        <div className="text-xs text-red-600 mt-1 truncate">
-                          {schedule.otherReason}
-                        </div>
-                      )}
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-gray-500 text-center py-4">최근 산업재해 방문 기록이 없습니다</p>
+                <p className="text-gray-500 text-center py-4 text-sm">최근 산업재해 방문 기록이 없습니다</p>
               )}
             </div>
+          </div>
 
-            {/* 메모장 */}
+          {/* 우측: 캘린더 + 메모장 (3/4) */}
+          <div className="lg:col-span-3 space-y-6">
+            
+            {/* 캘린더 */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+              <div className="p-6 border-b border-gray-200">
+                <h2 className="text-xl font-semibold text-gray-900">일정 캘린더</h2>
+                {selectedDate && (
+                  <p className="text-sm text-gray-500 mt-1">선택된 날짜: {selectedDate}</p>
+                )}
+              </div>
+              
+              <div className="p-6">
+                <DynamicScheduleCalendar 
+                  events={calendarEvents}
+                  onEventClick={handleEventClick}
+                  onDateClick={handleDateClick}
+                />
+              </div>
+            </div>
+
+            {/* 메모장 - 캘린더와 같은 가로 넓이 */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-gray-900">메모장</h3>
@@ -489,7 +528,7 @@ export default function DashboardPage() {
                 value={memos}
                 onChange={(e) => setMemos(e.target.value)}
                 placeholder="메모를 입력하세요..."
-                className="w-full h-40 p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full h-32 p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
               <div className="text-xs text-gray-500 mt-2">
                 메모는 브라우저에 자동 저장됩니다
