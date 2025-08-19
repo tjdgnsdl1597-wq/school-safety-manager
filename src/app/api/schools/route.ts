@@ -3,9 +3,24 @@ import { Prisma, PrismaClient } from '../../../generated/prisma';
 
 const prisma = new PrismaClient();
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    // 요청 헤더에서 사용자 정보 가져오기
+    const userId = request.headers.get('x-user-id');
+    const userRole = request.headers.get('x-user-role');
+    
+    let whereCondition = {};
+    
+    // 관리자가 아닌 경우 자신이 등록한 학교만 조회
+    if (userRole !== 'super_admin' && userId) {
+      whereCondition = { userId: userId };
+    }
+    
     const schools = await prisma.school.findMany({
+      where: {
+        ...whereCondition,
+        NOT: { name: '휴무일정' } // 더미 휴무일정 학교는 목록에서 제외
+      },
       orderBy: {
         name: 'asc', // 가나다순 (오름차순) 정렬
       },
@@ -19,11 +34,17 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const { name, phoneNumber, contactPerson } = await request.json();
-    console.log('Received school data for creation:', { name, phoneNumber, contactPerson });
+    const { name, phoneNumber, contactPerson, email } = await request.json();
+    const userId = request.headers.get('x-user-id');
+    
+    console.log('Received school data for creation:', { name, phoneNumber, contactPerson, userId });
 
     if (!name) {
       return NextResponse.json({ error: 'School name is required' }, { status: 400 });
+    }
+    
+    if (!userId) {
+      return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
     }
 
     // Test database connection and table existence
@@ -41,7 +62,13 @@ export async function POST(request: Request) {
     }
 
     const newSchool = await prisma.school.create({
-      data: { name, phoneNumber, contactPerson },
+      data: { 
+        name, 
+        phoneNumber, 
+        contactPerson,
+        email,
+        userId: userId
+      },
     });
     console.log('School created successfully:', newSchool);
     return NextResponse.json(newSchool, { status: 201 });
@@ -67,7 +94,7 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
   try {
-    const { id, name, phoneNumber, contactPerson } = await request.json();
+    const { id, name, phoneNumber, contactPerson, email } = await request.json();
     console.log('Received school data for update:', { id, name, phoneNumber, contactPerson });
 
     if (!id || !name) {
@@ -75,7 +102,7 @@ export async function PUT(request: Request) {
     }
     const updatedSchool = await prisma.school.update({
       where: { id },
-      data: { name, phoneNumber, contactPerson },
+      data: { name, phoneNumber, contactPerson, email },
     });
     console.log('School updated successfully:', updatedSchool);
     return NextResponse.json(updatedSchool);
@@ -102,9 +129,21 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: 'An array of school IDs is required' }, { status: 400 });
     }
 
+    // 휴무일정 더미 학교 ID 확인
+    const dummySchool = await prisma.school.findFirst({
+      where: { name: '휴무일정' }
+    });
+    
+    // 삭제할 ID 목록에서 더미 학교 ID 제외
+    const filteredIds = dummySchool ? ids.filter(id => id !== dummySchool.id) : ids;
+    
+    if (filteredIds.length === 0) {
+      return NextResponse.json({ error: '삭제할 수 있는 학교가 없습니다.' }, { status: 400 });
+    }
+
     const transaction = await prisma.$transaction([
-      prisma.schedule.deleteMany({ where: { schoolId: { in: ids } } }),
-      prisma.school.deleteMany({ where: { id: { in: ids } } }),
+      prisma.schedule.deleteMany({ where: { schoolId: { in: filteredIds } } }),
+      prisma.school.deleteMany({ where: { id: { in: filteredIds }, NOT: { name: '휴무일정' } } }),
     ]);
 
     return NextResponse.json({ message: `${transaction[1].count} schools and associated schedules deleted successfully.` });

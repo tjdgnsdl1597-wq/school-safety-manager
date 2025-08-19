@@ -128,7 +128,8 @@ const HeroSection = ({ title }: { title: string }) => {
 
 export default function PhotoCardManager({ category, title }: PhotoCardManagerProps) {
   const { user, isAuthenticated } = useAuth();
-  const isAdmin = user?.role === 'admin';
+  const isAdmin = user?.role === 'super_admin';
+  const canEdit = isAuthenticated; // 로그인한 사용자는 모두 추가/수정 가능
   
   const [materials, setMaterials] = useState<Material[]>([]);
   const [loading, setLoading] = useState(true);
@@ -310,8 +311,8 @@ export default function PhotoCardManager({ category, title }: PhotoCardManagerPr
           </motion.div>
         )}
 
-        {/* 업로드 섹션 (관리자만) */}
-        {isAdmin && (
+        {/* 업로드 섹션 (로그인 사용자) */}
+        {canEdit && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -388,8 +389,8 @@ export default function PhotoCardManager({ category, title }: PhotoCardManagerPr
                       </div>
                     )}
 
-                    {/* 관리자 삭제 버튼 (호버시 표시) */}
-                    {isAdmin && (
+                    {/* 삭제 버튼 (로그인 사용자, 호버시 표시) */}
+                    {canEdit && (
                       <button
                         onClick={() => handleDelete(material.id)}
                         className="absolute top-2 right-2 w-8 h-8 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-lg"

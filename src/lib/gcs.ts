@@ -66,25 +66,45 @@ const getCredentials = () => {
 
 // Storage 클라이언트를 동적으로 생성하는 함수
 function createStorageClient(): Storage {
-  const credentials = getCredentials();
+  console.log('Creating GCS storage client...');
   
   // Storage 클라이언트 설정
   const storageConfig: StorageOptions = {
     projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
   };
 
-  // 로컬 개발 환경
+  // 로컬 개발 환경에서 키 파일 사용
   if (process.env.GOOGLE_CLOUD_KEY_FILE) {
-    storageConfig.keyFilename = process.env.GOOGLE_CLOUD_KEY_FILE;
-    console.log('Using keyFilename for GCS authentication');
-  } 
-  // Vercel 환경
-  else if (credentials) {
+    try {
+      // 키 파일이 존재하는지 먼저 확인
+      const fs = require('fs');
+      if (fs.existsSync(process.env.GOOGLE_CLOUD_KEY_FILE)) {
+        storageConfig.keyFilename = process.env.GOOGLE_CLOUD_KEY_FILE;
+        console.log('Using keyFilename for GCS authentication:', process.env.GOOGLE_CLOUD_KEY_FILE);
+      } else {
+        console.error('Key file does not exist:', process.env.GOOGLE_CLOUD_KEY_FILE);
+      }
+    } catch (error) {
+      console.error('Error checking key file:', error);
+    }
+  }
+  
+  // Vercel 환경에서 환경변수 사용
+  const credentials = getCredentials();
+  if (credentials && !storageConfig.keyFilename) {
     storageConfig.credentials = credentials;
-    storageConfig.projectId = credentials.project_id; // 인증 정보에서 프로젝트 ID 사용
+    storageConfig.projectId = credentials.project_id;
     console.log('Using credentials object for GCS authentication');
-  } else {
+  }
+  
+  // 아무 인증 방법도 없는 경우
+  if (!storageConfig.keyFilename && !storageConfig.credentials) {
     console.error('No valid GCS authentication method found');
+    console.error('Available env vars:', {
+      hasKeyFile: !!process.env.GOOGLE_CLOUD_KEY_FILE,
+      hasCredentials: !!process.env.GOOGLE_CLOUD_CREDENTIALS,
+      hasProjectId: !!process.env.GOOGLE_CLOUD_PROJECT_ID
+    });
   }
 
   console.log('Storage config:', {

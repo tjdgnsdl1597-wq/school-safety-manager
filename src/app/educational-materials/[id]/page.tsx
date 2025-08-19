@@ -30,7 +30,7 @@ export default function EducationalMaterialDetailPage() {
   const params = useParams();
   const router = useRouter();
   const { user } = useAuth();
-  const isAdmin = user?.role === 'admin';
+  const isAdmin = user?.role === 'super_admin';
   
   const [material, setMaterial] = useState<Material | null>(null);
   const [loading, setLoading] = useState(true);

@@ -5,6 +5,7 @@ import Navbar from '../components/Navbar';
 import Providers from '../components/Providers';
 import AuthCheck from '../components/AuthCheck';
 import ErrorBoundary from '../components/ErrorBoundary';
+import DynamicTitle from '../components/DynamicTitle';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,7 +18,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "학교 안전보건 관리 시스템",
+  title: "학교안전보건 관리시스템",
   description: "학교 안전보건 관리를 위한 시스템입니다.",
 };
 
@@ -37,7 +38,7 @@ export default function RootLayout({
       <head>
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#3b82f6" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="학교안전관리" />
         <script dangerouslySetInnerHTML={{
@@ -62,6 +63,7 @@ export default function RootLayout({
         <ErrorBoundary>
           <Providers>
             <AuthCheck>
+              <DynamicTitle />
               <Navbar />
               <main className="pt-4">
                 {children}

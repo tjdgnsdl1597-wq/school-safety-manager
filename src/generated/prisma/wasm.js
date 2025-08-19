@@ -114,23 +114,39 @@ Prisma.NullTypes = {
  */
 
 exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
-  ReadUncommitted: 'ReadUncommitted',
-  ReadCommitted: 'ReadCommitted',
-  RepeatableRead: 'RepeatableRead',
   Serializable: 'Serializable'
 });
+
+exports.Prisma.UserScalarFieldEnum = {
+  id: 'id',
+  username: 'username',
+  password: 'password',
+  name: 'name',
+  position: 'position',
+  phoneNumber: 'phoneNumber',
+  email: 'email',
+  department: 'department',
+  profilePhoto: 'profilePhoto',
+  role: 'role',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
 
 exports.Prisma.SchoolScalarFieldEnum = {
   id: 'id',
   name: 'name',
   phoneNumber: 'phoneNumber',
-  contactPerson: 'contactPerson'
+  contactPerson: 'contactPerson',
+  email: 'email',
+  userId: 'userId'
 };
 
 exports.Prisma.ScheduleScalarFieldEnum = {
   id: 'id',
   date: 'date',
   schoolId: 'schoolId',
+  userId: 'userId',
   ampm: 'ampm',
   startTime: 'startTime',
   endTime: 'endTime',
@@ -170,11 +186,6 @@ exports.Prisma.SortOrder = {
   desc: 'desc'
 };
 
-exports.Prisma.QueryMode = {
-  default: 'default',
-  insensitive: 'insensitive'
-};
-
 exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
@@ -182,6 +193,7 @@ exports.Prisma.NullsOrder = {
 
 
 exports.Prisma.ModelName = {
+  User: 'User',
   School: 'School',
   Schedule: 'Schedule',
   Material: 'Material',

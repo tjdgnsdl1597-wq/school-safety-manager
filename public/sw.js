@@ -53,12 +53,14 @@ self.addEventListener('fetch', function(event) {
             return response;
           }
 
-          // 응답을 복제해서 캐시에 저장
-          var responseToCache = response.clone();
-          caches.open(CACHE_NAME)
-            .then(function(cache) {
-              cache.put(event.request, responseToCache);
-            });
+          // GET 요청만 캐시에 저장 (POST 요청은 캐시하지 않음)
+          if (event.request.method === 'GET') {
+            var responseToCache = response.clone();
+            caches.open(CACHE_NAME)
+              .then(function(cache) {
+                cache.put(event.request, responseToCache);
+              });
+          }
 
           return response;
         }).catch(function() {

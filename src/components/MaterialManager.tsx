@@ -22,6 +22,7 @@ interface Material {
   content?: string;
   attachments: MaterialAttachment[];
   uploadedAt: string;
+  uploader?: string;
   category: string;
 }
 
@@ -35,8 +36,9 @@ const ITEMS_PER_PAGE = 10;
 
 export default function MaterialManager({ category, title }: MaterialManagerProps) {
   // Auth session
-  const { user } = useAuth();
-  const isAdmin = user?.role === 'admin';
+  const { user, isAuthenticated } = useAuth();
+  const isAdmin = user?.role === 'super_admin';
+  const canEdit = isAuthenticated; // 로그인한 사용자는 모두 추가/수정 가능
 
   // State variables
   const [materials, setMaterials] = useState<Material[]>([]);
@@ -95,6 +97,7 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
     if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) return '🖼️';
     if (['mp4', 'webm', 'avi', 'mov'].includes(ext)) return '🎬';
     if (['txt'].includes(ext)) return '📃';
+    if (['zip', 'rar', '7z'].includes(ext)) return '📦';
     return '📎';
   };
 
@@ -140,6 +143,11 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
     setUploading(true);
     const formData = new FormData(e.currentTarget);
     formData.append('category', category);
+    
+    // 사용자 정보 추가
+    if (user) {
+      formData.append('uploader', user.name || user.username || '알 수 없는 사용자');
+    }
 
     try {
       if (isEditing && editingPost) {
@@ -302,7 +310,7 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
         <>
           {/* Selection Controls */}
           <div className="mb-4 flex items-center justify-between">
-            {isAdmin && (
+            {canEdit && (
               <div className="flex items-center space-x-4">
                 <label className="flex items-center space-x-2">
                   <input 
@@ -325,7 +333,7 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
                 <tr>
-                  {isAdmin && (
+                  {canEdit && (
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12">
                       <input 
                         type="checkbox" 
@@ -341,6 +349,11 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell w-80">
                     첨부파일
                   </th>
+                  {category === '교육자료' && (
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell w-24">
+                      작성자
+                    </th>
+                  )}
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell w-32">
                     작성일
                   </th>
@@ -355,7 +368,7 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
                     key={material.id} 
                     className={`hover:bg-gray-50 ${selectedItems.includes(material.id) ? 'bg-blue-50' : ''}`}
                   >
-                    {isAdmin && (
+                    {canEdit && (
                       <td className="px-6 py-4 whitespace-nowrap w-12">
                         <input 
                           type="checkbox" 
@@ -472,12 +485,19 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
                         <span className="text-sm text-gray-400">첨부파일 없음</span>
                       )}
                     </td>
+                    {category === '교육자료' && (
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden lg:table-cell w-24">
+                        <div className="text-xs text-gray-600 truncate" title={material.uploader || '알 수 없음'}>
+                          {material.uploader || '알 수 없음'}
+                        </div>
+                      </td>
+                    )}
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden sm:table-cell w-32">
                       {new Date(material.uploadedAt).toLocaleDateString('ko-KR')}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex space-x-2 justify-end">
-                        {isAdmin && (
+                        {canEdit && (
                           <button
                             onClick={() => handleEditPost(material)}
                             className="text-green-600 hover:text-green-900 text-xs px-2 py-1 border border-green-300 rounded hover:bg-green-50"
@@ -506,17 +526,19 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
       )}
 
         {/* Footer: Bulk Actions and Pagination */}
-        {isAdmin && (
+        {canEdit && (
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-8 space-y-3 sm:space-y-0">
             <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
-              <button 
-                onClick={handleBulkDelete} 
-                className="bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-lg hover:from-red-600 hover:to-red-700 disabled:from-gray-300 disabled:to-gray-400 text-sm sm:text-base w-full sm:w-auto transition-all duration-200 shadow-md hover:shadow-lg disabled:shadow-none flex items-center justify-center space-x-2" 
-                disabled={selectedItems.length === 0}
-              >
-                <span>🗑️</span>
-                <span>선택 삭제</span>
-              </button>
+              {isAdmin && (
+                <button 
+                  onClick={handleBulkDelete} 
+                  className="bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-lg hover:from-red-600 hover:to-red-700 disabled:from-gray-300 disabled:to-gray-400 text-sm sm:text-base w-full sm:w-auto transition-all duration-200 shadow-md hover:shadow-lg disabled:shadow-none flex items-center justify-center space-x-2" 
+                  disabled={selectedItems.length === 0}
+                >
+                  <span>🗑️</span>
+                  <span>선택 삭제</span>
+                </button>
+              )}
             </div>
             <button 
               onClick={() => setIsModalOpen(true)} 
@@ -635,10 +657,10 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
                   multiple
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline" 
                   autoComplete="off"
-                  accept=".pdf,.ppt,.pptx,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.gif,.webp,.mp4,.webm,.txt"
+                  accept=".pdf,.ppt,.pptx,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.gif,.webp,.mp4,.webm,.txt,.zip,.rar,.7z"
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                  지원 형식: PDF, PPT, DOC, XLS, 이미지, 동영상 파일 (최대 5개, 총합 50MB)
+                  지원 형식: PDF, PPT, DOC, XLS, 이미지, 동영상, 압축 파일 (최대 5개, 총합 50MB)
                 </p>
               </div>
               

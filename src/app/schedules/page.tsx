@@ -55,12 +55,6 @@ export default function SchedulesPage() {
   const { user } = useAuth();
   const router = useRouter();
   
-  // 관리자가 아닌 경우 교육자료 페이지로 리다이렉트
-  useEffect(() => {
-    if (user && user.role !== 'admin') {
-      router.push('/educational-materials');
-    }
-  }, [user, router]);
 
   // --- State ---
   const [schedules, setSchedules] = useState<Schedule[]>([]);
@@ -79,9 +73,38 @@ export default function SchedulesPage() {
   const timeOptions = useMemo(() => generateTimeOptions(), []);
 
   const filteredTimeOptions = useMemo(() => {
-    // 오전/오후 관계없이 모든 시간을 표시 (08:00 ~ 17:30)
-    return timeOptions;
-  }, [timeOptions]);
+    // 오전/오후에 따라 시간 필터링
+    if (ampm === 'AM') {
+      // 오전: 08:00 ~ 11:30
+      return timeOptions.filter(time => {
+        const hour = parseInt(time.split(':')[0]);
+        return hour >= 8 && hour < 12;
+      });
+    } else {
+      // 오후: 12:00 ~ 17:30
+      return timeOptions.filter(time => {
+        const hour = parseInt(time.split(':')[0]);
+        return hour >= 12 && hour <= 17;
+      });
+    }
+  }, [timeOptions, ampm]);
+  
+  // 종료시간 옵션 (오전/오후에 따라 다름)
+  const endTimeOptions = useMemo(() => {
+    if (ampm === 'AM') {
+      // 오전 선택 시: 10:00 ~ 17:30
+      return timeOptions.filter(time => {
+        const hour = parseInt(time.split(':')[0]);
+        return hour >= 10 && hour <= 17;
+      });
+    } else {
+      // 오후 선택 시: 12:00 ~ 17:30
+      return timeOptions.filter(time => {
+        const hour = parseInt(time.split(':')[0]);
+        return hour >= 12 && hour <= 17;
+      });
+    }
+  }, [timeOptions, ampm]);
 
   // --- Effects ---
   useEffect(() => {
@@ -110,7 +133,16 @@ export default function SchedulesPage() {
   const fetchSchedules = async () => {
     setIsLoading(true);
     try {
-      const res = await fetch('/api/schedules');
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json'
+      };
+      
+      if (user) {
+        headers['x-user-id'] = user.id;
+        headers['x-user-role'] = user.role;
+      }
+      
+      const res = await fetch('/api/schedules', { headers });
       if (!res.ok) throw new Error('Failed to fetch schedules');
       const data = await res.json();
       setSchedules(data);
@@ -123,7 +155,16 @@ export default function SchedulesPage() {
 
   const fetchSchools = async () => {
     try {
-      const res = await fetch('/api/schools');
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json'
+      };
+      
+      if (user) {
+        headers['x-user-id'] = user.id;
+        headers['x-user-role'] = user.role;
+      }
+      
+      const res = await fetch('/api/schools', { headers });
       if (!res.ok) throw new Error('Failed to fetch schools');
       const data = await res.json();
       setSchools(data);
@@ -156,11 +197,29 @@ export default function SchedulesPage() {
     } else {
       // 일반 일정인 경우
       const currentPurposes = formData.getAll('purpose') as string[];
-      let otherReason = formData.get('otherReason') as string;
-
-      if (!currentPurposes.includes('교육') && !currentPurposes.includes('기타')) {
-        otherReason = '';
+      
+      // 각각의 사유를 수집하여 하나의 문자열로 합침
+      const reasons = [];
+      if (currentPurposes.includes('교육')) {
+        const educationReason = formData.get('educationReason') as string;
+        if (educationReason?.trim()) {
+          reasons.push(`교육: ${educationReason.trim()}`);
+        }
       }
+      if (currentPurposes.includes('산업재해')) {
+        const accidentDate = formData.get('accidentDate') as string;
+        if (accidentDate?.trim()) {
+          reasons.push(`산재발생일: ${accidentDate.trim()}`);
+        }
+      }
+      if (currentPurposes.includes('기타')) {
+        const otherReasonValue = formData.get('otherReason') as string;
+        if (otherReasonValue?.trim()) {
+          reasons.push(`기타: ${otherReasonValue.trim()}`);
+        }
+      }
+      
+      const otherReason = reasons.join(' / ');
       
       scheduleData = {
         id: editingSchedule?.id,
@@ -180,7 +239,16 @@ export default function SchedulesPage() {
     const method = editingSchedule ? 'PUT' : 'POST';
 
     try {
-      const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(scheduleData) });
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json'
+      };
+      
+      if (user) {
+        headers['x-user-id'] = user.id;
+        headers['x-user-role'] = user.role;
+      }
+      
+      const res = await fetch(url, { method, headers, body: JSON.stringify(scheduleData) });
       if (!res.ok) throw new Error((await res.json()).error || 'Failed to save schedule');
       fetchSchedules();
       handleCancelEdit();
@@ -228,7 +296,16 @@ export default function SchedulesPage() {
   const handleDelete = async (id: string) => {
     if (!confirm('정말로 이 일정을 삭제하시겠습니까?')) return;
     try {
-      const res = await fetch('/api/schedules', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) });
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json'
+      };
+      
+      if (user) {
+        headers['x-user-id'] = user.id;
+        headers['x-user-role'] = user.role;
+      }
+      
+      const res = await fetch('/api/schedules', { method: 'DELETE', headers, body: JSON.stringify({ id }) });
       if (!res.ok) throw new Error((await res.json()).error || 'Failed to delete schedule');
       fetchSchedules();
       handleCancelEdit();
@@ -300,6 +377,7 @@ export default function SchedulesPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
             <div className="lg:col-span-2 bg-white/80 backdrop-blur-sm p-4 sm:p-6 rounded-xl shadow-xl border border-white/20">
                 <DynamicScheduleCalendar
+                    key={`calendar-${schedules.length}-${JSON.stringify(calendarEvents).slice(0, 100)}`}
                     events={calendarEvents}
                     onEventClick={handleEventClick}
                     onDateClick={handleDateClick}
@@ -313,15 +391,20 @@ export default function SchedulesPage() {
                 <form id="schedule-form" onSubmit={handleFormSubmit}>
                     <div className="space-y-4">
                         <div>
-                            <label className="flex items-center space-x-2 cursor-pointer mb-2">
-                                <input 
-                                    type="checkbox" 
-                                    checked={isHoliday} 
-                                    onChange={e => setIsHoliday(e.target.checked)}
-                                    className="rounded"
-                                />
-                                <span className="text-gray-700 text-sm font-bold">🏖️ 휴무일정</span>
-                            </label>
+                            <div className="p-3 bg-yellow-50 border-2 border-yellow-300 rounded-lg mb-4">
+                                <label className="flex items-center space-x-3 cursor-pointer">
+                                    <input 
+                                        type="checkbox" 
+                                        checked={isHoliday} 
+                                        onChange={e => setIsHoliday(e.target.checked)}
+                                        className="w-5 h-5 text-yellow-500 border-yellow-300 rounded focus:ring-yellow-500 focus:ring-2"
+                                    />
+                                    <span className="text-yellow-800 text-base font-bold flex items-center space-x-2">
+                                        <span>🏖️</span>
+                                        <span>휴무일정</span>
+                                    </span>
+                                </label>
+                            </div>
                         </div>
                         {!isHoliday && (
                             <div>
@@ -355,7 +438,7 @@ export default function SchedulesPage() {
                             <div>
                                 <label htmlFor="endTime" className="block text-gray-700 text-sm font-bold mb-2">종료 시간</label>
                                 <select name="endTime" id="endTime" value={endTime} onChange={e => setEndTime(e.target.value)} className="shadow appearance-none border rounded w-full py-2 px-3" required>
-                                    {timeOptions.filter(time => time >= '10:00' && time <= '17:00').map(time => <option key={time} value={time}>{time}</option>)}
+                                    {endTimeOptions.map(time => <option key={time} value={time}>{time}</option>)}
                                 </select>
                             </div>
                         </div>
@@ -372,10 +455,72 @@ export default function SchedulesPage() {
                                         ))}
                                     </div>
                                 </div>
-                                {(selectedPurposes.includes('교육') || selectedPurposes.includes('기타')) && (
+                                {selectedPurposes.includes('교육') && (
                                     <div>
-                                        <label htmlFor="otherReason" className="block text-gray-700 text-sm font-bold mb-2">교육 내용 / 기타 사유</label>
-                                        <input type="text" name="otherReason" id="otherReason" key={editingSchedule?.id} defaultValue={editingSchedule?.otherReason || ''} className="shadow appearance-none border rounded w-full py-2 px-3" autoComplete="off" />
+                                        <label htmlFor="educationReason" className="block text-gray-700 text-sm font-bold mb-2">교육 내용을 적어주세요</label>
+                                        <input 
+                                            type="text" 
+                                            name="educationReason" 
+                                            id="educationReason" 
+                                            key={`edu-${editingSchedule?.id}`} 
+                                            defaultValue={(() => {
+                                                if (!editingSchedule?.otherReason) return '';
+                                                const match = editingSchedule.otherReason.match(/교육:\s*([^/]+)/);
+                                                return match ? match[1].trim() : '';
+                                            })()} 
+                                            className="shadow appearance-none border rounded w-full py-2 px-3 mb-4" 
+                                            autoComplete="off" 
+                                        />
+                                    </div>
+                                )}
+                                {selectedPurposes.includes('산업재해') && (
+                                    <div>
+                                        <label htmlFor="accidentDate" className="block text-gray-700 text-sm font-bold mb-2">산재 발생일을 선택해주세요</label>
+                                        <input 
+                                            type="date" 
+                                            name="accidentDate" 
+                                            id="accidentDate" 
+                                            key={`acc-${editingSchedule?.id}`} 
+                                            defaultValue={(() => {
+                                                if (!editingSchedule?.otherReason) return '';
+                                                const match = editingSchedule.otherReason.match(/산재발생일:\s*([^/]+)/);
+                                                if (match) {
+                                                    const dateStr = match[1].trim();
+                                                    // 기존 데이터가 날짜 형식이 아닌 경우 빈 값 반환
+                                                    try {
+                                                        // YYYY-MM-DD 형식인지 확인
+                                                        if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+                                                            return dateStr;
+                                                        }
+                                                        // 다른 형식이면 빈 값 반환
+                                                        return '';
+                                                    } catch {
+                                                        return '';
+                                                    }
+                                                }
+                                                return '';
+                                            })()} 
+                                            className="shadow appearance-none border rounded w-full py-2 px-3 mb-4" 
+                                            autoComplete="off" 
+                                        />
+                                    </div>
+                                )}
+                                {selectedPurposes.includes('기타') && (
+                                    <div>
+                                        <label htmlFor="otherReason" className="block text-gray-700 text-sm font-bold mb-2">기타 사유를 적어주세요</label>
+                                        <input 
+                                            type="text" 
+                                            name="otherReason" 
+                                            id="otherReason" 
+                                            key={`other-${editingSchedule?.id}`} 
+                                            defaultValue={(() => {
+                                                if (!editingSchedule?.otherReason) return '';
+                                                const match = editingSchedule.otherReason.match(/기타:\s*([^/]+)/);
+                                                return match ? match[1].trim() : '';
+                                            })()} 
+                                            className="shadow appearance-none border rounded w-full py-2 px-3 mb-4" 
+                                            autoComplete="off" 
+                                        />
                                     </div>
                                 )}
                             </>

@@ -3,9 +3,21 @@ import { PrismaClient } from '../../../generated/prisma';
 
 const prisma = new PrismaClient();
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    // 요청 헤더에서 사용자 정보 가져오기
+    const userId = request.headers.get('x-user-id');
+    const userRole = request.headers.get('x-user-role');
+    
+    let whereCondition = {};
+    
+    // 관리자가 아닌 경우 자신이 등록한 일정만 조회
+    if (userRole !== 'super_admin' && userId) {
+      whereCondition = { userId: userId };
+    }
+    
     const schedules = await prisma.schedule.findMany({
+      where: whereCondition,
       include: {
         school: true, // Include school details
       },
@@ -23,6 +35,11 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const { date, schoolId, ampm, startTime, endTime, purpose, otherReason, isHoliday, holidayReason } = await request.json();
+    const userId = request.headers.get('x-user-id');
+    
+    if (!userId) {
+      return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
+    }
 
     // 휴무일정인 경우와 일반 일정인 경우를 다르게 검증
     if (isHoliday) {
@@ -50,6 +67,7 @@ export async function POST(request: Request) {
             name: '휴무일정',
             phoneNumber: null,
             contactPerson: null,
+            userId: userId
           }
         });
       }
@@ -64,6 +82,7 @@ export async function POST(request: Request) {
       data: {
         date: new Date(date),
         schoolId: finalSchoolId,
+        userId: userId,
         ampm,
         startTime,
         endTime,
@@ -83,6 +102,11 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
   try {
     const { id, date, schoolId, ampm, startTime, endTime, purpose, otherReason, isHoliday, holidayReason } = await request.json();
+    const userId = request.headers.get('x-user-id');
+    
+    if (!userId) {
+      return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
+    }
 
     // 휴무일정인 경우와 일반 일정인 경우를 다르게 검증
     if (isHoliday) {
@@ -110,6 +134,7 @@ export async function PUT(request: Request) {
             name: '휴무일정',
             phoneNumber: null,
             contactPerson: null,
+            userId: userId
           }
         });
       }

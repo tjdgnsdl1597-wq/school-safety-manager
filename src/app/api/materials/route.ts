@@ -70,12 +70,14 @@ export async function POST(request: Request) {
     const title = formData.get('title') as string;
     const content = formData.get('content') as string;
     const category = formData.get('category') as string;
+    const uploader = formData.get('uploader') as string;
 
     console.log('FormData received:', { 
       fileCount: files.length,
       title,
       hasContent: !!content,
       category,
+      uploader,
       fileSizes: files.map(f => f?.size),
       fileNames: files.map(f => f?.name)
     });
@@ -115,7 +117,12 @@ export async function POST(request: Request) {
         'image/webp',
         'video/mp4',
         'video/webm',
-        'text/plain'
+        'text/plain',
+        'application/zip',
+        'application/x-zip-compressed',
+        'application/x-rar-compressed',
+        'application/vnd.rar',
+        'application/x-7z-compressed'
       ];
 
       for (let i = 0; i < files.length; i++) {
@@ -123,7 +130,7 @@ export async function POST(request: Request) {
         
         if (!allowedTypes.includes(file.type)) {
           return NextResponse.json({ 
-            error: `지원하지 않는 파일 형식입니다: ${file.name}. PDF, PPT, DOC, XLS, 이미지, 동영상 파일만 업로드 가능합니다.` 
+            error: `지원하지 않는 파일 형식입니다: ${file.name}. PDF, PPT, DOC, XLS, 이미지, 동영상, 압축 파일만 업로드 가능합니다.` 
           }, { status: 400 });
         }
 
@@ -146,13 +153,13 @@ export async function POST(request: Request) {
           });
           
           console.log(`File ${i + 1} uploaded successfully: ${gcsUrl}`);
-        } catch (gcsError) {
-          console.error(`GCS upload failed for file ${i + 1}:`, gcsError);
-          const errorMessage = gcsError instanceof Error ? gcsError.message : 'Unknown GCS error';
+        } catch (uploadError) {
+          console.error(`Local upload failed for file ${i + 1}:`, uploadError);
+          const errorMessage = uploadError instanceof Error ? uploadError.message : 'Unknown upload error';
           
           return NextResponse.json({ 
             error: `파일 업로드 실패 (${file.name}): ${errorMessage}`,
-            details: process.env.NODE_ENV === 'development' ? gcsError : undefined
+            details: process.env.NODE_ENV === 'development' ? uploadError : undefined
           }, { status: 500 });
         }
       }
@@ -165,7 +172,7 @@ export async function POST(request: Request) {
           title,
           content: content || null,
           uploadedAt: new Date(),
-          uploader: 'Admin', // 기본값으로 설정
+          uploader: uploader || '알 수 없는 사용자', // 폼에서 받은 uploader 사용
           category,
           attachments: {
             create: attachments
@@ -262,7 +269,12 @@ export async function PUT(request: Request) {
         'image/webp',
         'video/mp4',
         'video/webm',
-        'text/plain'
+        'text/plain',
+        'application/zip',
+        'application/x-zip-compressed',
+        'application/x-rar-compressed',
+        'application/vnd.rar',
+        'application/x-7z-compressed'
       ];
 
       // 기존 파일들 삭제
@@ -281,7 +293,7 @@ export async function PUT(request: Request) {
         
         if (!allowedTypes.includes(file.type)) {
           return NextResponse.json({ 
-            error: `지원하지 않는 파일 형식입니다: ${file.name}. PDF, PPT, DOC, XLS, 이미지, 동영상 파일만 업로드 가능합니다.` 
+            error: `지원하지 않는 파일 형식입니다: ${file.name}. PDF, PPT, DOC, XLS, 이미지, 동영상, 압축 파일만 업로드 가능합니다.` 
           }, { status: 400 });
         }
 
@@ -302,12 +314,12 @@ export async function PUT(request: Request) {
           });
           
           console.log(`File ${i + 1} uploaded successfully: ${gcsUrl}`);
-        } catch (gcsError) {
-          console.error(`GCS upload failed for file ${i + 1}:`, gcsError);
-          const errorMessage = gcsError instanceof Error ? gcsError.message : 'Unknown GCS error';
+        } catch (uploadError) {
+          console.error(`Local upload failed for file ${i + 1}:`, uploadError);
+          const errorMessage = uploadError instanceof Error ? uploadError.message : 'Unknown upload error';
           return NextResponse.json({
             error: `파일 업로드 실패 (${file.name}): ${errorMessage}`,
-            details: process.env.NODE_ENV === 'development' ? gcsError : undefined
+            details: process.env.NODE_ENV === 'development' ? uploadError : undefined
           }, { status: 500 });
         }
       }

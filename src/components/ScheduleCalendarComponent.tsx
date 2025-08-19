@@ -21,21 +21,21 @@ function safeRenderEventContent(eventInfo: EventContentArg) {
     if (isHoliday) {
       // 휴무일정인 경우: 2줄 표시 (검은색 글씨)
       return (
-        <div className="fc-event-custom-view text-xs sm:text-sm leading-tight p-1">
-          <div className="font-semibold text-black text-xs sm:text-sm">{timeString}</div>
-          <div className="text-black truncate text-xs sm:text-sm">🏖️ {purposes || '휴무'}</div>
+        <div className="fc-event-custom-view leading-tight p-1">
+          <div className="font-semibold text-black text-[10px] sm:text-xs">{timeString}</div>
+          <div className="text-black truncate text-[10px] sm:text-xs">휴무({purposes || '휴무사유 없음'})</div>
         </div>
       );
     } else {
-      // 일반 일정인 경우: 2줄 표시 (시간 + 학교명,방문목적)
+      // 일반 일정인 경우: 2줄 표시 (시간 + 학교명-방문목적1,방문목적2)
       const schoolDisplayName = schoolAbbreviation || schoolName || '학교';
       const purposeText = purposes || '일정';
-      const combinedText = `${schoolDisplayName}, ${purposeText}`;
+      const combinedText = `${schoolDisplayName}-${purposeText}`;
       
       return (
-        <div className="fc-event-custom-view text-xs sm:text-sm leading-tight p-1">
-          <div className="font-semibold text-white text-xs sm:text-sm">{timeString}</div>
-          <div className="text-white/90 truncate text-xs sm:text-sm">{combinedText}</div>
+        <div className="fc-event-custom-view leading-tight p-1">
+          <div className="font-semibold text-white text-[10px] sm:text-xs">{timeString}</div>
+          <div className="text-white/90 truncate text-[10px] sm:text-xs">{combinedText}</div>
         </div>
       );
     }
@@ -54,6 +54,7 @@ interface ScheduleCalendarComponentProps {
 export default function ScheduleCalendarComponent({ events, onEventClick, onDateClick }: ScheduleCalendarComponentProps) {
   const [FullCalendar, setFullCalendar] = useState<React.ComponentType<any> | null>(null);
   const [mounted, setMounted] = useState(false);
+  const [forceUpdate, setForceUpdate] = useState(0);
 
   useEffect(() => {
     // Dynamically import FullCalendar only on client side
@@ -82,6 +83,13 @@ export default function ScheduleCalendarComponent({ events, onEventClick, onDate
       });
     }
   }, []);
+
+  // Force re-render when events change
+  useEffect(() => {
+    if (mounted && events) {
+      setForceUpdate(prev => prev + 1);
+    }
+  }, [events, mounted]);
 
   // Show loading state until mounted
   if (!mounted) {
@@ -115,6 +123,7 @@ export default function ScheduleCalendarComponent({ events, onEventClick, onDate
 
   return (
     <FullCalendar 
+      key={`fc-${forceUpdate}-${safeEvents.length}`}
       initialView="dayGridMonth" 
       headerToolbar={{ 
         left: 'prev', 

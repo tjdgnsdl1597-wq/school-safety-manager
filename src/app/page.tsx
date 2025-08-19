@@ -2,77 +2,143 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/simpleAuth';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import dynamic from 'next/dynamic';
 import HeroSplit from '@/components/HeroSplit';
 import { motion } from 'framer-motion';
 
-// Dynamically import ScheduleCalendarComponent to prevent SSR issues
-const ScheduleCalendarComponent = dynamic(() => import('../components/ScheduleCalendarComponent'), {
-  ssr: false,
-  loading: () => (
-    <div className="h-96 flex items-center justify-center text-gray-500 bg-gray-100 rounded-lg">
-      <div className="text-center">
-        <div className="text-4xl mb-4">📅</div>
-        <p>캘린더 로딩 중...</p>
+
+// Initial Selection Screen Component
+const InitialSelectionScreen = () => {
+  const router = useRouter();
+  
+  const handleVisitorClick = () => {
+    // 방문자용 페이지로 이동 (현재 페이지 콘텐츠 표시)
+    window.location.hash = 'visitor-content';
+    window.dispatchEvent(new HashChangeEvent('hashchange'));
+  };
+
+  const handleManagerClick = () => {
+    // 안전관리자 로그인 페이지로 이동
+    router.push('/auth/signin');
+  };
+
+  return (
+    <div className="fixed inset-0 z-[9999] min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center overflow-hidden">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 opacity-20">
+        <div className="absolute top-10 left-10 w-32 h-32 bg-blue-400 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute top-40 right-20 w-48 h-48 bg-emerald-400 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute bottom-20 left-1/3 w-40 h-40 bg-purple-400 rounded-full blur-3xl animate-pulse delay-2000"></div>
+        <div className="absolute bottom-40 right-1/4 w-36 h-36 bg-pink-400 rounded-full blur-3xl animate-pulse delay-500"></div>
+      </div>
+
+      {/* Content */}
+      <div className="relative z-10 container mx-auto px-4 sm:px-6 text-center max-w-4xl">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          {/* Logo/Title */}
+          <div className="mb-12">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="mb-6"
+            >
+              <div className="w-24 h-24 mx-auto mb-6 bg-white/10 backdrop-blur-sm rounded-3xl flex items-center justify-center border border-white/20">
+                <span className="text-4xl">🏫</span>
+              </div>
+            </motion.div>
+
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="text-4xl md:text-6xl font-bold text-white mb-4 leading-tight"
+            >
+              학교안전보건 관리시스템
+            </motion.h1>
+
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
+              className="text-xl md:text-2xl text-blue-200 mb-12"
+            >
+              인천광역시학교안전공제회
+            </motion.p>
+          </div>
+
+          {/* Selection Buttons */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.8 }}
+            className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto"
+          >
+            {/* 학교 관계자 버튼 */}
+            <motion.button
+              onClick={handleVisitorClick}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="group relative bg-white/10 backdrop-blur-sm border border-white/20 rounded-3xl p-10 hover:bg-white/20 transition-all duration-500 hover:shadow-2xl hover:border-white/40"
+            >
+              <div className="text-center">
+                <div className="w-32 h-32 bg-gradient-to-r from-green-400 to-emerald-500 rounded-3xl flex items-center justify-center mx-auto mb-8 group-hover:scale-110 transition-transform duration-300 shadow-2xl">
+                  <span className="text-white text-6xl">🏫</span>
+                </div>
+                <h2 className="text-2xl md:text-3xl font-bold text-white mb-6">학교 관계자</h2>
+                <p className="text-gray-300 leading-relaxed text-lg">
+                  학교안전보건 정보와<br />
+                  교육자료를 확인하실 수 있습니다
+                </p>
+              </div>
+              
+              {/* Hover Effect */}
+              <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-green-400/20 to-emerald-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            </motion.button>
+
+            {/* 공제회 관리자 버튼 */}
+            <motion.button
+              onClick={handleManagerClick}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="group relative bg-white/10 backdrop-blur-sm border border-white/20 rounded-3xl p-10 hover:bg-white/20 transition-all duration-500 hover:shadow-2xl hover:border-white/40"
+            >
+              <div className="text-center">
+                <div className="w-32 h-32 bg-gradient-to-r from-blue-400 to-blue-500 rounded-3xl flex items-center justify-center mx-auto mb-8 group-hover:scale-110 transition-transform duration-300 shadow-2xl">
+                  <span className="text-white text-6xl">⛑️</span>
+                </div>
+                <h2 className="text-2xl md:text-3xl font-bold text-white mb-6">공제회 관리자</h2>
+                <p className="text-gray-300 leading-relaxed text-lg">
+                  시스템 관리 및<br />
+                  안전업무를 수행하실 수 있습니다
+                </p>
+              </div>
+              
+              {/* Hover Effect */}
+              <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-blue-400/20 to-blue-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            </motion.button>
+          </motion.div>
+
+          {/* Bottom Info */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 1.2 }}
+            className="mt-12 text-gray-400 text-sm"
+          >
+            <p>목적에 맞는 서비스를 선택해 주세요</p>
+          </motion.div>
+        </motion.div>
       </div>
     </div>
-  )
-});
-
-// --- Helper Functions ---
-function safeParsePurpose(purpose: string): string[] {
-  try {
-    if (!purpose) return [];
-    const parsed = JSON.parse(purpose);
-    return Array.isArray(parsed) ? parsed : [];
-  } catch (e) {
-    console.warn('Failed to parse purpose JSON:', purpose);
-    return [];
-  }
-}
-
-function safeUrl(url: string | null | undefined): string {
-  if (!url || typeof url !== 'string') {
-    return '#';
-  }
-  try {
-    // Check if it's a valid URL or path
-    if (url.startsWith('http') || url.startsWith('/')) {
-      return url;
-    }
-    return '#';
-  } catch (e) {
-    console.warn('Invalid URL:', url);
-    return '#';
-  }
-}
-
-// --- Interfaces ---
-interface Schedule {
-  id: string;
-  date: string; // ISO string
-  schoolId: string;
-  school: { name: string; abbreviation?: string | null; }; // Only need name for display
-  ampm: string;
-  startTime: string;
-  endTime: string;
-  purpose: string; // JSON stringified array
-  otherReason?: string;
-  isHoliday?: boolean;
-  holidayReason?: string | null;
-}
-
-interface Material {
-  id: string;
-  filename: string;
-  filePath: string;
-  uploadedAt: string;
-  uploader: string;
-  category: string;
-  thumbnailPath?: string;
-}
+  );
+};
 
 // Personal Introduction Section Component
 const PersonalIntroSection = () => {
@@ -114,11 +180,13 @@ const PersonalIntroSection = () => {
                 className="text-center lg:text-left"
               >
                 <div className="relative inline-block">
-                  <div className="w-48 h-64 md:w-56 md:h-72 rounded-3xl overflow-hidden shadow-2xl ring-4 ring-blue-500/20">
+                  <div className="relative w-48 h-64 md:w-56 md:h-72 rounded-3xl overflow-hidden shadow-2xl ring-4 ring-blue-500/20">
                     <Image
                       src="/images/admin_profile.png"
                       alt="강성훈 대리 프로필"
                       fill
+                      sizes="(max-width: 768px) 192px, 224px"
+                      priority
                       className="object-cover object-center rounded-3xl"
                     />
                   </div>
@@ -639,7 +707,8 @@ const ImageGallerySection = () => {
                           fill
                           className="object-cover"
                           sizes="(max-width: 768px) 100vw, 33vw"
-                          {...(imageIndex === 0 ? { priority: true } : { loading: "lazy" })}
+                          priority={imageIndex === 0}
+                          loading={imageIndex === 0 ? undefined : "lazy"}
                           onError={(e) => {
                             const target = e.target as HTMLImageElement;
                             // 이미 fallback으로 변경되었다면 더 이상 변경하지 않음
@@ -814,126 +883,42 @@ const LegalNoticeSection = () => (
   </section>
 );
 
-// --- Component ---
+// --- Main Component ---
 export default function HomePage() {
-  const { user, loading } = useAuth();
-  
-  
-  // 관리자 여부 확인
-  const isAdmin = user?.role === 'admin';
+  const { user, loading, isAuthenticated } = useAuth();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [showSelection, setShowSelection] = useState(true);
+  const [showVisitorContent, setShowVisitorContent] = useState(false);
 
-  const [schedules, setSchedules] = useState<Schedule[]>([]);
-  const [latestEduMaterials, setLatestEduMaterials] = useState<Material[]>([]);
-  const [latestIndAccidents, setLatestIndAccidents] = useState<Material[]>([]);
-  const [todaySchedules, setTodaySchedules] = useState<Schedule[]>([]);
-  const [currentTime, setCurrentTime] = useState<Date>(new Date());
-  const [showModal, setShowModal] = useState(false);
-  const [selectedEvent, setSelectedEvent] = useState<Schedule | null>(null);
-  const [monthlyPurposeSummary, setMonthlyPurposeSummary] = useState<Record<string, number>>({});
-  const [monthlyDetailedSummary, setMonthlyDetailedSummary] = useState<Record<string, {
-    total: number;
-    completed: number;
-    upcoming: number;
-    schools: string[];
-    schoolsWithStatus: { name: string; isCompleted: boolean }[];
-  }>>({});
-
-  const adminInfo = {
-    profilePic: '/images/admin_profile.png',
-    name: '강성훈',
-    title: '산업안전팀 대리',
-    phone: '010-8764-2428',
-  };
-
+  // 해시 변경 감지
   useEffect(() => {
-    fetchSchedules();
-    fetchLatestMaterials('교육자료', setLatestEduMaterials);
-    fetchLatestMaterials('산업재해', setLatestIndAccidents);
+    const handleHashChange = () => {
+      if (window.location.hash === '#visitor-content') {
+        setShowSelection(false);
+        setShowVisitorContent(true);
+      }
+    };
 
-    // const timer = setInterval(() => {
-    //   setCurrentTime(new Date());
-    // }, 1000);
-
-    // return () => clearInterval(timer);
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
+  // URL 파라미터 체크 (visitor=true면 방문자 콘텐츠 표시)
   useEffect(() => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const filtered = schedules.filter(s => {
-      const scheduleDate = new Date(s.date);
-      scheduleDate.setHours(0, 0, 0, 0);
-      return scheduleDate.getTime() === today.getTime();
-    }).sort((a, b) => a.startTime.localeCompare(b.startTime));
-    setTodaySchedules(filtered);
+    const visitor = searchParams.get('visitor');
+    if (visitor === 'true') {
+      setShowSelection(false);
+      setShowVisitorContent(true);
+    }
+  }, [searchParams]);
 
-    const currentMonth = new Date().getMonth();
-    const currentYear = new Date().getFullYear();
-    const now = new Date();
-    const summary: Record<string, number> = {};
-    const detailedSummary: Record<string, {
-      total: number;
-      completed: number;
-      upcoming: number;
-      schools: string[];
-      schoolsWithStatus: { name: string; isCompleted: boolean }[];
-    }> = {};
-
-    schedules.forEach(s => {
-      // 휴무일정은 제외
-      if (s.isHoliday) return;
-      
-      const scheduleDate = new Date(s.date);
-      if (scheduleDate.getMonth() === currentMonth && scheduleDate.getFullYear() === currentYear) {
-        const purposes = safeParsePurpose(s.purpose);
-        const schoolName = s.school.abbreviation || s.school.name;
-        const isCompleted = scheduleDate < now;
-
-        purposes.forEach((p: string) => {
-          // 기존 간단한 통계
-          summary[p] = (summary[p] || 0) + 1;
-
-          // 상세 통계
-          if (!detailedSummary[p]) {
-            detailedSummary[p] = {
-              total: 0,
-              completed: 0,
-              upcoming: 0,
-              schools: [],
-              schoolsWithStatus: []
-            };
-          }
-
-          detailedSummary[p].total += 1;
-          if (isCompleted) {
-            detailedSummary[p].completed += 1;
-          } else {
-            detailedSummary[p].upcoming += 1;
-          }
-
-          // 학교명 추가 (중복 제거)
-          if (!detailedSummary[p].schools.includes(schoolName)) {
-            detailedSummary[p].schools.push(schoolName);
-          }
-
-          // 학교명과 상태 추가 (중복 허용 - 같은 학교가 여러 번 방문할 수 있음)
-          const existingSchoolStatus = detailedSummary[p].schoolsWithStatus.find(s => s.name === schoolName);
-          if (!existingSchoolStatus) {
-            detailedSummary[p].schoolsWithStatus.push({ name: schoolName, isCompleted });
-          } else {
-            // 이미 있는 학교라면, 완료된 것이 있으면 완료로 우선 처리
-            if (isCompleted) {
-              existingSchoolStatus.isCompleted = true;
-            }
-          }
-        });
-      }
-    });
-    
-    setMonthlyPurposeSummary(summary);
-    setMonthlyDetailedSummary(detailedSummary);
-
-  }, [schedules]);
+  // 로그인된 사용자는 메인 페이지 콘텐츠를 볼 수 있도록 리다이렉트 제거
+  // useEffect(() => {
+  //   if (isAuthenticated && !loading) {
+  //     router.push('/schedules');
+  //   }
+  // }, [isAuthenticated, loading, router]);
 
   // 로딩 중이면 로딩 표시
   if (loading) {
@@ -947,92 +932,10 @@ export default function HomePage() {
     );
   }
 
-  const fetchSchedules = async () => {
-    try {
-      const res = await fetch('/api/schedules');
-      if (!res.ok) {
-        throw new Error('Failed to fetch schedules');
-      }
-      const data = await res.json();
-      setSchedules(data);
-    } catch (error) {
-      console.error('Error fetching schedules:', error);
-      setSchedules([]); // 에러 시 빈 배열로 설정
-    }
-  };
-
-  const fetchLatestMaterials = async (category: string, setter: React.Dispatch<React.SetStateAction<Material[]>>) => {
-    try {
-      const res = await fetch(`/api/materials?category=${category}&limit=5`);
-      if (!res.ok) {
-        throw new Error(`Failed to fetch materials for category: ${category}`);
-      }
-      const { data } = await res.json();
-      if (Array.isArray(data)) {
-        setter(data);
-      } else {
-        console.error('API did not return an array for materials', data);
-        setter([]);
-      }
-    } catch (error) {
-      console.error(error);
-      setter([]);
-    }
-  };
-
-  const handleEventClick = (clickInfo: { event: { id: string } }) => {
-    try {
-      const eventId = clickInfo.event.id;
-      const clickedSchedule = schedules.find(s => s.id === eventId);
-      if (clickedSchedule) {
-        setSelectedEvent(clickedSchedule);
-        setShowModal(true);
-      }
-    } catch (error) {
-      console.warn('Error handling event click:', error);
-    }
-  };
-
-  const closeModal = () => {
-    setShowModal(false);
-    setSelectedEvent(null);
-  };
-
-  const safeCreateCalendarEvents = (schedules: Schedule[]) => {
-    try {
-      return schedules
-        .filter(schedule => schedule && schedule.id && schedule.date && schedule.startTime && schedule.endTime)
-        .map(schedule => ({
-          id: schedule.id,
-          start: `${new Date(schedule.date).toISOString().split('T')[0]}T${schedule.startTime}`,
-          end: `${new Date(schedule.date).toISOString().split('T')[0]}T${schedule.endTime}`,
-          allDay: false,
-          className: schedule.isHoliday ? 'fc-holiday-event' : 'fc-custom-event',
-          extendedProps: {
-            schoolName: schedule.school?.name || '알 수 없는 학교',
-            purposes: safeParsePurpose(schedule.purpose).join(', '),
-            schoolAbbreviation: schedule.school?.abbreviation,
-            ...schedule,
-          }
-        }));
-    } catch (error) {
-      console.warn('Error creating calendar events:', error);
-      return [];
-    }
-  };
-
-  const calendarEvents = safeCreateCalendarEvents(schedules);
-
-  const upcomingSchedules = schedules
-    .filter(s => new Date(s.date) >= new Date())
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-    .slice(0, 5);
-
-  // 관리자가 아닌 경우 학교안전보건 콘텐츠 표시
-  if (!isAdmin) {
+  // 방문자 콘텐츠 표시
+  if (showVisitorContent) {
     return (
       <div className="min-h-screen">
-        <PersonalIntroSection />
         <HeroSplit />
         <HeroSection />
         <CoreValuesSection />
@@ -1046,187 +949,23 @@ export default function HomePage() {
     );
   }
 
-  // 관리자용 대시보드
+  // 초기 선택 화면 표시 (로그인되지 않은 경우만)
+  if (showSelection && !isAuthenticated) {
+    return <InitialSelectionScreen />;
+  }
+
+  // 기본 콘텐츠 (fallback)
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100">
-      <div className="container mx-auto px-6 py-8">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-800 to-slate-800 bg-clip-text text-transparent mb-2">
-            학교안전보건관리
-          </h1>
-          <p className="text-gray-600 text-lg">관리자 대시보드</p>
-        </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
-        <div className="bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-xl border border-white/20 flex flex-col">
-          <div className="flex flex-col items-center pb-4 border-b border-gray-200 mb-4">
-            <Image src={adminInfo.profilePic} alt="Admin Profile" width={96} height={96} className="rounded-full object-cover mb-4 border-2 border-blue-500" />
-            <h2 className="text-xl font-semibold text-gray-800">{adminInfo.name}</h2>
-            <p className="text-gray-600">{adminInfo.title}</p>
-            <p className="text-gray-600">{adminInfo.phone}</p>
-          </div>
-
-          <div className="flex flex-col">
-            <div className="pb-4 border-b border-gray-200 mb-4">
-              <h3 className="text-lg font-bold mb-2 text-blue-700 flex justify-between items-center">
-                <span>오늘의 방문 일정</span>
-                <span className="text-sm text-gray-600">{currentTime.toLocaleDateString()} {currentTime.toLocaleTimeString()}</span>
-              </h3>
-              {todaySchedules.length === 0 ? (
-                <p className="text-gray-500 text-sm">오늘 예정된 일정이 없습니다.</p>
-              ) : (
-                <ul>
-                  {todaySchedules.map(schedule => (
-                    <li key={schedule.id} className="mb-1 text-sm text-gray-700">
-                      <span className="font-medium">{schedule.startTime} ~ {schedule.endTime}</span> - {schedule.school.abbreviation || schedule.school.name} ({safeParsePurpose(schedule.purpose).join(', ')})
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-
-            <div>
-              <h3 className="text-lg font-bold mb-2 text-blue-700">{new Date().getMonth() + 1}월 등록 일정수</h3>
-              {Object.keys(monthlyPurposeSummary).length === 0 ? (
-                <p className="text-gray-500 text-sm">이번 달 등록된 일정이 없습니다.</p>
-              ) : (
-                <div className="space-y-3">
-                  {Object.entries(monthlyDetailedSummary)
-                    .sort(([purposeA], [purposeB]) => {
-                      // 월점검을 맨 위로, 나머지는 알파벳 순
-                      if (purposeA === '월점검') return -1;
-                      if (purposeB === '월점검') return 1;
-                      return purposeA.localeCompare(purposeB);
-                    })
-                    .map(([purpose, data]) => (
-                      <div key={purpose} className="border-l-4 border-blue-400 pl-3 bg-blue-50/30 rounded-r-lg py-2">
-                        <div className="font-medium text-gray-800 mb-1 text-sm sm:text-base">
-                          <div className="break-words">
-                            {purpose} - {data.total}건
-                          </div>
-                          <div className="text-xs sm:text-sm text-gray-600 mt-1">
-                            (방문완료 {data.completed}건 / 방문예정 {data.upcoming}건)
-                          </div>
-                        </div>
-                        {purpose !== '월점검' && data.schoolsWithStatus.length > 0 && (
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 mt-2">
-                            {data.schoolsWithStatus
-                              .sort((a, b) => {
-                                // 먼저 완료 상태별로 정렬 (완료된 것이 위쪽으로)
-                                if (a.isCompleted && !b.isCompleted) return -1;
-                                if (!a.isCompleted && b.isCompleted) return 1;
-                                // 같은 상태끼리는 이름순으로 정렬
-                                return a.name.localeCompare(b.name, 'ko');
-                              })
-                              .map((schoolStatus, index) => (
-                                <div 
-                                  key={index} 
-                                  className={`text-xs px-2 py-1 rounded border truncate font-medium ${
-                                    schoolStatus.isCompleted 
-                                      ? 'bg-green-100 text-green-800 border-green-200' // 방문완료 - 연한 연두색
-                                      : 'bg-purple-100 text-purple-800 border-purple-200' // 방문예정 - 연한 자주색
-                                  }`}
-                                  title={schoolStatus.name}
-                                >
-                                  {schoolStatus.name}
-                                </div>
-                              ))}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        <div className="lg:col-span-2 bg-white/80 backdrop-blur-sm p-4 sm:p-8 rounded-2xl shadow-xl border border-white/20">
-          <ScheduleCalendarComponent 
-            events={calendarEvents}
-            onEventClick={handleEventClick}
-            onDateClick={() => {}} // Empty handler for main page
-          />
-        </div>
-
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white p-6 rounded-lg shadow-md border border-gray-300">
-          <h2 className="text-xl font-bold mb-4 text-blue-700">방문 예정 학교</h2>
-          {upcomingSchedules.length === 0 ? (
-            <p className="text-gray-500">예정된 일정이 없습니다.</p>
-          ) : (
-            <ul>
-              {upcomingSchedules.map(schedule => (
-                <li key={schedule.id} className="mb-2 pb-2 border-b border-gray-200 last:border-b-0">
-                  <p className="font-medium text-gray-800">{new Date(schedule.date).toLocaleDateString()} - {schedule.school.abbreviation || schedule.school.name}</p>
-                  <p className="text-sm text-gray-600">{safeParsePurpose(schedule.purpose).join(', ')} ({schedule.startTime} ~ {schedule.endTime})</p>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-
-        <div className="bg-white p-6 rounded-lg shadow-md border border-gray-300">
-          <h2 className="text-xl font-bold mb-4 text-blue-700">최신 교육자료 (5개)</h2>
-          {latestEduMaterials.length === 0 ? (
-            <p className="text-gray-500">등록된 교육자료가 없습니다.</p>
-          ) : (
-            <ul>
-              {latestEduMaterials.map(material => (
-                <li key={material.id} className="mb-2 pb-2 border-b border-gray-200 last:border-b-0 flex items-center">
-                  {material.thumbnailPath && <Image src={material.thumbnailPath} alt={material.filename} width={40} height={40} className="object-cover mr-3 rounded" />}
-                  <div>
-                    <Link href={safeUrl(material.filePath)} target="_blank" rel="noopener noreferrer" className="font-medium text-blue-600 hover:underline">{material.filename}</Link>
-                    <p className="text-sm text-gray-600">{new Date(material.uploadedAt).toLocaleDateString()}</p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-
-        <div className="bg-white p-6 rounded-lg shadow-md border border-gray-300">
-          <h2 className="text-xl font-bold mb-4 text-blue-700">최신 중대재해 정보 (5개)</h2>
-          {latestIndAccidents.length === 0 ? (
-            <p className="text-gray-500">등록된 중대재해 정보가 없습니다.</p>
-          ) : (
-            <ul>
-              {latestIndAccidents.map(material => (
-                <li key={material.id} className="mb-2 pb-2 border-b border-gray-200 last:border-b-0 flex items-center">
-                  {material.thumbnailPath && <Image src={material.thumbnailPath} alt={material.filename} width={40} height={40} className="object-cover mr-3 rounded" />}
-                  <div>
-                    <Link href={safeUrl(material.filePath)} target="_blank" rel="noopener noreferrer" className="font-medium text-blue-600 hover:underline">{material.filename}</Link>
-                    <p className="text-sm text-gray-600">{new Date(material.uploadedAt).toLocaleDateString()}</p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      </div>
-
-      {/* Schedule Detail Modal */}
-      {showModal && selectedEvent && (
-        <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-2xl w-96 border-2 border-gray-300 max-w-[90vw] ring-4 ring-blue-200">
-            <h2 className="text-xl font-bold mb-4 text-blue-700">일정 상세</h2>
-            <p className="mb-2"><strong>학교명:</strong> {selectedEvent.school?.name || '알 수 없는 학교'}</p>
-            <p className="mb-2"><strong>날짜:</strong> {new Date(selectedEvent.date).toLocaleDateString()}</p>
-            <p className="mb-2"><strong>시간:</strong> {selectedEvent.startTime} ~ {selectedEvent.endTime} ({selectedEvent.ampm})</p>
-            <p className="mb-2"><strong>방문 목적:</strong> {safeParsePurpose(selectedEvent.purpose).join(', ')}</p>
-            {selectedEvent.otherReason && <p className="mb-4"><strong>기타 사유:</strong> {selectedEvent.otherReason}</p>}
-            <button 
-              onClick={closeModal} 
-              className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md w-full transition-colors"
-            >
-              닫기
-            </button>
-          </div>
-        </div>
-      )}
-      </div>
+    <div className="min-h-screen">
+      <HeroSplit />
+      <HeroSection />
+      <CoreValuesSection />
+      <ConsultingAreasSection />
+      <MainTasksSection />
+      <ImageGallerySection />
+      <TrustComplianceSection />
+      <QuickMenuSection />
+      <LegalNoticeSection />
     </div>
   );
 }
