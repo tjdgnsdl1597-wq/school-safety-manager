@@ -11,18 +11,23 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = "file:./dev.db"
+  url      = env("DATABASE_URL")
 }
 
 model User {
-  id        String   @id @default(uuid())
-  username  String   @unique // 로그인용 아이디 (중복 불가)
-  password  String // 비밀번호 (나중에 암호화 예정)
-  name      String // 사용자 실명 (한글명)
-  role      String   @default("user") // "super_admin" 또는 "user"
-  isActive  Boolean  @default(true) // 계정 활성화 여부
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String   @id @default(uuid())
+  username     String   @unique // 로그인용 아이디 (중복 불가)
+  password     String // 비밀번호 (나중에 암호화 예정)
+  name         String // 사용자 실명 (한글명)
+  position     String? // 직급
+  phoneNumber  String? // 전화번호
+  email        String? // 이메일 주소
+  department   String   @default("산업안전팀") // 부서 (자동선택)
+  profilePhoto String? // 프로필 사진 URL (Google Cloud Storage)
+  role         String   @default("user") // "super_admin" 또는 "user"
+  isActive     Boolean  @default(false) // 계정 활성화 여부 (승인 전까지 비활성화)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   // 관계 설정 (나중에 연결할 예정)
   schools   School[]
@@ -34,6 +39,7 @@ model School {
   name          String     @unique
   phoneNumber   String?
   contactPerson String?
+  email         String? // 학교 이메일
   userId        String // 어느 사용자가 등록했는지
   user          User       @relation(fields: [userId], references: [id])
   schedules     Schedule[]
