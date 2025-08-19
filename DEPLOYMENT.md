@@ -40,7 +40,7 @@ npm start
 
 ## 기본 로그인 정보
 - 아이디: admin
-- 비밀번호: password123
+- 비밀번호: rkddkwl12.
 
 ## 주요 기능
 ✅ 로그인 시스템 (NextAuth.js)

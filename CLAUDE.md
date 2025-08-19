@@ -136,7 +136,7 @@ Components use `const { user, isAuthenticated } = useAuth()` and `const isAdmin 
 ```bash
 DATABASE_URL="file:./dev.db"
 ADMIN_USERNAME="admin"
-ADMIN_PASSWORD="password123"
+ADMIN_PASSWORD="rkddkwl12."
 GOOGLE_CLOUD_PROJECT_ID="your-project-id"
 GOOGLE_CLOUD_BUCKET_NAME="school-safety-manager"
 GOOGLE_CLOUD_KEY_FILE="path/to/service-account-key.json"
@@ -147,7 +147,7 @@ PIXABAY_KEY="your-pixabay-api-key-for-image-search"
 ```bash
 DATABASE_URL="postgresql://..." # PostgreSQL connection string
 ADMIN_USERNAME="admin"
-ADMIN_PASSWORD="password123"
+ADMIN_PASSWORD="rkddkwl12."
 GOOGLE_CLOUD_PROJECT_ID="your-project-id"
 GOOGLE_CLOUD_BUCKET_NAME="school-safety-manager"
 GOOGLE_CLOUD_CREDENTIALS='{"type":"service_account","project_id":"..."}' # Full JSON string
