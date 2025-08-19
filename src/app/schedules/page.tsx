@@ -136,25 +136,45 @@ export default function SchedulesPage() {
   const handleFormSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    const currentPurposes = formData.getAll('purpose') as string[];
-    let otherReason = formData.get('otherReason') as string;
-
-    if (!currentPurposes.includes('교육') && !currentPurposes.includes('기타')) {
-      otherReason = '';
-    }
     
-    const scheduleData = {
-      id: editingSchedule?.id,
-      schoolId: formData.get('schoolId') as string,
-      date: formData.get('date') as string,
-      ampm,
-      startTime,
-      endTime,
-      purpose: JSON.stringify(currentPurposes),
-      otherReason: otherReason,
-      isHoliday,
-      holidayReason,
-    };
+    let scheduleData;
+    
+    if (isHoliday) {
+      // 휴무일정인 경우 - schoolId와 purpose는 필요없음
+      scheduleData = {
+        id: editingSchedule?.id,
+        schoolId: schools[0]?.id || '', // 임시로 첫 번째 학교 ID 사용 (API에서는 무시됨)
+        date: formData.get('date') as string,
+        ampm,
+        startTime,
+        endTime,
+        purpose: '[]', // 빈 배열
+        otherReason: '',
+        isHoliday,
+        holidayReason,
+      };
+    } else {
+      // 일반 일정인 경우
+      const currentPurposes = formData.getAll('purpose') as string[];
+      let otherReason = formData.get('otherReason') as string;
+
+      if (!currentPurposes.includes('교육') && !currentPurposes.includes('기타')) {
+        otherReason = '';
+      }
+      
+      scheduleData = {
+        id: editingSchedule?.id,
+        schoolId: formData.get('schoolId') as string,
+        date: formData.get('date') as string,
+        ampm,
+        startTime,
+        endTime,
+        purpose: JSON.stringify(currentPurposes),
+        otherReason: otherReason,
+        isHoliday,
+        holidayReason: '',
+      };
+    }
 
     const url = '/api/schedules';
     const method = editingSchedule ? 'PUT' : 'POST';
@@ -234,22 +254,35 @@ export default function SchedulesPage() {
     setSelectedPurposes(prev => checked ? [...prev, value] : prev.filter(p => p !== value));
   };
 
-  const calendarEvents = schedules.map(schedule => ({
-    id: schedule.id,
-    start: `${new Date(schedule.date).toISOString().split('T')[0]}T${schedule.startTime}`,
-    end: `${new Date(schedule.date).toISOString().split('T')[0]}T${schedule.endTime}`,
-    allDay: false,
-    backgroundColor: schedule.isHoliday ? '#fbbf24' : '#3b82f6', // 휴무일정은 노란색, 일반일정은 파란색
-    borderColor: schedule.isHoliday ? '#f59e0b' : '#2563eb',
-    textColor: schedule.isHoliday ? '#92400e' : '#ffffff',
-    extendedProps: {
-      schoolName: schedule.school.name,
-      purposes: schedule.isHoliday ? schedule.holidayReason || '휴무' : JSON.parse(schedule.purpose).join(', '),
-      startTime: schedule.startTime,
-      schoolAbbreviation: schedule.school.abbreviation, // Pass abbreviation
-      isHoliday: schedule.isHoliday,
+  const calendarEvents = schedules.map(schedule => {
+    let title;
+    if (schedule.isHoliday) {
+      // 휴무일정인 경우: 휴무 사유만 표시
+      title = `🏖️ ${schedule.holidayReason || '휴무'}`;
+    } else {
+      // 일반 일정인 경우: 학교명과 목적 표시
+      const schoolDisplayName = schedule.school.abbreviation || schedule.school.name;
+      title = `[${schoolDisplayName}] ${JSON.parse(schedule.purpose).join(', ')}`;
     }
-  }));
+
+    return {
+      id: schedule.id,
+      title: title,
+      start: `${new Date(schedule.date).toISOString().split('T')[0]}T${schedule.startTime}`,
+      end: `${new Date(schedule.date).toISOString().split('T')[0]}T${schedule.endTime}`,
+      allDay: false,
+      backgroundColor: schedule.isHoliday ? '#fbbf24' : '#3b82f6', // 휴무일정은 노란색, 일반일정은 파란색
+      borderColor: schedule.isHoliday ? '#f59e0b' : '#2563eb',
+      textColor: schedule.isHoliday ? '#92400e' : '#ffffff',
+      extendedProps: {
+        schoolName: schedule.school?.name || '',
+        purposes: schedule.isHoliday ? schedule.holidayReason || '휴무' : JSON.parse(schedule.purpose).join(', '),
+        startTime: schedule.startTime,
+        schoolAbbreviation: schedule.school?.abbreviation || '', // Pass abbreviation
+        isHoliday: schedule.isHoliday,
+      }
+    };
+  });
 
   // --- Render ---
   if (isLoading) return <div className="text-center p-8">로딩 중...</div>;
@@ -282,12 +315,25 @@ export default function SchedulesPage() {
                 <form id="schedule-form" onSubmit={handleFormSubmit}>
                     <div className="space-y-4">
                         <div>
-                            <label htmlFor="schoolId" className="block text-gray-700 text-sm font-bold mb-2">학교</label>
-                            <select name="schoolId" id="schoolId" key={editingSchedule?.id} defaultValue={editingSchedule?.schoolId || ''} className="shadow border rounded w-full py-2 px-3" required>
-                                <option value="" disabled>학교를 선택하세요</option>
-                                {schools.map(school => <option key={school.id} value={school.id}>{school.name}</option>)}
-                            </select>
+                            <label className="flex items-center space-x-2 cursor-pointer mb-2">
+                                <input 
+                                    type="checkbox" 
+                                    checked={isHoliday} 
+                                    onChange={e => setIsHoliday(e.target.checked)}
+                                    className="rounded"
+                                />
+                                <span className="text-gray-700 text-sm font-bold">🏖️ 휴무일정</span>
+                            </label>
                         </div>
+                        {!isHoliday && (
+                            <div>
+                                <label htmlFor="schoolId" className="block text-gray-700 text-sm font-bold mb-2">학교</label>
+                                <select name="schoolId" id="schoolId" key={editingSchedule?.id} defaultValue={editingSchedule?.schoolId || ''} className="shadow border rounded w-full py-2 px-3" required>
+                                    <option value="" disabled>학교를 선택하세요</option>
+                                    {schools.map(school => <option key={school.id} value={school.id}>{school.name}</option>)}
+                                </select>
+                            </div>
+                        )}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label htmlFor="date" className="block text-gray-700 text-sm font-bold mb-2">날짜</label>
@@ -315,34 +361,27 @@ export default function SchedulesPage() {
                                 </select>
                             </div>
                         </div>
-                        <div>
-                            <label className="block text-gray-700 text-sm font-bold mb-2">방문 목적</label>
-                            <div className="grid grid-cols-2 gap-2">
-                                {ALL_PURPOSES.map(p => (
-                                <label key={p} className="flex items-center">
-                                    <input type="checkbox" name="purpose" value={p} checked={selectedPurposes.includes(p)} onChange={handlePurposeChange} className="mr-2" />
-                                    {p}
-                                </label>
-                                ))}
-                            </div>
-                        </div>
-                        {(selectedPurposes.includes('교육') || selectedPurposes.includes('기타')) && (
-                            <div>
-                                <label htmlFor="otherReason" className="block text-gray-700 text-sm font-bold mb-2">교육 내용 / 기타 사유</label>
-                                <input type="text" name="otherReason" id="otherReason" key={editingSchedule?.id} defaultValue={editingSchedule?.otherReason || ''} className="shadow appearance-none border rounded w-full py-2 px-3" autoComplete="off" />
-                            </div>
+                        {!isHoliday && (
+                            <>
+                                <div>
+                                    <label className="block text-gray-700 text-sm font-bold mb-2">방문 목적</label>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        {ALL_PURPOSES.map(p => (
+                                        <label key={p} className="flex items-center">
+                                            <input type="checkbox" name="purpose" value={p} checked={selectedPurposes.includes(p)} onChange={handlePurposeChange} className="mr-2" />
+                                            {p}
+                                        </label>
+                                        ))}
+                                    </div>
+                                </div>
+                                {(selectedPurposes.includes('교육') || selectedPurposes.includes('기타')) && (
+                                    <div>
+                                        <label htmlFor="otherReason" className="block text-gray-700 text-sm font-bold mb-2">교육 내용 / 기타 사유</label>
+                                        <input type="text" name="otherReason" id="otherReason" key={editingSchedule?.id} defaultValue={editingSchedule?.otherReason || ''} className="shadow appearance-none border rounded w-full py-2 px-3" autoComplete="off" />
+                                    </div>
+                                )}
+                            </>
                         )}
-                        <div>
-                            <label className="flex items-center space-x-2 cursor-pointer">
-                                <input 
-                                    type="checkbox" 
-                                    checked={isHoliday} 
-                                    onChange={e => setIsHoliday(e.target.checked)}
-                                    className="rounded"
-                                />
-                                <span className="text-gray-700 text-sm font-bold">🏖️ 휴무일정</span>
-                            </label>
-                        </div>
                         {isHoliday && (
                             <div>
                                 <label htmlFor="holidayReason" className="block text-gray-700 text-sm font-bold mb-2">휴무 사유</label>
@@ -354,6 +393,7 @@ export default function SchedulesPage() {
                                     className="shadow appearance-none border rounded w-full py-2 px-3" 
                                     placeholder="휴무 사유를 입력하세요" 
                                     autoComplete="off" 
+                                    required
                                 />
                             </div>
                         )}

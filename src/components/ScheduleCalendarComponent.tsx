@@ -9,7 +9,7 @@ import type { DateClickArg } from '@fullcalendar/interaction';
 // Safe helper function for event rendering
 function safeRenderEventContent(eventInfo: EventContentArg) {
   try {
-    const { schoolName, purposes, startTime, schoolAbbreviation } = eventInfo.event.extendedProps || {};
+    const { schoolName, purposes, startTime, schoolAbbreviation, isHoliday } = eventInfo.event.extendedProps || {};
     
     if (!startTime) return <div>일정</div>;
     
@@ -18,8 +18,15 @@ function safeRenderEventContent(eventInfo: EventContentArg) {
     const displayHour = hour % 12 === 0 ? 12 : hour % 12;
     const timeString = `${ampm} ${displayHour}` + (minute > 0 ? `:${String(minute).padStart(2, '0')}` : '') + '시';
     
-    const schoolDisplayName = schoolAbbreviation || schoolName || '학교';
-    const detailsString = `[${schoolDisplayName}] - ${purposes || '일정'}`;
+    let detailsString;
+    if (isHoliday) {
+      // 휴무일정인 경우: 학교명 없이 휴무 사유만 표시
+      detailsString = `🏖️ ${purposes || '휴무'}`;
+    } else {
+      // 일반 일정인 경우: 기존 방식
+      const schoolDisplayName = schoolAbbreviation || schoolName || '학교';
+      detailsString = `[${schoolDisplayName}] - ${purposes || '일정'}`;
+    }
 
     return (
       <div className="fc-event-custom-view">

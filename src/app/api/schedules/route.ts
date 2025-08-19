@@ -24,8 +24,37 @@ export async function POST(request: Request) {
   try {
     const { date, schoolId, ampm, startTime, endTime, purpose, otherReason, isHoliday, holidayReason } = await request.json();
 
-    if (!date || !schoolId || !ampm || !startTime || !endTime || !purpose) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    // 휴무일정인 경우와 일반 일정인 경우를 다르게 검증
+    if (isHoliday) {
+      if (!date || !ampm || !startTime || !endTime || !holidayReason) {
+        return NextResponse.json({ error: 'Missing required fields for holiday schedule' }, { status: 400 });
+      }
+    } else {
+      if (!date || !schoolId || !ampm || !startTime || !endTime || !purpose) {
+        return NextResponse.json({ error: 'Missing required fields for regular schedule' }, { status: 400 });
+      }
+    }
+
+    let finalSchoolId = schoolId;
+    
+    // 휴무일정인 경우 더미 학교 사용 또는 생성
+    if (isHoliday) {
+      // 더미 학교가 있는지 확인하고 없으면 생성
+      let dummySchool = await prisma.school.findFirst({
+        where: { name: '휴무일정' }
+      });
+      
+      if (!dummySchool) {
+        dummySchool = await prisma.school.create({
+          data: {
+            name: '휴무일정',
+            phoneNumber: null,
+            contactPerson: null,
+          }
+        });
+      }
+      
+      finalSchoolId = dummySchool.id;
     }
 
     // Ensure purpose is stringified if it's an array
@@ -33,13 +62,13 @@ export async function POST(request: Request) {
 
     const newSchedule = await prisma.schedule.create({
       data: {
-      date: new Date(date),
-        schoolId,
+        date: new Date(date),
+        schoolId: finalSchoolId,
         ampm,
         startTime,
         endTime,
-        purpose: purposeString,
-        otherReason,
+        purpose: purposeString || '[]',
+        otherReason: otherReason || null,
         isHoliday: isHoliday || false,
         holidayReason: holidayReason || null,
       },
@@ -55,8 +84,37 @@ export async function PUT(request: Request) {
   try {
     const { id, date, schoolId, ampm, startTime, endTime, purpose, otherReason, isHoliday, holidayReason } = await request.json();
 
-    if (!id || !date || !schoolId || !ampm || !startTime || !endTime || !purpose) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    // 휴무일정인 경우와 일반 일정인 경우를 다르게 검증
+    if (isHoliday) {
+      if (!id || !date || !ampm || !startTime || !endTime || !holidayReason) {
+        return NextResponse.json({ error: 'Missing required fields for holiday schedule' }, { status: 400 });
+      }
+    } else {
+      if (!id || !date || !schoolId || !ampm || !startTime || !endTime || !purpose) {
+        return NextResponse.json({ error: 'Missing required fields for regular schedule' }, { status: 400 });
+      }
+    }
+
+    let finalSchoolId = schoolId;
+    
+    // 휴무일정인 경우 더미 학교 사용 또는 생성
+    if (isHoliday) {
+      // 더미 학교가 있는지 확인하고 없으면 생성
+      let dummySchool = await prisma.school.findFirst({
+        where: { name: '휴무일정' }
+      });
+      
+      if (!dummySchool) {
+        dummySchool = await prisma.school.create({
+          data: {
+            name: '휴무일정',
+            phoneNumber: null,
+            contactPerson: null,
+          }
+        });
+      }
+      
+      finalSchoolId = dummySchool.id;
     }
 
     // Ensure purpose is stringified if it's an array
@@ -66,12 +124,12 @@ export async function PUT(request: Request) {
       where: { id },
       data: {
         date: new Date(date),
-        schoolId,
+        schoolId: finalSchoolId,
         ampm,
         startTime,
         endTime,
-        purpose: purposeString,
-        otherReason,
+        purpose: purposeString || '[]',
+        otherReason: otherReason || null,
         isHoliday: isHoliday || false,
         holidayReason: holidayReason || null,
       },

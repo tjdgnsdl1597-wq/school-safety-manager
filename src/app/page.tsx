@@ -828,6 +828,12 @@ export default function HomePage() {
   const [showModal, setShowModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<Schedule | null>(null);
   const [monthlyPurposeSummary, setMonthlyPurposeSummary] = useState<Record<string, number>>({});
+  const [monthlyDetailedSummary, setMonthlyDetailedSummary] = useState<Record<string, {
+    total: number;
+    completed: number;
+    upcoming: number;
+    schools: string[];
+  }>>({});
 
   const adminInfo = {
     profilePic: '/images/admin_profile.png',
@@ -860,18 +866,56 @@ export default function HomePage() {
 
     const currentMonth = new Date().getMonth();
     const currentYear = new Date().getFullYear();
+    const now = new Date();
     const summary: Record<string, number> = {};
+    const detailedSummary: Record<string, {
+      total: number;
+      completed: number;
+      upcoming: number;
+      schools: string[];
+    }> = {};
 
     schedules.forEach(s => {
+      // 휴무일정은 제외
+      if (s.isHoliday) return;
+      
       const scheduleDate = new Date(s.date);
       if (scheduleDate.getMonth() === currentMonth && scheduleDate.getFullYear() === currentYear) {
         const purposes = safeParsePurpose(s.purpose);
+        const schoolName = s.school.abbreviation || s.school.name;
+        const isCompleted = scheduleDate < now;
+
         purposes.forEach((p: string) => {
+          // 기존 간단한 통계
           summary[p] = (summary[p] || 0) + 1;
+
+          // 상세 통계
+          if (!detailedSummary[p]) {
+            detailedSummary[p] = {
+              total: 0,
+              completed: 0,
+              upcoming: 0,
+              schools: []
+            };
+          }
+
+          detailedSummary[p].total += 1;
+          if (isCompleted) {
+            detailedSummary[p].completed += 1;
+          } else {
+            detailedSummary[p].upcoming += 1;
+          }
+
+          // 학교명 추가 (중복 제거)
+          if (!detailedSummary[p].schools.includes(schoolName)) {
+            detailedSummary[p].schools.push(schoolName);
+          }
         });
       }
     });
+    
     setMonthlyPurposeSummary(summary);
+    setMonthlyDetailedSummary(detailedSummary);
 
   }, [schedules]);
 
@@ -1029,13 +1073,42 @@ export default function HomePage() {
               {Object.keys(monthlyPurposeSummary).length === 0 ? (
                 <p className="text-gray-500 text-sm">이번 달 등록된 일정이 없습니다.</p>
               ) : (
-                <ul>
-                  {Object.entries(monthlyPurposeSummary).map(([purpose, count]) => (
-                    <li key={purpose} className="mb-1 text-sm text-gray-700">
-                      <span className="font-medium">{purpose}</span> - {count}건
-                    </li>
-                  ))}
-                </ul>
+                <div className="space-y-3">
+                  {Object.entries(monthlyDetailedSummary)
+                    .sort(([purposeA], [purposeB]) => {
+                      // 월점검을 맨 위로, 나머지는 알파벳 순
+                      if (purposeA === '월점검') return -1;
+                      if (purposeB === '월점검') return 1;
+                      return purposeA.localeCompare(purposeB);
+                    })
+                    .map(([purpose, data]) => (
+                      <div key={purpose} className="border-l-4 border-blue-200 pl-2 sm:pl-3">
+                        <div className="font-medium text-gray-800 mb-1 text-sm sm:text-base">
+                          <div className="break-words">
+                            {purpose} - {data.total}건
+                          </div>
+                          <div className="text-xs sm:text-sm text-gray-600 mt-1">
+                            (방문완료 {data.completed}건 / 방문예정 {data.upcoming}건)
+                          </div>
+                        </div>
+                        {purpose !== '월점검' && data.schools.length > 0 && (
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 mt-2">
+                            {data.schools
+                              .sort((a, b) => a.localeCompare(b, 'ko'))
+                              .map((school, index) => (
+                                <div 
+                                  key={index} 
+                                  className="text-xs text-gray-600 bg-gray-50 px-2 py-1 rounded truncate"
+                                  title={school}
+                                >
+                                  {school}
+                                </div>
+                              ))}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                </div>
               )}
             </div>
           </div>
@@ -1053,7 +1126,7 @@ export default function HomePage() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white p-6 rounded-lg shadow-md border border-gray-300">
-          <h2 className="text-xl font-bold mb-4 text-blue-700">미완료 업무 (가장 가까운 5개)</h2>
+          <h2 className="text-xl font-bold mb-4 text-blue-700">방문 예정 학교</h2>
           {upcomingSchedules.length === 0 ? (
             <p className="text-gray-500">예정된 일정이 없습니다.</p>
           ) : (
