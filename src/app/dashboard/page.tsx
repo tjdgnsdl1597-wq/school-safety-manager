@@ -495,7 +495,7 @@ export default function DashboardPage() {
                   {/* 다른 통계들 - 상세한 버전 */}
                   {Object.entries(monthlyStats)
                     .filter(([purpose]) => purpose !== '월점검')
-                    .sort(([a, b]) => {
+                    .sort(([a], [b]) => {
                       const order = ['위험성평가', '근골조사', '교육', '산업재해'];
                       const aIndex = order.indexOf(a);
                       const bIndex = order.indexOf(b);
