@@ -59,7 +59,7 @@ This is a **School Safety Management System** (학교 안전보건 관리 시스
 - **MaterialManager**: File upload and display with thumbnails, admin-only controls
 - **AuthCheck**: Global authentication wrapper that handles public/private page access
 - **AuthProvider**: Custom React Context provider for authentication state management
-- **ScheduleCalendarComponent**: Dynamically imported FullCalendar with comprehensive error handling
+- **ScheduleCalendarComponent**: Dynamically imported FullCalendar with comprehensive error handling and optimized layout
 - **ErrorBoundary**: Application-wide error catching and user-friendly error display
 
 ### Data Patterns
@@ -81,8 +81,8 @@ Materials are blog-style posts with title, content, and up to 5 file attachments
 - **Holiday Schedules**: Special schedule type with `isHoliday: true` and `holidayReason`
 - **UI Behavior**: When holiday checkbox is checked, school selection is hidden, purpose selection is hidden
 - **Database Handling**: Holiday schedules use dummy school "휴무일정", auto-created via API
-- **Calendar Display**: Holiday schedules show as `🏖️ [holiday reason]` without school name
-- **Color Coding**: Holiday schedules display in yellow (#fbbf24) instead of blue
+- **Calendar Display**: Holiday schedules show as `🏖️ [holiday reason]` in 2-line format (time + reason)
+- **Color Coding**: Holiday schedules display in yellow (#fbbf24) background with black text (#000000)
 
 #### Authentication & Authorization
 - **Public Pages**: `/`, `/educational-materials`, `/industrial-accidents`, `/auth/signin` - accessible without login
@@ -127,6 +127,8 @@ Components use `const { user, isAuthenticated } = useAuth()` and `const isAdmin 
 - Modern glassmorphism design with gradient backgrounds (`bg-white/80 backdrop-blur-sm`)
 - Responsive design patterns for mobile compatibility
 - Consistent color scheme with blue/indigo gradients and elevated shadows
+- Calendar-specific CSS classes: `.fc-custom-event` (blue), `.fc-holiday-event` (yellow)
+- Horizontal toolbar layout optimizations in globals.css for space efficiency
 
 ### Error Handling & Data Safety Patterns
 - **Safe JSON Parsing**: Use `safeParsePurpose()` helper for schedule purpose data
@@ -216,6 +218,9 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 ### Monthly Statistics Display
 - **Purpose Prioritization**: 월점검 (monthly inspection) always appears first in statistics
 - **Detailed Breakdown**: Each purpose shows total count with completion status (방문완료/방문예정)
+- **Color-Coded Status**: Completed schools in light green, upcoming schools in light purple
+- **School Sorting**: Completed schools displayed first, then upcoming schools, each group sorted alphabetically
+- **Visual Enhancement**: Stronger section borders and background colors for better distinction
 - **School Name Display**: Non-월점검 purposes show related school names in 2-column grid
 - **Mobile Responsive**: Adapts to single column on mobile, proper text wrapping and truncation
 - **Data Exclusions**: Holiday schedules (휴무일정) are excluded from monthly statistics
@@ -229,6 +234,19 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 - **Left Panel**: Today's schedules and quick links
 - **Center Panel**: Monthly statistics with detailed breakdown
 - **Right Panel**: Upcoming school visits (formerly "미완료 업무")
+
+### Calendar UI Patterns
+- **Event Display**: 2-line format (time on first line, "school, purpose" on second line)
+- **Holiday Events**: Yellow background (#fbbf24) with black text, 2-line format showing time and holiday reason
+- **Regular Events**: Blue background (#3b82f6) with white text, truncated text with ellipsis for overflow
+- **Toolbar Layout**: Horizontal arrangement - prev button (left), title (center), next + view buttons (right)
+- **No Today Button**: Removed from toolbar for cleaner interface
+- **Responsive Design**: Smaller buttons and fonts on mobile, maintains horizontal layout
+
+### Modal Behavior
+- **Schedule Detail Modal**: No dark background overlay, keeps dashboard visible behind popup
+- **Enhanced Visibility**: Strong shadows (shadow-2xl) and blue ring borders for clear distinction
+- **Click Outside**: Modal can be closed by clicking the close button (background clicks don't close modal)
 
 ## Common Development Workflows
 
