@@ -1110,7 +1110,13 @@ export default function HomePage() {
                         {purpose !== '월점검' && data.schoolsWithStatus.length > 0 && (
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 mt-2">
                             {data.schoolsWithStatus
-                              .sort((a, b) => a.name.localeCompare(b.name, 'ko'))
+                              .sort((a, b) => {
+                                // 먼저 완료 상태별로 정렬 (완료된 것이 위쪽으로)
+                                if (a.isCompleted && !b.isCompleted) return -1;
+                                if (!a.isCompleted && b.isCompleted) return 1;
+                                // 같은 상태끼리는 이름순으로 정렬
+                                return a.name.localeCompare(b.name, 'ko');
+                              })
                               .map((schoolStatus, index) => (
                                 <div 
                                   key={index} 
