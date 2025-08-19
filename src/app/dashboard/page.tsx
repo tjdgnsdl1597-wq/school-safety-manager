@@ -186,22 +186,24 @@ export default function DashboardPage() {
     if (isAuthenticated) {
       fetchSchedules();
       fetchSchools();
-      
-      // 사용자별 저장된 메모 불러오기
-      if (typeof window !== 'undefined' && user?.id) {
-        const memoKey = `dashboard-memos-${user.id}`;
-        const savedMemosList = localStorage.getItem(memoKey);
-        if (savedMemosList) {
-          try {
-            const parsedMemos = JSON.parse(savedMemosList);
-            setSavedMemos(Array.isArray(parsedMemos) ? parsedMemos : []);
-          } catch (error) {
-            console.error('메모 불러오기 실패:', error);
-            setSavedMemos([]);
-          }
-        } else {
+    }
+  }, [isAuthenticated]);
+
+  // 사용자 로그인 후 메모 자동 불러오기
+  useEffect(() => {
+    if (isAuthenticated && user?.id && typeof window !== 'undefined') {
+      const memoKey = `dashboard-memos-${user.id}`;
+      const savedMemosList = localStorage.getItem(memoKey);
+      if (savedMemosList) {
+        try {
+          const parsedMemos = JSON.parse(savedMemosList);
+          setSavedMemos(Array.isArray(parsedMemos) ? parsedMemos : []);
+        } catch (error) {
+          console.error('메모 자동 불러오기 실패:', error);
           setSavedMemos([]);
         }
+      } else {
+        setSavedMemos([]);
       }
     }
   }, [isAuthenticated, user?.id]);
