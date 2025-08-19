@@ -1209,8 +1209,8 @@ export default function HomePage() {
 
       {/* Schedule Detail Modal */}
       {showModal && selectedEvent && (
-        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-xl w-96 border border-gray-200 max-w-[90vw]">
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-2xl w-96 border-2 border-gray-300 max-w-[90vw] ring-4 ring-blue-200">
             <h2 className="text-xl font-bold mb-4 text-blue-700">일정 상세</h2>
             <p className="mb-2"><strong>학교명:</strong> {selectedEvent.school?.name || '알 수 없는 학교'}</p>
             <p className="mb-2"><strong>날짜:</strong> {new Date(selectedEvent.date).toLocaleDateString()}</p>
