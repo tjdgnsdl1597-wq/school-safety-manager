@@ -117,9 +117,9 @@ export default function ScheduleCalendarComponent({ events, onEventClick, onDate
     <FullCalendar 
       initialView="dayGridMonth" 
       headerToolbar={{ 
-        left: 'title', 
-        center: 'prev,next', 
-        right: 'today dayGridMonth,timeGridWeek'
+        left: 'prev', 
+        center: 'title', 
+        right: 'next dayGridMonth,timeGridWeek'
       }}
       titleFormat={{ year: 'numeric', month: 'long' }}
       events={safeEvents} 
