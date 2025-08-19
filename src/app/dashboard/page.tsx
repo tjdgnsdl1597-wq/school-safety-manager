@@ -212,24 +212,40 @@ export default function DashboardPage() {
              !schedule.isHoliday; // 휴무일정 제외
     });
 
-    const stats: { [key: string]: { total: number; completed: number } } = {};
+    const stats: { [key: string]: { total: number; completed: number; completedSchools: Schedule[]; upcomingSchools: Schedule[] } } = {};
     
     monthlySchedules.forEach(schedule => {
       const purposes = JSON.parse(schedule.purpose || '[]');
       purposes.forEach((purpose: string) => {
         if (!stats[purpose]) {
-          stats[purpose] = { total: 0, completed: 0 };
+          stats[purpose] = { total: 0, completed: 0, completedSchools: [], upcomingSchools: [] };
         }
         stats[purpose].total++;
         
         const scheduleDate = new Date(schedule.date);
         if (scheduleDate < now) {
           stats[purpose].completed++;
+          stats[purpose].completedSchools.push(schedule);
+        } else {
+          stats[purpose].upcomingSchools.push(schedule);
         }
       });
     });
 
     return stats;
+  }, [schedules]);
+
+  // 최근 산업재해 관련 일정 계산
+  const recentAccidentSchedules = useMemo(() => {
+    const now = new Date();
+    const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 6, 1);
+    
+    return schedules.filter(schedule => {
+      if (schedule.isHoliday) return false;
+      const purposes = JSON.parse(schedule.purpose || '[]');
+      const scheduleDate = new Date(schedule.date);
+      return purposes.includes('산업재해') && scheduleDate >= sixMonthsAgo;
+    }).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 10);
   }, [schedules]);
 
   if (!isAuthenticated || loading) {
@@ -258,10 +274,26 @@ export default function DashboardPage() {
               </p>
             </div>
             
-            {/* 오늘 일정 요약 */}
-            <div className="text-right">
-              <div className="text-2xl font-bold text-blue-600">{todaySchedules.length}</div>
-              <div className="text-sm text-gray-500">오늘의 일정</div>
+            {/* 사용자 프로필 섹션 */}
+            <div className="flex items-center space-x-6">
+              {/* 사용자 프로필 */}
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                  <span className="text-blue-600 font-semibold text-lg">
+                    {user?.name?.charAt(0) || 'U'}
+                  </span>
+                </div>
+                <div>
+                  <div className="text-sm font-medium text-gray-900">{user?.name || '사용자'}</div>
+                  <div className="text-xs text-gray-500">{isAdmin ? '시스템 관리자' : '일반 사용자'}</div>
+                </div>
+              </div>
+              
+              {/* 오늘 일정 요약 */}
+              <div className="text-right">
+                <div className="text-2xl font-bold text-blue-600">{todaySchedules.length}</div>
+                <div className="text-sm text-gray-500">오늘의 일정</div>
+              </div>
             </div>
           </div>
         </div>
@@ -327,7 +359,7 @@ export default function DashboardPage() {
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">이번 달 통계</h3>
               {Object.keys(monthlyStats).length > 0 ? (
-                <div className="space-y-3">
+                <div className="space-y-4">
                   {Object.entries(monthlyStats)
                     .sort(([a], [b]) => {
                       if (a === '월점검') return -1;
@@ -335,22 +367,100 @@ export default function DashboardPage() {
                       return a.localeCompare(b, 'ko');
                     })
                     .map(([purpose, stats]) => (
-                    <div key={purpose} className="p-3 border border-gray-200 rounded-lg">
-                      <div className="text-sm font-medium text-gray-900">{purpose}</div>
-                      <div className="text-xs text-gray-600 mt-1">
-                        완료: {stats.completed} / 총: {stats.total}
+                    <div key={purpose} className="border border-gray-300 rounded-lg overflow-hidden">
+                      {/* 헤더 */}
+                      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-3 border-b border-gray-200">
+                        <div className="flex justify-between items-center">
+                          <div className="text-sm font-semibold text-gray-900">{purpose}</div>
+                          <div className="text-xs text-gray-600">
+                            완료: {stats.completed} / 총: {stats.total}
+                          </div>
+                        </div>
+                        <div className="mt-2 bg-gray-200 rounded-full h-2">
+                          <div 
+                            className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                            style={{ width: `${stats.total > 0 ? (stats.completed / stats.total) * 100 : 0}%` }}
+                          ></div>
+                        </div>
                       </div>
-                      <div className="mt-2 bg-gray-200 rounded-full h-2">
-                        <div 
-                          className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                          style={{ width: `${stats.total > 0 ? (stats.completed / stats.total) * 100 : 0}%` }}
-                        ></div>
-                      </div>
+                      
+                      {/* 완료된 학교들 */}
+                      {stats.completedSchools.length > 0 && (
+                        <div className="p-3 bg-green-50 border-b border-gray-200">
+                          <div className="text-xs font-medium text-green-800 mb-2">완료된 학교 ({stats.completedSchools.length}개)</div>
+                          <div className="grid grid-cols-1 gap-1">
+                            {stats.completedSchools
+                              .sort((a, b) => a.school.name.localeCompare(b.school.name, 'ko'))
+                              .slice(0, 5)
+                              .map((schedule, idx) => (
+                              <div key={schedule.id} className="text-xs text-green-700 px-2 py-1 bg-white rounded">
+                                {schedule.school.abbreviation || schedule.school.name} ({new Date(schedule.date).toLocaleDateString()})
+                              </div>
+                            ))}
+                            {stats.completedSchools.length > 5 && (
+                              <div className="text-xs text-green-600 px-2 py-1 italic">
+                                외 {stats.completedSchools.length - 5}개 학교
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* 예정된 학교들 */}
+                      {stats.upcomingSchools.length > 0 && (
+                        <div className="p-3 bg-purple-50">
+                          <div className="text-xs font-medium text-purple-800 mb-2">예정된 학교 ({stats.upcomingSchools.length}개)</div>
+                          <div className="grid grid-cols-1 gap-1">
+                            {stats.upcomingSchools
+                              .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+                              .slice(0, 5)
+                              .map((schedule, idx) => (
+                              <div key={schedule.id} className="text-xs text-purple-700 px-2 py-1 bg-white rounded">
+                                {schedule.school.abbreviation || schedule.school.name} ({new Date(schedule.date).toLocaleDateString()})
+                              </div>
+                            ))}
+                            {stats.upcomingSchools.length > 5 && (
+                              <div className="text-xs text-purple-600 px-2 py-1 italic">
+                                외 {stats.upcomingSchools.length - 5}개 학교
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
               ) : (
                 <p className="text-gray-500 text-center py-4">통계 데이터가 없습니다</p>
+              )}
+            </div>
+
+            {/* 최근 산업재해 발생 학교 */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
+                <span className="text-red-500">⚠️</span>
+                <span>최근 산업재해 발생 학교</span>
+              </h3>
+              {recentAccidentSchedules.length > 0 ? (
+                <div className="space-y-2">
+                  {recentAccidentSchedules.map((schedule) => (
+                    <div key={schedule.id} className="p-3 bg-red-50 rounded-lg border border-red-200">
+                      <div className="text-sm font-medium text-red-900">
+                        {schedule.school.abbreviation || schedule.school.name}
+                      </div>
+                      <div className="text-xs text-red-700 mt-1">
+                        방문일: {new Date(schedule.date).toLocaleDateString()}
+                      </div>
+                      {schedule.otherReason && (
+                        <div className="text-xs text-red-600 mt-1 truncate">
+                          {schedule.otherReason}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-gray-500 text-center py-4">최근 산업재해 방문 기록이 없습니다</p>
               )}
             </div>
 
