@@ -64,6 +64,9 @@ export default function DashboardPage() {
   // 메모 관련 state
   const [memos, setMemos] = useState<string>('');
   const [isMemoSaving, setIsMemoSaving] = useState(false);
+  const [savedMemos, setSavedMemos] = useState<{ id: string; content: string; createdAt: string }[]>([]);
+  const [editingMemoId, setEditingMemoId] = useState<string | null>(null);
+  const [editingContent, setEditingContent] = useState<string>('');
   
   // 현재 시간 state
   const [currentTime, setCurrentTime] = useState('');
@@ -106,17 +109,71 @@ export default function DashboardPage() {
 
   // 메모 저장
   const saveMemos = async () => {
+    if (!memos.trim()) return;
+    
     setIsMemoSaving(true);
     try {
-      // 로컬 스토리지에 메모 저장 (간단한 구현)
+      const newMemo = {
+        id: Date.now().toString(),
+        content: memos.trim(),
+        createdAt: new Date().toLocaleString('ko-KR')
+      };
+      
+      const updatedMemos = [...savedMemos, newMemo];
+      setSavedMemos(updatedMemos);
+      
+      // 로컬 스토리지에 메모 목록 저장
       if (typeof window !== 'undefined') {
-        localStorage.setItem('dashboard-memos', memos);
+        localStorage.setItem('dashboard-memos', JSON.stringify(updatedMemos));
       }
+      
+      setMemos(''); // 입력창 초기화
     } catch (error) {
       console.error('메모 저장 실패:', error);
     } finally {
       setIsMemoSaving(false);
     }
+  };
+
+  // 메모 삭제
+  const deleteMemo = (memoId: string) => {
+    const updatedMemos = savedMemos.filter(memo => memo.id !== memoId);
+    setSavedMemos(updatedMemos);
+    
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('dashboard-memos', JSON.stringify(updatedMemos));
+    }
+  };
+
+  // 메모 수정 시작
+  const startEditMemo = (memo: { id: string; content: string }) => {
+    setEditingMemoId(memo.id);
+    setEditingContent(memo.content);
+  };
+
+  // 메모 수정 완료
+  const saveEditMemo = () => {
+    if (!editingContent.trim()) return;
+    
+    const updatedMemos = savedMemos.map(memo => 
+      memo.id === editingMemoId 
+        ? { ...memo, content: editingContent.trim() }
+        : memo
+    );
+    setSavedMemos(updatedMemos);
+    
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('dashboard-memos', JSON.stringify(updatedMemos));
+    }
+    
+    setEditingMemoId(null);
+    setEditingContent('');
+  };
+
+  // 메모 수정 취소
+  const cancelEditMemo = () => {
+    setEditingMemoId(null);
+    setEditingContent('');
   };
 
   // 컴포넌트 마운트시 데이터 로드
@@ -127,9 +184,15 @@ export default function DashboardPage() {
       
       // 저장된 메모 불러오기
       if (typeof window !== 'undefined') {
-        const savedMemos = localStorage.getItem('dashboard-memos');
-        if (savedMemos) {
-          setMemos(savedMemos);
+        const savedMemosList = localStorage.getItem('dashboard-memos');
+        if (savedMemosList) {
+          try {
+            const parsedMemos = JSON.parse(savedMemosList);
+            setSavedMemos(Array.isArray(parsedMemos) ? parsedMemos : []);
+          } catch (error) {
+            console.error('메모 불러오기 실패:', error);
+            setSavedMemos([]);
+          }
         }
       }
     }
@@ -142,12 +205,16 @@ export default function DashboardPage() {
     }
   }, [schedulesLoading, schoolsLoading]);
 
-  // 현재 시간 업데이트
+  // 현재 시간 업데이트 (년월일 시분초)
   useEffect(() => {
     const updateTime = () => {
-      setCurrentTime(new Date().toLocaleTimeString('ko-KR', { 
+      setCurrentTime(new Date().toLocaleString('ko-KR', { 
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
         hour: '2-digit', 
         minute: '2-digit',
+        second: '2-digit',
         hour12: false 
       }));
     };
@@ -289,64 +356,36 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* 헤더 */}
-      <div className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">
-                {isAdmin ? '관리자' : '사용자'} 대시보드
-              </h1>
-              <p className="text-gray-600 mt-1">
-                안녕하세요, {user?.name || '사용자'}님! 오늘의 일정과 업무를 관리하세요.
-              </p>
-            </div>
-            
-            {/* 사용자 프로필 섹션 */}
-            <div className="flex items-center space-x-6">
-              {/* 사용자 프로필 */}
-              <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                  <span className="text-blue-600 font-semibold text-lg">
-                    {user?.name?.charAt(0) || 'U'}
-                  </span>
-                </div>
-                <div>
-                  <div className="text-sm font-medium text-gray-900">{user?.name || '사용자'}</div>
-                  <div className="text-xs text-gray-500">{isAdmin ? '시스템 관리자' : '일반 사용자'}</div>
-                </div>
-              </div>
-              
-              {/* 오늘 일정 요약 */}
-              <div className="text-right">
-                <div className="text-2xl font-bold text-blue-600">{todaySchedules.length}</div>
-                <div className="text-sm text-gray-500">오늘의 일정</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <div className="max-w-full mx-auto px-2 sm:px-4 lg:px-6 py-4">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
           
-          {/* 좌측: 정보 패널 (1/4) */}
-          <div className="lg:col-span-1 space-y-6">
+          {/* 좌측: 정보 패널 (2/5로 더 넓게) */}
+          <div className="lg:col-span-2 space-y-4">
             
             {/* 사용자 정보/사진 */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">사용자 정보</h3>
               <div className="text-center">
-                <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-blue-600 font-semibold text-2xl">
-                    {user?.name?.charAt(0) || 'U'}
-                  </span>
+                <div className="w-24 h-24 mx-auto mb-4">
+                  {user?.profilePhoto ? (
+                    <img 
+                      src={user.profilePhoto} 
+                      alt="프로필 사진"
+                      className="w-full h-full rounded-full object-cover border-2 border-blue-200"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-blue-100 rounded-full flex items-center justify-center">
+                      <span className="text-blue-600 font-semibold text-2xl">
+                        {user?.name?.charAt(0) || 'U'}
+                      </span>
+                    </div>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <div className="text-sm font-medium text-gray-900">{user?.name || '사용자'}</div>
-                  <div className="text-xs text-gray-600">{isAdmin ? '시스템 관리자' : '일반 사용자'}</div>
-                  <div className="text-xs text-gray-600">010-0000-0000</div>
-                  <div className="text-xs text-gray-600">user@example.com</div>
+                  <div className="text-xs text-gray-600">{user?.position || (isAdmin ? '시스템 관리자' : '일반 사용자')}</div>
+                  <div className="text-xs text-gray-600">{user?.phoneNumber || '전화번호 미등록'}</div>
+                  <div className="text-xs text-gray-600">{user?.email || '이메일 미등록'}</div>
                 </div>
               </div>
             </div>
@@ -491,19 +530,19 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* 우측: 캘린더 + 메모장 (3/4) */}
-          <div className="lg:col-span-3 space-y-6">
+          {/* 우측: 캘린더 + 메모장 (3/5) */}
+          <div className="lg:col-span-3 space-y-4">
             
-            {/* 캘린더 */}
+            {/* 캘린더 - 세로 높이 증가 */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-              <div className="p-6 border-b border-gray-200">
+              <div className="p-4 border-b border-gray-200">
                 <h2 className="text-xl font-semibold text-gray-900">일정 캘린더</h2>
                 {selectedDate && (
                   <p className="text-sm text-gray-500 mt-1">선택된 날짜: {selectedDate}</p>
                 )}
               </div>
               
-              <div className="p-6">
+              <div className="p-4" style={{ minHeight: '600px' }}>
                 <DynamicScheduleCalendar 
                   events={calendarEvents}
                   onEventClick={handleEventClick}
@@ -512,26 +551,85 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* 메모장 - 캘린더와 같은 가로 넓이 */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">메모장</h3>
+            {/* 메모장 - 한 줄 입력 + 목록 */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">메모장</h3>
+              
+              {/* 메모 입력 */}
+              <div className="flex gap-2 mb-4">
+                <input
+                  type="text"
+                  value={memos}
+                  onChange={(e) => setMemos(e.target.value)}
+                  placeholder="메모를 입력하세요..."
+                  className="flex-1 h-10 px-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  onKeyPress={(e) => e.key === 'Enter' && saveMemos()}
+                />
                 <button
                   onClick={saveMemos}
-                  disabled={isMemoSaving}
-                  className="px-3 py-1 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                  disabled={isMemoSaving || !memos.trim()}
+                  className="px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 disabled:opacity-50 transition-colors"
                 >
                   {isMemoSaving ? '저장 중...' : '저장'}
                 </button>
               </div>
-              <textarea
-                value={memos}
-                onChange={(e) => setMemos(e.target.value)}
-                placeholder="메모를 입력하세요..."
-                className="w-full h-32 p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-              <div className="text-xs text-gray-500 mt-2">
-                메모는 브라우저에 자동 저장됩니다
+
+              {/* 저장된 메모 목록 */}
+              <div className="space-y-2 max-h-60 overflow-y-auto">
+                {savedMemos.length > 0 ? (
+                  savedMemos.map((memo) => (
+                    <div key={memo.id} className="p-3 bg-gray-50 rounded-lg border">
+                      {editingMemoId === memo.id ? (
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={editingContent}
+                            onChange={(e) => setEditingContent(e.target.value)}
+                            className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm"
+                            onKeyPress={(e) => e.key === 'Enter' && saveEditMemo()}
+                          />
+                          <button
+                            onClick={saveEditMemo}
+                            className="px-2 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700"
+                          >
+                            완료
+                          </button>
+                          <button
+                            onClick={cancelEditMemo}
+                            className="px-2 py-1 bg-gray-500 text-white text-xs rounded hover:bg-gray-600"
+                          >
+                            취소
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <div className="text-sm text-gray-900">{memo.content}</div>
+                            <div className="text-xs text-gray-500 mt-1">{memo.createdAt}</div>
+                          </div>
+                          <div className="flex gap-1 ml-2">
+                            <button
+                              onClick={() => startEditMemo(memo)}
+                              className="px-2 py-1 text-blue-600 text-xs hover:bg-blue-50 rounded"
+                              title="수정"
+                            >
+                              ✏️
+                            </button>
+                            <button
+                              onClick={() => deleteMemo(memo.id)}
+                              className="px-2 py-1 text-red-600 text-xs hover:bg-red-50 rounded"
+                              title="삭제"
+                            >
+                              🗑️
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-gray-500 text-center py-4 text-sm">저장된 메모가 없습니다</p>
+                )}
               </div>
             </div>
           </div>
