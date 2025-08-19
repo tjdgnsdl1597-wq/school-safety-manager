@@ -115,7 +115,7 @@ body {
 
 .fc-event {
   height: auto !important;
-  min-height: 3rem !important;
+  min-height: 2.2rem !important;
   margin: 1px 0 !important;
   border-radius: 0.25rem !important;
   font-size: 0.75rem !important;
@@ -140,11 +140,11 @@ body {
 .fc-event-custom-view {
   display: flex;
   flex-direction: column;
-  padding: 3px 4px !important;
+  padding: 2px 4px !important;
   line-height: 1.2 !important;
   cursor: pointer;
   width: 100%;
-  min-height: 2.8rem;
+  min-height: 2rem;
   overflow: hidden;
   gap: 1px;
 }
@@ -207,7 +207,7 @@ body {
   
   .fc-event {
     font-size: 0.65rem !important;
-    min-height: 2.5rem !important;
+    min-height: 2rem !important;
   }
   
   .fc-event-time,
@@ -216,7 +216,7 @@ body {
   }
   
   .fc-event-custom-view {
-    min-height: 2.3rem !important;
+    min-height: 1.8rem !important;
     padding: 2px 3px !important;
     gap: 1px;
   }

@@ -27,15 +27,15 @@ function safeRenderEventContent(eventInfo: EventContentArg) {
         </div>
       );
     } else {
-      // 일반 일정인 경우: 3줄 표시
+      // 일반 일정인 경우: 2줄 표시 (시간 + 학교명,방문목적)
       const schoolDisplayName = schoolAbbreviation || schoolName || '학교';
       const purposeText = purposes || '일정';
+      const combinedText = `${schoolDisplayName}, ${purposeText}`;
       
       return (
         <div className="fc-event-custom-view text-xs sm:text-sm leading-tight p-1">
           <div className="font-semibold text-white text-xs sm:text-sm">{timeString}</div>
-          <div className="text-white/90 truncate text-xs sm:text-sm">{schoolDisplayName}</div>
-          <div className="text-white/80 truncate text-[10px] sm:text-xs">{purposeText}</div>
+          <div className="text-white/90 truncate text-xs sm:text-sm">{combinedText}</div>
         </div>
       );
     }
