@@ -57,6 +57,8 @@ export default function DashboardPage() {
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [schools, setSchools] = useState<School[]>([]);
   const [loading, setLoading] = useState(true);
+  const [schedulesLoading, setSchedulesLoading] = useState(true);
+  const [schoolsLoading, setSchoolsLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState<string>('');
   
   // 메모 관련 state
@@ -73,23 +75,29 @@ export default function DashboardPage() {
   // --- Data Fetching ---
   const fetchSchedules = async () => {
     try {
+      setSchedulesLoading(true);
       const response = await fetch('/api/schedules');
       const data = await response.json();
       setSchedules(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('스케줄 로딩 실패:', error);
       setSchedules([]);
+    } finally {
+      setSchedulesLoading(false);
     }
   };
 
   const fetchSchools = async () => {
     try {
+      setSchoolsLoading(true);
       const response = await fetch('/api/schools');
       const data = await response.json();
       setSchools(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('학교 정보 로딩 실패:', error);
       setSchools([]);
+    } finally {
+      setSchoolsLoading(false);
     }
   };
 
@@ -125,10 +133,11 @@ export default function DashboardPage() {
   }, [isAuthenticated]);
 
   useEffect(() => {
-    if (schedules.length > 0 && schools.length > 0) {
+    // API 호출이 모두 완료되면 로딩 상태 해제
+    if (!schedulesLoading && !schoolsLoading) {
       setLoading(false);
     }
-  }, [schedules, schools]);
+  }, [schedulesLoading, schoolsLoading]);
 
   // --- Event Handlers ---
   const handleDateClick = (arg: DateClickArg) => {
