@@ -109,7 +109,7 @@ export default function DashboardPage() {
 
   // 메모 저장
   const saveMemos = async () => {
-    if (!memos.trim()) return;
+    if (!memos.trim() || !user?.id) return;
     
     setIsMemoSaving(true);
     try {
@@ -122,9 +122,10 @@ export default function DashboardPage() {
       const updatedMemos = [...savedMemos, newMemo];
       setSavedMemos(updatedMemos);
       
-      // 로컬 스토리지에 메모 목록 저장
+      // 사용자별 메모 저장 키
+      const memoKey = `dashboard-memos-${user.id}`;
       if (typeof window !== 'undefined') {
-        localStorage.setItem('dashboard-memos', JSON.stringify(updatedMemos));
+        localStorage.setItem(memoKey, JSON.stringify(updatedMemos));
       }
       
       setMemos(''); // 입력창 초기화
@@ -137,11 +138,14 @@ export default function DashboardPage() {
 
   // 메모 삭제
   const deleteMemo = (memoId: string) => {
+    if (!user?.id) return;
+    
     const updatedMemos = savedMemos.filter(memo => memo.id !== memoId);
     setSavedMemos(updatedMemos);
     
+    const memoKey = `dashboard-memos-${user.id}`;
     if (typeof window !== 'undefined') {
-      localStorage.setItem('dashboard-memos', JSON.stringify(updatedMemos));
+      localStorage.setItem(memoKey, JSON.stringify(updatedMemos));
     }
   };
 
@@ -153,7 +157,7 @@ export default function DashboardPage() {
 
   // 메모 수정 완료
   const saveEditMemo = () => {
-    if (!editingContent.trim()) return;
+    if (!editingContent.trim() || !user?.id) return;
     
     const updatedMemos = savedMemos.map(memo => 
       memo.id === editingMemoId 
@@ -162,8 +166,9 @@ export default function DashboardPage() {
     );
     setSavedMemos(updatedMemos);
     
+    const memoKey = `dashboard-memos-${user.id}`;
     if (typeof window !== 'undefined') {
-      localStorage.setItem('dashboard-memos', JSON.stringify(updatedMemos));
+      localStorage.setItem(memoKey, JSON.stringify(updatedMemos));
     }
     
     setEditingMemoId(null);
@@ -182,9 +187,10 @@ export default function DashboardPage() {
       fetchSchedules();
       fetchSchools();
       
-      // 저장된 메모 불러오기
-      if (typeof window !== 'undefined') {
-        const savedMemosList = localStorage.getItem('dashboard-memos');
+      // 사용자별 저장된 메모 불러오기
+      if (typeof window !== 'undefined' && user?.id) {
+        const memoKey = `dashboard-memos-${user.id}`;
+        const savedMemosList = localStorage.getItem(memoKey);
         if (savedMemosList) {
           try {
             const parsedMemos = JSON.parse(savedMemosList);
@@ -193,10 +199,12 @@ export default function DashboardPage() {
             console.error('메모 불러오기 실패:', error);
             setSavedMemos([]);
           }
+        } else {
+          setSavedMemos([]);
         }
       }
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, user?.id]);
 
   useEffect(() => {
     // API 호출이 모두 완료되면 로딩 상태 해제
