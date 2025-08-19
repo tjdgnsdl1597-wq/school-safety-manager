@@ -372,11 +372,12 @@ export default function DashboardPage() {
           {/* 좌측: 정보 패널 (2/7로 적당한 크기) */}
           <div className="lg:col-span-2 space-y-4">
             
-            {/* 사용자 정보/사진 */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">사용자 정보</h3>
-              <div className="text-center">
-                <div className="w-24 h-24 mx-auto mb-4">
+            {/* 담당자 정보 */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">담당자 정보</h3>
+              <div className="flex items-start space-x-4">
+                {/* 프로필 사진 */}
+                <div className="w-20 h-20 flex-shrink-0">
                   {user?.profilePhoto ? (
                     <img 
                       src={user.profilePhoto} 
@@ -385,19 +386,31 @@ export default function DashboardPage() {
                     />
                   ) : (
                     <div className="w-full h-full bg-blue-100 rounded-full flex items-center justify-center">
-                      <span className="text-blue-600 font-semibold text-2xl">
+                      <span className="text-blue-600 font-semibold text-xl">
                         {user?.name?.charAt(0) || 'U'}
                       </span>
                     </div>
                   )}
                 </div>
-                <div className="space-y-2">
-                  <div className="text-sm font-medium text-gray-900">{user?.name || '사용자'}</div>
-                  <div className="text-xs text-gray-600">
-                    [{user?.department || '산업안전팀'} {user?.position || '대리'}]
+                
+                {/* 정보 2열 배치 */}
+                <div className="flex-1 grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
+                  <div>
+                    <span className="text-gray-500">부서/직급:</span>
+                    <span className="ml-1 text-gray-900">{user?.department || '산업안전팀'} {user?.position || '대리'}</span>
                   </div>
-                  <div className="text-xs text-gray-600">{user?.phoneNumber || '전화번호 미등록'}</div>
-                  <div className="text-xs text-gray-600">{user?.email || '이메일 미등록'}</div>
+                  <div>
+                    <span className="text-gray-500">연락처:</span>
+                    <span className="ml-1 text-gray-900">{user?.phoneNumber || '010-8764-2428'}</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-500">담당자명:</span>
+                    <span className="ml-1 text-gray-900">{user?.name || '강성훈'}</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-500">e-mail:</span>
+                    <span className="ml-1 text-gray-900">{user?.email || 'safe08@ssif.or.kr'}</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -443,11 +456,8 @@ export default function DashboardPage() {
               {Object.keys(monthlyStats).length > 0 ? (
                 <div className="space-y-4">
                   {Object.entries(monthlyStats)
-                    .sort(([a], [b]) => {
-                      if (a === '월점검') return -1;
-                      if (b === '월점검') return 1;
-                      return a.localeCompare(b, 'ko');
-                    })
+                    .filter(([purpose]) => purpose !== '월점검') // 월점검 제외
+                    .sort(([a], [b]) => a.localeCompare(b, 'ko'))
                     .map(([purpose, stats]) => (
                     <div key={purpose} className="border border-gray-300 rounded-lg overflow-hidden">
                       {/* 헤더 */}

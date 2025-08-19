@@ -410,8 +410,7 @@ export default function SchoolsPage() {
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">순번</th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">학교명</th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">전화번호</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">담당자</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">이메일</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">담당자/이메일</th>
                   <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">작업</th>
                 </tr>
               </thead>
@@ -429,21 +428,25 @@ export default function SchoolsPage() {
                     <td className="px-6 py-4 text-sm text-gray-900">{index + 1}</td>
                     <td className="px-6 py-4 text-sm font-medium text-gray-900">{school.name}</td>
                     <td className="px-6 py-4 text-sm text-gray-600">{school.phoneNumber || '-'}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600">{school.contactPerson || '-'}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600">{school.email || '-'}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600">
+                      <div className="flex justify-between items-center">
+                        <span>{school.contactPerson || '-'}</span>
+                        <span className="ml-4 text-blue-600">{school.email || '-'}</span>
+                      </div>
+                    </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex space-x-2 justify-end">
                         <button 
                           onClick={() => setEditingSchool(school)} 
                           className="px-3 py-1 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors text-sm"
                         >
-                          ✏️ 수정
+                          수정
                         </button>
                         <button 
                           onClick={() => handleDelete(school.id)} 
                           className="px-3 py-1 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors text-sm"
                         >
-                          🗑️ 삭제
+                          삭제
                         </button>
                       </div>
                     </td>
