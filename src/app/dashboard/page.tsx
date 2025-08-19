@@ -272,9 +272,17 @@ export default function DashboardPage() {
       } else {
         const purposes = JSON.parse(schedule.purpose || '[]');
         const purposeText = purposes.join(', ');
-        title = `${schedule.school.abbreviation || schedule.school.name} - ${purposeText}`;
-        backgroundColor = '#3b82f6';
-        textColor = '#ffffff';
+        
+        // 휴가일정인지 확인
+        if (purposes.includes('휴가') || purposes.includes('휴가일정')) {
+          title = `${schedule.school.abbreviation || schedule.school.name} - ${purposeText}`;
+          backgroundColor = '#fbbf24'; // 노란색 배경
+          textColor = '#000000'; // 검은 텍스트
+        } else {
+          title = `${schedule.school.abbreviation || schedule.school.name} - ${purposeText}`;
+          backgroundColor = '#3b82f6';
+          textColor = '#ffffff';
+        }
       }
 
       return {
@@ -328,7 +336,11 @@ export default function DashboardPage() {
         stats[purpose].total++;
         
         const scheduleDate = new Date(schedule.date);
-        if (scheduleDate < now) {
+        if (purpose === '산업재해') {
+          // 산업재해는 항상 "발생"으로 처리
+          stats[purpose].completed++;
+          stats[purpose].completedSchools.push(schedule);
+        } else if (scheduleDate < now) {
           stats[purpose].completed++;
           stats[purpose].completedSchools.push(schedule);
         } else {
@@ -394,7 +406,7 @@ export default function DashboardPage() {
                 </div>
                 
                 {/* 정보 2열 배치 */}
-                <div className="flex-1 grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
+                <div className="flex-1 grid grid-cols-2 gap-x-4 gap-y-2" style={{ fontSize: '12.5px' }}>
                   <div>
                     <span className="text-gray-500">부서/직급:</span>
                     <span className="ml-1 text-gray-900">{user?.department || '산업안전팀'} {user?.position || '대리'}</span>
@@ -455,9 +467,43 @@ export default function DashboardPage() {
               <h3 className="text-lg font-semibold text-gray-900 mb-4">이번 달 통계</h3>
               {Object.keys(monthlyStats).length > 0 ? (
                 <div className="space-y-4">
+                  {/* 월점검 통계 - 간단한 버전 */}
                   {Object.entries(monthlyStats)
-                    .filter(([purpose]) => purpose !== '월점검') // 월점검 제외
-                    .sort(([a], [b]) => a.localeCompare(b, 'ko'))
+                    .filter(([purpose]) => purpose === '월점검')
+                    .map(([purpose, stats]) => (
+                      <div key={purpose} className="border border-gray-300 rounded-lg overflow-hidden">
+                        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-3">
+                          <div className="flex justify-between items-center">
+                            <div className="text-sm font-semibold text-gray-900">{purpose}</div>
+                            <div className="text-xs text-gray-600">
+                              {stats.total > 0 && purpose === '산업재해' 
+                                ? `발생: ${stats.completed} / 총: ${stats.total}`
+                                : `완료: ${stats.completed} / 예정: ${stats.total - stats.completed} / 총: ${stats.total}`
+                              }
+                            </div>
+                          </div>
+                          <div className="mt-2 bg-gray-200 rounded-full h-2">
+                            <div 
+                              className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                              style={{ width: `${stats.total > 0 ? (stats.completed / stats.total) * 100 : 0}%` }}
+                            ></div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  
+                  {/* 다른 통계들 - 상세한 버전 */}
+                  {Object.entries(monthlyStats)
+                    .filter(([purpose]) => purpose !== '월점검')
+                    .sort(([a, b]) => {
+                      const order = ['위험성평가', '근골조사', '교육', '산업재해'];
+                      const aIndex = order.indexOf(a);
+                      const bIndex = order.indexOf(b);
+                      if (aIndex !== -1 && bIndex !== -1) return aIndex - bIndex;
+                      if (aIndex !== -1) return -1;
+                      if (bIndex !== -1) return 1;
+                      return a.localeCompare(b, 'ko');
+                    })
                     .map(([purpose, stats]) => (
                     <div key={purpose} className="border border-gray-300 rounded-lg overflow-hidden">
                       {/* 헤더 */}
@@ -465,7 +511,10 @@ export default function DashboardPage() {
                         <div className="flex justify-between items-center">
                           <div className="text-sm font-semibold text-gray-900">{purpose}</div>
                           <div className="text-xs text-gray-600">
-                            완료: {stats.completed} / 총: {stats.total}
+                            {purpose === '산업재해' 
+                              ? `발생: ${stats.completed} / 총: ${stats.total}`
+                              : `완료: ${stats.completed} / 예정: ${stats.total - stats.completed} / 총: ${stats.total}`
+                            }
                           </div>
                         </div>
                         <div className="mt-2 bg-gray-200 rounded-full h-2">
@@ -479,7 +528,9 @@ export default function DashboardPage() {
                       {/* 완료된 학교들 - 3열, 녹색, 위에 배치 */}
                       {stats.completedSchools.length > 0 && (
                         <div className="p-3 bg-green-50 border-b border-gray-200">
-                          <div className="text-xs font-medium text-green-800 mb-2">✅ 완료 ({stats.completedSchools.length})</div>
+                          <div className="text-xs font-medium text-green-800 mb-2">
+                            ✅ {purpose === '산업재해' ? '발생' : '완료'} ({stats.completedSchools.length})
+                          </div>
                           <div className="grid grid-cols-3 gap-1">
                             {stats.completedSchools
                               .sort((a, b) => a.school.name.localeCompare(b.school.name, 'ko'))
