@@ -123,9 +123,9 @@ body {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
 }
 
+/* Custom event styles - colors are set programmatically */
 .fc-custom-event {
-  background-color: #3b82f6 !important;
-  color: white !important;
+  /* background-color and color are set in JavaScript based on event type */
 }
 
 /* Custom Event Content */

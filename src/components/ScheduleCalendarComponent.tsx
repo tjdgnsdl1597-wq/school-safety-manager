@@ -19,11 +19,11 @@ function safeRenderEventContent(eventInfo: EventContentArg) {
     const timeString = `${ampm} ${displayHour}` + (minute > 0 ? `:${String(minute).padStart(2, '0')}` : '') + '시';
     
     if (isHoliday) {
-      // 휴무일정인 경우: 2줄 표시
+      // 휴무일정인 경우: 2줄 표시 (검은색 글씨)
       return (
         <div className="fc-event-custom-view text-sm leading-tight p-1">
-          <div className="font-semibold text-yellow-800">{timeString}</div>
-          <div className="text-yellow-700 truncate">🏖️ {purposes || '휴무'}</div>
+          <div className="font-semibold text-black">{timeString}</div>
+          <div className="text-black truncate">🏖️ {purposes || '휴무'}</div>
         </div>
       );
     } else {
