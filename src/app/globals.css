@@ -123,9 +123,17 @@ body {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
 }
 
-/* Custom event styles - colors are set programmatically */
+/* Custom event styles */
 .fc-custom-event {
-  /* background-color and color are set in JavaScript based on event type */
+  background-color: #3b82f6 !important; /* 기본 파란색 */
+  color: white !important;
+}
+
+/* Holiday event override */
+.fc-event.fc-holiday-event {
+  background-color: #fbbf24 !important; /* 휴무일정 노란색 */
+  border-color: #f59e0b !important;
+  color: #000000 !important; /* 검은색 글씨 */
 }
 
 /* Custom Event Content */

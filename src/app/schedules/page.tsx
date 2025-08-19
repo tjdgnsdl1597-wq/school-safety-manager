@@ -271,9 +271,7 @@ export default function SchedulesPage() {
       start: `${new Date(schedule.date).toISOString().split('T')[0]}T${schedule.startTime}`,
       end: `${new Date(schedule.date).toISOString().split('T')[0]}T${schedule.endTime}`,
       allDay: false,
-      backgroundColor: schedule.isHoliday ? '#fbbf24' : '#3b82f6', // 휴무일정은 노란색, 일반일정은 파란색
-      borderColor: schedule.isHoliday ? '#f59e0b' : '#2563eb',
-      textColor: schedule.isHoliday ? '#000000' : '#ffffff', // 휴무일정은 검은색 글씨, 일반일정은 흰색 글씨
+      className: schedule.isHoliday ? 'fc-holiday-event' : 'fc-custom-event',
       extendedProps: {
         schoolName: schedule.school?.name || '',
         purposes: schedule.isHoliday ? schedule.holidayReason || '휴무' : JSON.parse(schedule.purpose).join(', '),
