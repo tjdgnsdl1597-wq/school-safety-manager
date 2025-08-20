@@ -116,7 +116,6 @@ export async function POST(request: Request) {
       otherReason: otherReason || null,
       isHoliday: isHoliday || false,
       holidayReason: holidayReason || null,
-      ...(accidentDate && { accidentDate: new Date(accidentDate) }),
     };
     
     console.log('POST /api/schedules - Creating schedule with data:', JSON.stringify(scheduleData, null, 2));
@@ -203,7 +202,6 @@ export async function PUT(request: Request) {
         otherReason: otherReason || null,
         isHoliday: isHoliday || false,
         holidayReason: holidayReason || null,
-        ...(accidentDate && { accidentDate: new Date(accidentDate) }),
       },
     });
     return NextResponse.json(updatedSchedule);

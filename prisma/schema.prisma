@@ -59,7 +59,6 @@ model Schedule {
   otherReason String?   // Only if "기타" or "교육" is selected
   isHoliday   Boolean   @default(false) // 휴무일정 여부
   holidayReason String? // 휴무 사유
-  accidentDate DateTime? // 산업재해 발생일 (purpose에 "산업재해"가 포함된 경우에만 사용)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 }
