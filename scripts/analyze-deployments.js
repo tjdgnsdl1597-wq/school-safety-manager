@@ -1,0 +1,27 @@
+// 최근 배포에서 데이터 손실 원인 분석
+console.log('🔍 배포 히스토리 분석 가이드');
+console.log('=====================================');
+console.log('');
+console.log('Vercel Dashboard → school-safety-manager → Deployments에서:');
+console.log('');
+console.log('📅 최근 배포들을 확인하세요:');
+console.log('- 언제부터 데이터가 없어졌는지 파악');
+console.log('- 각 배포의 Build Logs 확인');
+console.log('');
+console.log('🔍 Build Logs에서 찾아야 할 키워드:');
+console.log('- "prisma migrate"');
+console.log('- "prisma db push"');
+console.log('- "--accept-data-loss"');
+console.log('- "DATABASE_URL"');
+console.log('- "PostgreSQL" 관련 오류');
+console.log('');
+console.log('🚨 특히 이런 로그가 있다면 위험:');
+console.log('- "Database reset"');
+console.log('- "Dropping existing data"');
+console.log('- "Schema drift detected"');
+console.log('- "--accept-data-loss flag was passed"');
+console.log('');
+console.log('📋 확인 후 결과를 알려주세요:');
+console.log('1. 언제부터 데이터가 사라졌는지');
+console.log('2. Build Logs에 위험한 메시지가 있었는지');
+console.log('3. 환경변수가 언제 변경되었는지');

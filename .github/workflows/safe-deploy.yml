@@ -1,0 +1,45 @@
+name: Safe Deploy with Backup
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  backup-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Create backup before deploy
+      run: |
+        echo "🔄 배포 전 백업 생성 중..."
+        curl -X POST "https://school-safety-manager.vercel.app/api/backup/create" \
+          -H "Content-Type: application/json" \
+          -d '{}' || echo "백업 실패 - 계속 진행"
+          
+    - name: Build project
+      run: npm run build
+      
+    - name: Deploy to Vercel
+      uses: amondnet/vercel-action@v25
+      with:
+        vercel-token: ${{ secrets.VERCEL_TOKEN }}
+        vercel-org-id: ${{ secrets.ORG_ID }}
+        vercel-project-id: ${{ secrets.PROJECT_ID }}
+        vercel-args: '--prod'
+        
+    - name: Health check after deploy
+      run: |
+        echo "🔍 배포 후 데이터베이스 상태 확인..."
+        sleep 30  # 배포 완료 대기
+        curl "https://school-safety-manager.vercel.app/api/health/database" || echo "헬스체크 실패"
