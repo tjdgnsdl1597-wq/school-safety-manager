@@ -661,8 +661,6 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
                 />
                 <p className="text-xs text-gray-500 mt-1">
                   지원 형식: PDF, PPT, DOC, XLS, 이미지, 동영상, 압축 파일 (최대 5개, 총합 50MB)
-                  <br />
-                  파일 개수에 따른 개별 크기 제한: 1개(50MB), 2개(25MB), 3개(16.7MB), 4개(12.5MB), 5개(10MB)
                 </p>
               </div>
               

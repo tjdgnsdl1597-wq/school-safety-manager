@@ -4,6 +4,10 @@ import { uploadFileToGCS, deleteFileFromGCS } from '../../../lib/gcs';
 
 const prisma = new PrismaClient();
 
+// Vercel에서 대용량 파일 업로드를 위한 설정
+export const runtime = 'nodejs';
+export const maxDuration = 60;
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -100,17 +104,15 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: '최대 5개의 파일만 업로드할 수 있습니다.' }, { status: 400 });
     }
 
-    // 파일 크기 검증 (개수에 따른 개별 파일 크기 제한)
+    // 전체 파일 크기 검증 (총합 50MB)
     const totalSize = files.reduce((sum, file) => sum + (file?.size || 0), 0);
     const maxTotalSize = 50 * 1024 * 1024; // 50MB
-    const maxIndividualSize = Math.floor(maxTotalSize / files.length); // 개수에 따른 개별 파일 크기
     
     console.log('File size validation:', {
       fileCount: files.length,
       totalSizeBytes: totalSize,
       totalSizeMB: (totalSize / (1024 * 1024)).toFixed(2),
       maxTotalSizeMB: 50,
-      maxIndividualSizeMB: (maxIndividualSize / (1024 * 1024)).toFixed(1),
       fileSizes: files.map(f => ({
         name: f?.name,
         sizeBytes: f?.size,
@@ -118,20 +120,10 @@ export async function POST(request: Request) {
       }))
     });
     
-    // 총 용량 초과 검사
+    // 총 용량 초과 검사만 수행
     if (totalSize > maxTotalSize) {
       return NextResponse.json({ 
         error: `파일이 커서 못넣습니다. 전체 파일 크기가 50MB를 초과합니다. 현재: ${(totalSize / (1024 * 1024)).toFixed(2)}MB` 
-      }, { status: 413 });
-    }
-    
-    // 개별 파일 크기 검사
-    const oversizedFile = files.find(file => file && file.size > maxIndividualSize);
-    if (oversizedFile) {
-      const oversizedFileMB = (oversizedFile.size / (1024 * 1024)).toFixed(2);
-      const maxIndividualMB = (maxIndividualSize / (1024 * 1024)).toFixed(1);
-      return NextResponse.json({ 
-        error: `파일이 커서 못넣습니다. "${oversizedFile.name}" (${oversizedFileMB}MB)가 개별 파일 크기 제한을 초과합니다. ${files.length}개 파일 업로드 시 각 파일은 최대 ${maxIndividualMB}MB까지 가능합니다.` 
       }, { status: 413 });
     }
 
@@ -268,17 +260,15 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: '최대 5개의 파일만 업로드할 수 있습니다.' }, { status: 400 });
     }
 
-    // 파일 크기 검증 (개수에 따른 개별 파일 크기 제한)
+    // 전체 파일 크기 검증 (총합 50MB)
     const totalSize = files.reduce((sum, file) => sum + (file?.size || 0), 0);
     const maxTotalSize = 50 * 1024 * 1024; // 50MB
-    const maxIndividualSize = Math.floor(maxTotalSize / files.length); // 개수에 따른 개별 파일 크기
     
     console.log('File size validation:', {
       fileCount: files.length,
       totalSizeBytes: totalSize,
       totalSizeMB: (totalSize / (1024 * 1024)).toFixed(2),
       maxTotalSizeMB: 50,
-      maxIndividualSizeMB: (maxIndividualSize / (1024 * 1024)).toFixed(1),
       fileSizes: files.map(f => ({
         name: f?.name,
         sizeBytes: f?.size,
@@ -286,20 +276,10 @@ export async function PUT(request: Request) {
       }))
     });
     
-    // 총 용량 초과 검사
+    // 총 용량 초과 검사만 수행
     if (totalSize > maxTotalSize) {
       return NextResponse.json({ 
         error: `파일이 커서 못넣습니다. 전체 파일 크기가 50MB를 초과합니다. 현재: ${(totalSize / (1024 * 1024)).toFixed(2)}MB` 
-      }, { status: 413 });
-    }
-    
-    // 개별 파일 크기 검사
-    const oversizedFile = files.find(file => file && file.size > maxIndividualSize);
-    if (oversizedFile) {
-      const oversizedFileMB = (oversizedFile.size / (1024 * 1024)).toFixed(2);
-      const maxIndividualMB = (maxIndividualSize / (1024 * 1024)).toFixed(1);
-      return NextResponse.json({ 
-        error: `파일이 커서 못넣습니다. "${oversizedFile.name}" (${oversizedFileMB}MB)가 개별 파일 크기 제한을 초과합니다. ${files.length}개 파일 업로드 시 각 파일은 최대 ${maxIndividualMB}MB까지 가능합니다.` 
       }, { status: 413 });
     }
 
