@@ -51,7 +51,9 @@ This is a **School Safety Management System** (학교 안전보건 관리 시스
 #### API Routes
 - `/api/schools` - School CRUD operations
 - `/api/schedules` - Schedule management with school relations
-- `/api/materials` - Multi-file upload/retrieval with category filtering, supports FormData
+- `/api/materials` - Multi-file upload/retrieval with category filtering, supports FormData (traditional upload)
+- `/api/materials/signed-url` - Google Cloud Storage signed URL generation for direct client uploads
+- `/api/materials/metadata` - Save file metadata to database after successful GCS uploads
 - `/api/materials/[id]` - Individual post retrieval for detail pages
 
 #### Key Components
@@ -112,11 +114,12 @@ Components use `const { user, isAuthenticated } = useAuth()` and `isSuperAdmin(u
 - Data access control (user-specific vs. shared data patterns)
 
 ### Multi-File Upload Architecture
-- **MaterialManager Component**: Handles both display and upload functionality with role-based controls, supports multiple file selection
-- **GCS Integration**: `src/lib/gcs.ts` provides uploadFileToGCS and deleteFileFromGCS functions
-- **API Route**: `/api/materials` handles FormData uploads with multiple files, validates total size (50MB), max count (5), integrates with GCS
+- **Hybrid Upload Strategy**: 교육자료 (Educational Materials) use direct Google Cloud Storage upload bypassing Vercel's 4.5MB limit, while 산업재해 (Industrial Accidents) use traditional Vercel upload
+- **MaterialManager Component**: Handles both display and upload functionality with role-based controls, category-specific upload routing
+- **Direct GCS Upload**: `/api/materials/signed-url` generates signed URLs for direct client-side uploads, `/api/materials/metadata` saves file metadata after successful uploads
+- **Traditional Upload**: `/api/materials` handles FormData uploads with multiple files for smaller files
 - **Database Relations**: Material → MaterialAttachment (one-to-many), supports cascade delete
-- **UI Patterns**: Table view with file thumbnails, dedicated post detail pages (no more modals)
+- **UI Patterns**: Table view with file thumbnails, dedicated post detail pages
 
 ### TypeScript Configuration
 - Uses Next.js TypeScript setup with strict mode
@@ -167,8 +170,10 @@ PIXABAY_KEY="your-pixabay-api-key"
 
 ### Google Cloud Storage Setup
 - Service account with Storage Admin role
-- Bucket with uniform bucket-level access disabled (for `public: true` uploads)
-- Files uploaded with pattern: `{category}/{timestamp}_{filename}`
+- Bucket with uniform bucket-level access disabled (for ACL-based permissions)
+- CORS policy configured for direct client uploads from Vercel domains
+- Files uploaded with pattern: `{category}/{timestamp}_{sanitized_filename}`
+- Filename sanitization: Korean/special characters removed, length limited to 50 chars
 - Public URLs: `https://storage.googleapis.com/{bucket}/{path}`
 
 ### Prerequisites
@@ -194,6 +199,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 - **Session Management**: Uses custom localStorage-based authentication to prevent hydration mismatches
 - **Component Mounting**: AuthProvider uses mounted state to prevent SSR/client rendering differences
 - **FullCalendar Integration**: Always use dynamic imports with client-side only loading to prevent SSR issues
+- **PWA Support**: Progressive Web App with standalone mode, app shortcuts, service worker, and SSIA logo icons
 
 ## File Type Support
 - **Documents**: PDF, PPT, PPTX, DOC, DOCX, XLS, XLSX, TXT
@@ -269,9 +275,18 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 4. Create new page route following existing pattern (`/[category]/page.tsx`)
 
 ### File Upload Process
-1. Files validated at client-side (count, size, type)
+
+**교육자료 (Educational Materials) - Direct GCS Upload:**
+1. Client validates files (count, size, type, 50MB total limit)
+2. Request signed URLs from `/api/materials/signed-url`
+3. Direct client upload to Google Cloud Storage using signed URLs
+4. Send metadata to `/api/materials/metadata` to create database records
+5. UI updates with new post and file links
+
+**산업재해 (Industrial Accidents) - Traditional Upload:**
+1. Client validates files (count, size, type, 4.5MB per file limit)
 2. FormData sent to `/api/materials` with multiple files
-3. Files uploaded to GCS with structured naming
+3. Files processed and stored via traditional Vercel upload
 4. Database records created for Material and MaterialAttachment
 5. UI updates with new post and file thumbnails
 
@@ -311,6 +326,7 @@ const calendarEvents = safeCreateCalendarEvents(schedules); // Filters invalid d
 4. **Data Access**: External API data should be validated before use
 5. **TypeScript Interfaces**: When adding new schedule fields, update both database schema and TypeScript interfaces
 6. **Holiday Schedule Logic**: Always check `isHoliday` flag when processing schedules to handle different UI/logic paths
+7. **GCS Upload Errors**: Common 403/500 errors are due to missing CORS config, incorrect service account permissions, or malformed signed URLs
 
 ## Critical TypeScript Patterns
 
@@ -340,3 +356,61 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   // use id...
 }
 ```
+
+## Progressive Web App (PWA) Implementation
+
+### PWA Architecture
+- **Manifest**: `/public/manifest.json` configured with Korean language support, SSIA branding, and app shortcuts
+- **Service Worker**: `/public/sw.js` handles offline caching and background sync
+- **Icons**: Multiple sizes (48x48, 192x192, 512x512) based on SSIA logo for various device contexts
+- **Display Mode**: Standalone mode for native app-like experience
+
+### Mobile Safe Area Support
+- **Viewport Configuration**: `viewport-fit=cover` enables full-screen coverage on modern devices
+- **CSS Variables**: Safe area inset environment variables for iOS notch/Dynamic Island and Android navigation
+- **Custom CSS Classes**: `.pt-safe`, `.pb-safe`, `.py-safe`, `.px-safe` for consistent safe area handling
+- **PWA-Specific Styles**: `@media (display-mode: standalone)` ensures proper content display in installed app
+
+### Safe Area Implementation
+```css
+:root {
+  --safe-area-inset-top: env(safe-area-inset-top, 0px);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.pb-safe { 
+  padding-bottom: max(1rem, var(--safe-area-inset-bottom)); 
+}
+```
+
+### PWA Installation Features
+- **App Shortcuts**: Direct links to Dashboard and Educational Materials
+- **Install Prompts**: Browser-native installation prompts on desktop and mobile
+- **Offline Support**: Service worker caches critical resources for offline access
+- **Touch Scrolling**: `-webkit-overflow-scrolling: touch` for smooth mobile interaction
+
+## Critical Troubleshooting
+
+### Google Cloud Storage Upload Issues
+
+**403 Forbidden Errors:**
+- Check service account has Storage Admin role
+- Verify CORS policy allows your domain origins
+- Ensure bucket has uniform bucket-level access disabled
+- Confirm signed URL generation doesn't include contentType parameter (causes signature mismatches)
+
+**500 Internal Server Errors:**
+- Verify GOOGLE_CLOUD_CREDENTIALS environment variable is properly formatted JSON
+- Check service account key is not expired or revoked
+- Ensure GOOGLE_CLOUD_PROJECT_ID and GOOGLE_CLOUD_BUCKET_NAME are correct
+
+**SignatureDoesNotMatch Errors:**
+- Generate new service account key and update Vercel environment variables
+- Remove old/expired keys from Google Cloud Console
+- Verify credentials are wrapped in `{ credentials: parsedCredentials }` object
+
+### File Upload Validation
+- **교육자료**: Maximum 50MB total, 5 files max, direct GCS upload
+- **산업재해**: Maximum 4.5MB per file, traditional Vercel upload
+- Always validate file types against allowedTypes array in signed-url route
+- Filename sanitization removes Korean characters and limits to 50 characters

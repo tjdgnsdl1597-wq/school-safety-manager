@@ -13,7 +13,11 @@ const PUBLIC_PAGES = [
   '/auth/signup',
   '/school-safety',
   '/educational-materials',
-  '/industrial-accidents'
+  '/industrial-accidents',
+  '/data-center/education',
+  '/data-center/safety-signs',
+  '/data-center/forms',
+  '/data-center/notices'
 ];
 
 // 로그인 필요 페이지 (일반 사용자도 접근 가능)

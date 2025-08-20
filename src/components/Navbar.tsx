@@ -4,17 +4,41 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/lib/simpleAuth';
 import { isSuperAdmin, getUserDisplayName } from '@/lib/authUtils';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 export default function Navbar() {
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isDataCenterOpen, setIsDataCenterOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // 슈퍼관리자용 네비게이션 메뉴 (사용자 관리 + 교육자료 + 중대재해 알리미)
+  // 드롭다운 외부 클릭 감지
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDataCenterOpen(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  // 자료마당 서브메뉴
+  const dataCenterItems = [
+    { name: '📚 교육자료', href: '/data-center/education', icon: '📚' },
+    { name: '🎯 안전보건표지 및 포스터', href: '/data-center/safety-signs', icon: '🎯' },
+    { name: '📄 안전서류 양식', href: '/data-center/forms', icon: '📄' },
+    { name: '📢 교육청 배포물', href: '/data-center/notices', icon: '📢' },
+  ];
+
+  // 슈퍼관리자용 네비게이션 메뉴 (사용자 관리 + 자료마당 + 중대재해 알리미)
   const adminNavItems = [
     { name: '사용자 관리', href: '/admin/users' },
-    { name: '교육 자료', href: '/educational-materials' },
+    { name: '자료마당', href: '/data-center/education', isDropdown: true },
     { name: '중대재해 알리미', href: '/industrial-accidents' },
   ];
 
@@ -41,8 +65,8 @@ export default function Navbar() {
     if (menuName === '학교 안전보건') {
       return <span className="text-center leading-tight">학교<br />안전보건</span>;
     }
-    if (menuName === '교육 자료') {
-      return <span className="text-center leading-tight">교육<br />자료</span>;
+    if (menuName === '자료마당') {
+      return <span className="text-center leading-tight">자료<br />마당</span>;
     }
     if (menuName === '중대재해 알리미') {
       return <span className="text-center leading-tight">중대재해<br />알리미</span>;
@@ -50,19 +74,19 @@ export default function Navbar() {
     return menuName;
   };
 
-  // 일반 사용자용 네비게이션 메뉴 (대시보드, 학교정보, 일정관리, 교육자료, 중대재해)
+  // 일반 사용자용 네비게이션 메뉴 (대시보드, 학교정보, 일정관리, 자료마당, 중대재해)
   const userNavItems = [
     { name: '대시보드', href: '/dashboard' },
     { name: '학교 정보', href: '/schools' },
     { name: '일정 관리', href: '/schedules' },
-    { name: '교육 자료', href: '/educational-materials' },
+    { name: '자료마당', href: '/data-center/education', isDropdown: true },
     { name: '중대재해 알리미', href: '/industrial-accidents' },
   ];
 
-  // 방문자용 네비게이션 메뉴 (홈, 교육자료, 중대재해)
+  // 방문자용 네비게이션 메뉴 (홈, 자료마당, 중대재해)
   const visitorNavItems = [
     { name: '홈', href: '/?visitor=true' },
-    { name: '교육 자료', href: '/educational-materials' },
+    { name: '자료마당', href: '/data-center/education', isDropdown: true },
     { name: '중대재해 알리미', href: '/industrial-accidents' },
   ];
 
@@ -103,19 +127,70 @@ export default function Navbar() {
           
           {/* 데스크톱 메뉴 */}
           <div className="hidden md:flex items-center space-x-1">
-            {navItems.map((item) => (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={`px-3 lg:px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
-                  pathname === item.href 
-                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/25' 
-                    : 'text-gray-300 hover:text-white hover:bg-white/10'
-                }`}
-              >
-                {renderMenuText(item.name)}
-              </Link>
-            ))}
+            {navItems.map((item) => {
+              if (item.isDropdown && item.name === '자료마당') {
+                const isDataCenterActive = pathname.startsWith('/data-center');
+                return (
+                  <div key={item.name} className="relative" ref={dropdownRef}>
+                    <button
+                      onClick={() => setIsDataCenterOpen(!isDataCenterOpen)}
+                      className={`px-3 lg:px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center space-x-1 ${
+                        isDataCenterActive
+                          ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/25' 
+                          : 'text-gray-300 hover:text-white hover:bg-white/10'
+                      }`}
+                    >
+                      <span>{renderMenuText(item.name)}</span>
+                      <svg 
+                        className={`w-4 h-4 transition-transform duration-200 ${isDataCenterOpen ? 'rotate-180' : ''}`} 
+                        fill="none" 
+                        stroke="currentColor" 
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+
+                    {/* 드롭다운 메뉴 */}
+                    {isDataCenterOpen && (
+                      <div className="absolute top-full left-0 mt-2 w-64 bg-white/95 backdrop-blur-sm border border-gray-200 rounded-lg shadow-xl shadow-black/10 overflow-hidden z-50">
+                        {dataCenterItems.map((subItem) => (
+                          <Link
+                            key={subItem.href}
+                            href={subItem.href}
+                            onClick={() => setIsDataCenterOpen(false)}
+                            className={`block px-4 py-3 text-sm font-medium transition-all duration-200 ${
+                              pathname === subItem.href
+                                ? 'bg-blue-50 text-blue-600 border-l-4 border-blue-500'
+                                : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+                            }`}
+                          >
+                            <div className="flex items-center space-x-3">
+                              <span className="text-lg">{subItem.icon}</span>
+                              <span>{subItem.name.replace(subItem.icon + ' ', '')}</span>
+                            </div>
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+
+              return (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={`px-3 lg:px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
+                    pathname === item.href 
+                      ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/25' 
+                      : 'text-gray-300 hover:text-white hover:bg-white/10'
+                  }`}
+                >
+                  {renderMenuText(item.name)}
+                </Link>
+              );
+            })}
             
             <div className="ml-4 lg:ml-6 flex items-center space-x-2 lg:space-x-3">
               {user ? (
@@ -173,20 +248,74 @@ export default function Navbar() {
         {isMenuOpen && (
           <div className="md:hidden border-t border-white/10 mt-2 pt-4 pb-4">
             <div className="flex flex-col space-y-2">
-              {navItems.map((item) => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  onClick={() => setIsMenuOpen(false)}
-                  className={`px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300 ${
-                    pathname === item.href 
-                      ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/25' 
-                      : 'text-gray-300 hover:text-white hover:bg-white/10'
-                  }`}
-                >
-                  {renderMenuText(item.name)}
-                </Link>
-              ))}
+              {navItems.map((item) => {
+                if (item.isDropdown && item.name === '자료마당') {
+                  const isDataCenterActive = pathname.startsWith('/data-center');
+                  return (
+                    <div key={item.name}>
+                      <button
+                        onClick={() => setIsDataCenterOpen(!isDataCenterOpen)}
+                        className={`w-full px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300 flex items-center justify-between ${
+                          isDataCenterActive
+                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/25' 
+                            : 'text-gray-300 hover:text-white hover:bg-white/10'
+                        }`}
+                      >
+                        <span>{renderMenuText(item.name)}</span>
+                        <svg 
+                          className={`w-4 h-4 transition-transform duration-200 ${isDataCenterOpen ? 'rotate-180' : ''}`} 
+                          fill="none" 
+                          stroke="currentColor" 
+                          viewBox="0 0 24 24"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </button>
+
+                      {/* 모바일 서브메뉴 */}
+                      {isDataCenterOpen && (
+                        <div className="mt-2 ml-4 space-y-1">
+                          {dataCenterItems.map((subItem) => (
+                            <Link
+                              key={subItem.href}
+                              href={subItem.href}
+                              onClick={() => {
+                                setIsMenuOpen(false);
+                                setIsDataCenterOpen(false);
+                              }}
+                              className={`block px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
+                                pathname === subItem.href
+                                  ? 'bg-blue-500 text-white shadow-md'
+                                  : 'text-gray-400 hover:text-white hover:bg-white/10'
+                              }`}
+                            >
+                              <div className="flex items-center space-x-2">
+                                <span className="text-base">{subItem.icon}</span>
+                                <span>{subItem.name.replace(subItem.icon + ' ', '')}</span>
+                              </div>
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                }
+
+                return (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    onClick={() => setIsMenuOpen(false)}
+                    className={`px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300 ${
+                      pathname === item.href 
+                        ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/25' 
+                        : 'text-gray-300 hover:text-white hover:bg-white/10'
+                    }`}
+                  >
+                    {renderMenuText(item.name)}
+                  </Link>
+                );
+              })}
               
               <div className="border-t border-white/10 pt-4 mt-4">
                 {user ? (
