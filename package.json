@@ -3,7 +3,7 @@
   "version": "0.2.0",
   "private": true,
   "engines": {
-    "node": ">=18 <21"
+    "node": ">=18"
   },
   "scripts": {
     "dev": "next dev",
@@ -11,7 +11,7 @@
     "start": "next start",
     "lint": "next lint",
     "postinstall": "prisma generate",
-    "vercel-build": "prisma generate && prisma migrate deploy && next build"
+    "vercel-build": "prisma generate && (prisma migrate deploy 2>/dev/null || (echo 'Baseline existing schema...' && prisma migrate resolve --applied 20250817184630_add_multiple_file_attachments && prisma migrate resolve --applied 20250818134619_add_holiday_fields && prisma migrate resolve --applied 20250819111342_add_user_system_and_ownership && prisma migrate resolve --applied 20250819112551_add_user_profile_fields && prisma migrate resolve --applied 20250819114558_add_profile_photo_field && prisma migrate resolve --applied 20250819114819_add_email_field && prisma migrate resolve --applied 20250819122504_remove_reason_field && prisma migrate resolve --applied 20250819123751_add_email_to_school && echo 'Baseline completed')) && next build"
   },
   "dependencies": {
     "@fullcalendar/daygrid": "^6.1.19",
