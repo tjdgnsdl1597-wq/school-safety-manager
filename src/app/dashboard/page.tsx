@@ -70,6 +70,10 @@ export default function DashboardPage() {
   
   // 현재 시간 state
   const [currentTime, setCurrentTime] = useState('');
+  
+  // 일정 상세 모달 state
+  const [selectedSchedule, setSelectedSchedule] = useState<Schedule | null>(null);
+  const [showScheduleModal, setShowScheduleModal] = useState(false);
 
   // 인증되지 않은 사용자 리다이렉트
   useEffect(() => {
@@ -270,8 +274,11 @@ export default function DashboardPage() {
 
   const handleEventClick = (clickInfo: { event: { id: string } }) => {
     const scheduleId = clickInfo.event.id;
-    console.log('클릭된 스케줄 ID:', scheduleId);
-    // 필요시 상세 정보 표시 로직 추가
+    const schedule = schedules.find(s => s.id === scheduleId);
+    if (schedule) {
+      setSelectedSchedule(schedule);
+      setShowScheduleModal(true);
+    }
   };
 
   // --- Calendar Events ---
@@ -615,10 +622,10 @@ export default function DashboardPage() {
                   {recentAccidentSchedules.slice(0, 10).map((schedule) => (
                     <div key={schedule.id} className="p-2 bg-red-50 rounded-lg border border-red-200">
                       <div className="text-xs text-red-700 font-medium">
-                        {new Date(schedule.date).toLocaleDateString()}
+                        {schedule.school.abbreviation || schedule.school.name}
                       </div>
                       <div className="text-xs text-red-900 mt-1">
-                        {schedule.school.abbreviation || schedule.school.name}
+                        발생일: {new Date(schedule.date).toLocaleDateString('ko-KR').replace(/\./g, '.').replace(/\s/g, '')}
                       </div>
                     </div>
                   ))}
@@ -734,6 +741,78 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+      
+      {/* 일정 상세 정보 모달 */}
+      {showScheduleModal && selectedSchedule && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4 shadow-2xl border-2 border-blue-200">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">일정 상세 정보</h3>
+              <button
+                onClick={() => setShowScheduleModal(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                ✖️
+              </button>
+            </div>
+            
+            <div className="space-y-3">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">날짜</label>
+                <p className="text-sm text-gray-900">{new Date(selectedSchedule.date).toLocaleDateString('ko-KR')}</p>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">학교</label>
+                <p className="text-sm text-gray-900">{selectedSchedule.school.name}</p>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">구분</label>
+                  <p className="text-sm text-gray-900">{selectedSchedule.ampm === 'AM' ? '오전' : '오후'}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">시간</label>
+                  <p className="text-sm text-gray-900">{selectedSchedule.startTime} - {selectedSchedule.endTime}</p>
+                </div>
+              </div>
+              
+              {selectedSchedule.isHoliday ? (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">휴무 사유</label>
+                  <p className="text-sm text-gray-900">{selectedSchedule.holidayReason || '휴무'}</p>
+                </div>
+              ) : (
+                <>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">목적</label>
+                    <p className="text-sm text-gray-900">
+                      {JSON.parse(selectedSchedule.purpose || '[]').join(', ')}
+                    </p>
+                  </div>
+                  
+                  {selectedSchedule.otherReason && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">기타 사유</label>
+                      <p className="text-sm text-gray-900">{selectedSchedule.otherReason}</p>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+            
+            <div className="mt-6 flex justify-end">
+              <button
+                onClick={() => setShowScheduleModal(false)}
+                className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors"
+              >
+                닫기
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
