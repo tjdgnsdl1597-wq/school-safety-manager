@@ -838,8 +838,16 @@ export default function DashboardPage() {
                   
                   {selectedSchedule.otherReason && (
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">기타 사유</label>
-                      <p className="text-sm text-gray-900">{selectedSchedule.otherReason}</p>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">세부 사유</label>
+                      <div className="text-sm text-gray-900">
+                        {selectedSchedule.otherReason.split(' / ').map((reason, index) => (
+                          <div key={index} className="mb-1">
+                            <span className="inline-block bg-blue-50 text-blue-700 px-2 py-1 rounded text-xs font-medium">
+                              {reason}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </>

@@ -206,6 +206,24 @@ export default function SchedulesPage() {
       
       // 각각의 사유를 수집하여 하나의 문자열로 합침
       const reasons = [];
+      if (currentPurposes.includes('월점검')) {
+        const monthlyReason = formData.get('monthlyReason') as string;
+        if (monthlyReason?.trim()) {
+          reasons.push(`월점검: ${monthlyReason.trim()}`);
+        }
+      }
+      if (currentPurposes.includes('위험성평가')) {
+        const riskReason = formData.get('riskReason') as string;
+        if (riskReason?.trim()) {
+          reasons.push(`위험성평가: ${riskReason.trim()}`);
+        }
+      }
+      if (currentPurposes.includes('근골조사')) {
+        const musculoskeletalReason = formData.get('musculoskeletalReason') as string;
+        if (musculoskeletalReason?.trim()) {
+          reasons.push(`근골조사: ${musculoskeletalReason.trim()}`);
+        }
+      }
       if (currentPurposes.includes('교육')) {
         const educationReason = formData.get('educationReason') as string;
         if (educationReason?.trim()) {
@@ -461,6 +479,60 @@ export default function SchedulesPage() {
                                         ))}
                                     </div>
                                 </div>
+                                {selectedPurposes.includes('월점검') && (
+                                    <div>
+                                        <label htmlFor="monthlyReason" className="block text-gray-700 text-sm font-bold mb-2">월점검 내용을 적어주세요</label>
+                                        <input 
+                                            type="text" 
+                                            name="monthlyReason" 
+                                            id="monthlyReason" 
+                                            key={`monthly-${editingSchedule?.id}`} 
+                                            defaultValue={(() => {
+                                                if (!editingSchedule?.otherReason) return '';
+                                                const match = editingSchedule.otherReason.match(/월점검:\s*([^/]+)/);
+                                                return match ? match[1].trim() : '';
+                                            })()} 
+                                            className="shadow appearance-none border rounded w-full py-2 px-3 mb-4" 
+                                            autoComplete="off" 
+                                        />
+                                    </div>
+                                )}
+                                {selectedPurposes.includes('위험성평가') && (
+                                    <div>
+                                        <label htmlFor="riskReason" className="block text-gray-700 text-sm font-bold mb-2">위험성평가 내용을 적어주세요</label>
+                                        <input 
+                                            type="text" 
+                                            name="riskReason" 
+                                            id="riskReason" 
+                                            key={`risk-${editingSchedule?.id}`} 
+                                            defaultValue={(() => {
+                                                if (!editingSchedule?.otherReason) return '';
+                                                const match = editingSchedule.otherReason.match(/위험성평가:\s*([^/]+)/);
+                                                return match ? match[1].trim() : '';
+                                            })()} 
+                                            className="shadow appearance-none border rounded w-full py-2 px-3 mb-4" 
+                                            autoComplete="off" 
+                                        />
+                                    </div>
+                                )}
+                                {selectedPurposes.includes('근골조사') && (
+                                    <div>
+                                        <label htmlFor="musculoskeletalReason" className="block text-gray-700 text-sm font-bold mb-2">근골조사 내용을 적어주세요</label>
+                                        <input 
+                                            type="text" 
+                                            name="musculoskeletalReason" 
+                                            id="musculoskeletalReason" 
+                                            key={`muscular-${editingSchedule?.id}`} 
+                                            defaultValue={(() => {
+                                                if (!editingSchedule?.otherReason) return '';
+                                                const match = editingSchedule.otherReason.match(/근골조사:\s*([^/]+)/);
+                                                return match ? match[1].trim() : '';
+                                            })()} 
+                                            className="shadow appearance-none border rounded w-full py-2 px-3 mb-4" 
+                                            autoComplete="off" 
+                                        />
+                                    </div>
+                                )}
                                 {selectedPurposes.includes('교육') && (
                                     <div>
                                         <label htmlFor="educationReason" className="block text-gray-700 text-sm font-bold mb-2">교육 내용을 적어주세요</label>
