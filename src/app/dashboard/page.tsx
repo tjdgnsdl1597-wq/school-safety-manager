@@ -91,7 +91,11 @@ export default function DashboardPage() {
         headers['x-user-role'] = user.role;
       }
       
-      const response = await fetch('/api/schedules', { headers });
+      const response = await fetch(`/api/schedules?t=${Date.now()}`, { 
+        headers,
+        cache: 'no-store',
+        next: { revalidate: 0 }
+      });
       const data = await response.json();
       setSchedules(Array.isArray(data) ? data : []);
     } catch (error) {
@@ -114,7 +118,11 @@ export default function DashboardPage() {
         headers['x-user-role'] = user.role;
       }
       
-      const response = await fetch('/api/schools', { headers });
+      const response = await fetch(`/api/schools?t=${Date.now()}`, { 
+        headers,
+        cache: 'no-store',
+        next: { revalidate: 0 }
+      });
       const data = await response.json();
       setSchools(Array.isArray(data) ? data : []);
     } catch (error) {

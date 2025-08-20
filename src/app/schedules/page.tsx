@@ -142,7 +142,10 @@ export default function SchedulesPage() {
         headers['x-user-role'] = user.role;
       }
       
-      const res = await fetch('/api/schedules', { headers });
+      const res = await fetch(`/api/schedules?t=${Date.now()}`, { 
+        headers,
+        cache: 'no-store'
+      });
       if (!res.ok) throw new Error('Failed to fetch schedules');
       const data = await res.json();
       setSchedules(data);
@@ -164,7 +167,10 @@ export default function SchedulesPage() {
         headers['x-user-role'] = user.role;
       }
       
-      const res = await fetch('/api/schools', { headers });
+      const res = await fetch(`/api/schools?t=${Date.now()}`, { 
+        headers,
+        cache: 'no-store'
+      });
       if (!res.ok) throw new Error('Failed to fetch schools');
       const data = await res.json();
       setSchools(data);
