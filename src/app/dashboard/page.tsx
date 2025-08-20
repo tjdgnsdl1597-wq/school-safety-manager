@@ -485,7 +485,7 @@ export default function DashboardPage() {
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold text-gray-900">오늘의 일정</h3>
-                <div className="text-xs text-gray-500">
+                <div className="text-sm font-bold text-gray-700">
                   {currentTime}
                 </div>
               </div>
@@ -809,76 +809,57 @@ export default function DashboardPage() {
       
       {/* 일정 상세 정보 모달 */}
       {showScheduleModal && selectedSchedule && (
-        <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4 shadow-2xl border-2 border-blue-200">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">일정 상세 정보</h3>
+        <div className="fixed inset-0 flex items-center justify-center z-50 px-4">
+          <div className="bg-white rounded-lg p-4 w-full max-w-sm mx-auto shadow-2xl border-2 border-blue-200">
+            <div className="flex justify-between items-center mb-3">
+              <h3 className="text-base font-semibold text-gray-900">일정 상세</h3>
               <button
                 onClick={() => setShowScheduleModal(false)}
-                className="text-gray-500 hover:text-gray-700"
+                className="text-gray-500 hover:text-gray-700 text-lg"
               >
                 ✖️
               </button>
             </div>
             
-            <div className="space-y-3">
+            <div className="space-y-2">
+              {/* 1행: 날짜와 시간 */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">날짜</label>
-                <p className="text-sm text-gray-900">{new Date(selectedSchedule.date).toLocaleDateString('ko-KR')}</p>
+                <p className="text-base font-medium text-gray-900">
+                  {new Date(selectedSchedule.date).toLocaleDateString('ko-KR')} {selectedSchedule.startTime} - {selectedSchedule.endTime}
+                </p>
               </div>
               
+              {/* 2행: 학교명과 목적 */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">학교</label>
-                <p className="text-sm text-gray-900">{selectedSchedule.school.name}</p>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">구분</label>
-                  <p className="text-sm text-gray-900">{selectedSchedule.ampm === 'AM' ? '오전' : '오후'}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">시간</label>
-                  <p className="text-sm text-gray-900">{selectedSchedule.startTime} - {selectedSchedule.endTime}</p>
-                </div>
-              </div>
-              
-              {selectedSchedule.isHoliday ? (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">휴무 사유</label>
-                  <p className="text-sm text-gray-900">{selectedSchedule.holidayReason || '휴무'}</p>
-                </div>
-              ) : (
-                <>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">목적</label>
-                    <p className="text-sm text-gray-900">
-                      {JSON.parse(selectedSchedule.purpose || '[]').join(', ')}
-                    </p>
-                  </div>
-                  
-                  {selectedSchedule.otherReason && (
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">세부 사유</label>
-                      <div className="text-sm text-gray-900">
-                        {selectedSchedule.otherReason.split(' / ').map((reason, index) => (
-                          <div key={index} className="mb-1">
-                            <span className="inline-block bg-blue-50 text-blue-700 px-2 py-1 rounded text-xs font-medium">
-                              {reason}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
+                <p className="text-base font-medium text-gray-900">
+                  {selectedSchedule.isHoliday ? (
+                    `🏖️ ${selectedSchedule.holidayReason || '휴무'}`
+                  ) : (
+                    `${selectedSchedule.school.name} - ${JSON.parse(selectedSchedule.purpose || '[]').join(', ')}`
                   )}
-                </>
+                </p>
+              </div>
+              
+              {/* 3행: 세부 사유 (일반 일정인 경우에만) */}
+              {!selectedSchedule.isHoliday && selectedSchedule.otherReason && (
+                <div>
+                  <div className="text-base text-gray-700 space-y-1">
+                    {selectedSchedule.otherReason.split(' / ').map((reason, index) => (
+                      <div key={index}>
+                        <span className="inline-block bg-blue-50 text-blue-700 px-2 py-1 rounded text-sm font-medium">
+                          {reason}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               )}
             </div>
             
-            <div className="mt-6 flex justify-end">
+            <div className="mt-4 flex justify-end">
               <button
                 onClick={() => setShowScheduleModal(false)}
-                className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors"
+                className="px-3 py-1.5 bg-gray-500 text-white text-sm rounded hover:bg-gray-600 transition-colors"
               >
                 닫기
               </button>
