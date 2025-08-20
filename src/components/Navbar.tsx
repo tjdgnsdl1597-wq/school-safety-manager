@@ -13,19 +13,35 @@ export default function Navbar() {
   const [isDataCenterOpen, setIsDataCenterOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // 드롭다운 외부 클릭 감지
+  // 드롭다운 외부 클릭/터치 감지 (모바일 대응)
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
+    function handleOutsideClick(event: MouseEvent | TouchEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsDataCenterOpen(false);
       }
     }
 
-    document.addEventListener('mousedown', handleClickOutside);
+    // 마우스 및 터치 이벤트 모두 처리
+    document.addEventListener('mousedown', handleOutsideClick);
+    document.addEventListener('touchstart', handleOutsideClick);
+    
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('mousedown', handleOutsideClick);
+      document.removeEventListener('touchstart', handleOutsideClick);
     };
   }, []);
+
+  // 터치 디바이스 감지
+  const isTouchDevice = () => {
+    return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  };
+
+  // 드롭다운 토글 핸들러 (모바일/데스크톱 통합)
+  const handleDataCenterToggle = (e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDataCenterOpen(!isDataCenterOpen);
+  };
 
   // 자료마당 서브메뉴
   const dataCenterItems = [
@@ -133,7 +149,11 @@ export default function Navbar() {
                 return (
                   <div key={item.name} className="relative" ref={dropdownRef}>
                     <button
-                      onClick={() => setIsDataCenterOpen(!isDataCenterOpen)}
+                      onClick={handleDataCenterToggle}
+                      onTouchStart={isTouchDevice() ? handleDataCenterToggle : undefined}
+                      aria-expanded={isDataCenterOpen}
+                      aria-haspopup="true"
+                      aria-label="자료마당 메뉴 열기/닫기"
                       className={`px-3 lg:px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center space-x-1 ${
                         isDataCenterActive
                           ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/25' 
@@ -146,14 +166,15 @@ export default function Navbar() {
                         fill="none" 
                         stroke="currentColor" 
                         viewBox="0 0 24 24"
+                        aria-hidden="true"
                       >
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                       </svg>
                     </button>
 
-                    {/* 드롭다운 메뉴 */}
+                    {/* 드롭다운 메뉴 - 애니메이션 효과 개선 */}
                     {isDataCenterOpen && (
-                      <div className="absolute top-full left-0 mt-2 w-64 bg-white/95 backdrop-blur-sm border border-gray-200 rounded-lg shadow-xl shadow-black/10 overflow-hidden z-50">
+                      <div className="absolute top-full left-0 mt-2 w-64 bg-white/95 backdrop-blur-sm border border-gray-200 rounded-lg shadow-xl shadow-black/10 overflow-hidden z-50 animate-in slide-in-from-top-2 duration-200">
                         {dataCenterItems.map((subItem) => (
                           <Link
                             key={subItem.href}
@@ -254,7 +275,11 @@ export default function Navbar() {
                   return (
                     <div key={item.name}>
                       <button
-                        onClick={() => setIsDataCenterOpen(!isDataCenterOpen)}
+                        onClick={handleDataCenterToggle}
+                        onTouchStart={isTouchDevice() ? handleDataCenterToggle : undefined}
+                        aria-expanded={isDataCenterOpen}
+                        aria-haspopup="true"
+                        aria-label="자료마당 메뉴 열기/닫기"
                         className={`w-full px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300 flex items-center justify-between ${
                           isDataCenterActive
                             ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/25' 
@@ -267,14 +292,15 @@ export default function Navbar() {
                           fill="none" 
                           stroke="currentColor" 
                           viewBox="0 0 24 24"
+                          aria-hidden="true"
                         >
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                         </svg>
                       </button>
 
-                      {/* 모바일 서브메뉴 */}
+                      {/* 모바일 서브메뉴 - 애니메이션 효과 개선 */}
                       {isDataCenterOpen && (
-                        <div className="mt-2 ml-4 space-y-1">
+                        <div className="mt-2 ml-4 space-y-1 animate-in slide-in-from-top-2 duration-200">
                           {dataCenterItems.map((subItem) => (
                             <Link
                               key={subItem.href}
