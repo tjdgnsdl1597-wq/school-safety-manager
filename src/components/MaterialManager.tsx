@@ -28,7 +28,7 @@ interface Material {
 
 // Props for the component
 interface MaterialManagerProps {
-  category: '교육자료' | '산업재해';
+  category: '교육자료' | '산업재해' | '안전서류양식' | '교육청배포물' | '안전보건표지';
   title: string;
 }
 
