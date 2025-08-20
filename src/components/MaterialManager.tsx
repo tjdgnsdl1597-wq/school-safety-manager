@@ -148,6 +148,7 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
 
   // 교육자료용 직접 GCS 업로드
   const handleDirectGCSUpload = async (e: React.FormEvent<HTMLFormElement>) => {
+    console.log('handleDirectGCSUpload 시작');
     e.preventDefault();
     setUploading(true);
     
@@ -155,6 +156,8 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
     const title = formData.get('title') as string;
     const content = formData.get('content') as string;
     const files = Array.from(formData.getAll('files') as File[]).filter(file => file.size > 0);
+    
+    console.log('업로드할 파일들:', files.map(f => ({ name: f.name, size: f.size })));
 
     try {
       // 파일 개수 검증
@@ -244,10 +247,15 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
 
   // Handle file upload/update
   const handleFileSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    console.log('handleFileSubmit 호출됨:', { category, isEditing });
+    
     // 교육자료인 경우 직접 GCS 업로드 사용
     if (category === '교육자료' && !isEditing) {
+      console.log('직접 GCS 업로드 사용');
       return handleDirectGCSUpload(e);
     }
+    
+    console.log('기존 방식 사용');
 
     // 기존 방식 (산업재해 또는 편집 모드)
     e.preventDefault();
