@@ -98,7 +98,7 @@ export async function POST(request: Request) {
         otherReason: otherReason || null,
         isHoliday: isHoliday || false,
         holidayReason: holidayReason || null,
-        accidentDate: accidentDate ? new Date(accidentDate) : null,
+        ...(accidentDate && { accidentDate: new Date(accidentDate) }),
       },
     });
     return NextResponse.json(newSchedule, { status: 201 });
@@ -166,7 +166,7 @@ export async function PUT(request: Request) {
         otherReason: otherReason || null,
         isHoliday: isHoliday || false,
         holidayReason: holidayReason || null,
-        accidentDate: accidentDate ? new Date(accidentDate) : null,
+        ...(accidentDate && { accidentDate: new Date(accidentDate) }),
       },
     });
     return NextResponse.json(updatedSchedule);
