@@ -25,7 +25,7 @@ const InitialSelectionScreen = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-[9999] min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center overflow-hidden">
+    <div className="fixed inset-0 z-[9999] min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center overflow-y-auto">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-20">
         <div className="absolute top-10 left-10 w-32 h-32 bg-blue-400 rounded-full blur-3xl animate-pulse"></div>
@@ -35,7 +35,7 @@ const InitialSelectionScreen = () => {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 container mx-auto px-4 sm:px-6 text-center max-w-4xl">
+      <div className="relative z-10 container mx-auto px-4 sm:px-6 text-center max-w-4xl py-safe">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}

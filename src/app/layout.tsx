@@ -26,6 +26,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
@@ -65,7 +66,7 @@ export default function RootLayout({
             <AuthCheck>
               <DynamicTitle />
               <Navbar />
-              <main className="pt-4">
+              <main className="pt-4 pb-safe">
                 {children}
               </main>
             </AuthCheck>
