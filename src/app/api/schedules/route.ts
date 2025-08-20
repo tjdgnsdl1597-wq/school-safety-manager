@@ -42,20 +42,34 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const { date, schoolId, ampm, startTime, endTime, purpose, otherReason, isHoliday, holidayReason, accidentDate } = await request.json();
+    const requestBody = await request.json();
+    console.log('POST /api/schedules - Request body:', JSON.stringify(requestBody, null, 2));
+    
+    const { date, schoolId, ampm, startTime, endTime, purpose, otherReason, isHoliday, holidayReason, accidentDate } = requestBody;
     const userId = request.headers.get('x-user-id');
+    const userRole = request.headers.get('x-user-role');
+    
+    console.log('POST /api/schedules - Headers:', { userId, userRole });
+    console.log('POST /api/schedules - Parsed data:', {
+      date, schoolId, ampm, startTime, endTime, purpose, otherReason, isHoliday, holidayReason, accidentDate
+    });
     
     if (!userId) {
+      console.error('POST /api/schedules - Error: User ID is missing');
       return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
     }
 
     // 휴무일정인 경우와 일반 일정인 경우를 다르게 검증
     if (isHoliday) {
+      console.log('POST /api/schedules - Holiday schedule validation');
       if (!date || !ampm || !startTime || !endTime || !holidayReason) {
+        console.error('POST /api/schedules - Holiday validation failed:', { date, ampm, startTime, endTime, holidayReason });
         return NextResponse.json({ error: 'Missing required fields for holiday schedule' }, { status: 400 });
       }
     } else {
+      console.log('POST /api/schedules - Regular schedule validation');
       if (!date || !schoolId || !ampm || !startTime || !endTime || !purpose) {
+        console.error('POST /api/schedules - Regular validation failed:', { date, schoolId, ampm, startTime, endTime, purpose });
         return NextResponse.json({ error: 'Missing required fields for regular schedule' }, { status: 400 });
       }
     }
@@ -85,26 +99,49 @@ export async function POST(request: Request) {
 
     // Ensure purpose is stringified if it's an array
     const purposeString = Array.isArray(purpose) ? JSON.stringify(purpose) : purpose;
+    console.log('POST /api/schedules - Purpose processing:', { 
+      originalPurpose: purpose, 
+      purposeString, 
+      finalSchoolId 
+    });
+
+    const scheduleData = {
+      date: new Date(date),
+      schoolId: finalSchoolId,
+      userId: userId,
+      ampm,
+      startTime,
+      endTime,
+      purpose: purposeString || '[]',
+      otherReason: otherReason || null,
+      isHoliday: isHoliday || false,
+      holidayReason: holidayReason || null,
+      ...(accidentDate && { accidentDate: new Date(accidentDate) }),
+    };
+    
+    console.log('POST /api/schedules - Creating schedule with data:', JSON.stringify(scheduleData, null, 2));
 
     const newSchedule = await prisma.schedule.create({
-      data: {
-        date: new Date(date),
-        schoolId: finalSchoolId,
-        userId: userId,
-        ampm,
-        startTime,
-        endTime,
-        purpose: purposeString || '[]',
-        otherReason: otherReason || null,
-        isHoliday: isHoliday || false,
-        holidayReason: holidayReason || null,
-        ...(accidentDate && { accidentDate: new Date(accidentDate) }),
-      },
+      data: scheduleData,
     });
+    
+    console.log('POST /api/schedules - Schedule created successfully:', newSchedule.id);
     return NextResponse.json(newSchedule, { status: 201 });
   } catch (error) {
-    console.error('Error creating schedule:', error);
-    return NextResponse.json({ error: 'Failed to create schedule' }, { status: 500 });
+    console.error('POST /api/schedules - Error creating schedule:', error);
+    console.error('POST /api/schedules - Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+    
+    // 더 상세한 에러 정보 반환
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorDetails = error instanceof Error && 'code' in error ? (error as any).code : 'No code';
+    
+    console.error('POST /api/schedules - Error details:', { errorMessage, errorDetails });
+    
+    return NextResponse.json({ 
+      error: 'Failed to create schedule',
+      details: errorMessage,
+      code: errorDetails
+    }, { status: 500 });
   }
 }
 

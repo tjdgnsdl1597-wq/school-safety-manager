@@ -254,11 +254,26 @@ export default function SchedulesPage() {
         headers['x-user-role'] = user.role;
       }
       
+      console.log('Frontend - Sending schedule data:', JSON.stringify(scheduleData, null, 2));
+      console.log('Frontend - Request details:', { url, method, headers: Object.keys(headers) });
+      
       const res = await fetch(url, { method, headers, body: JSON.stringify(scheduleData) });
-      if (!res.ok) throw new Error((await res.json()).error || 'Failed to save schedule');
+      
+      console.log('Frontend - Response status:', res.status);
+      const responseData = await res.json();
+      console.log('Frontend - Response data:', responseData);
+      
+      if (!res.ok) {
+        const errorMsg = responseData.error || 'Failed to save schedule';
+        const details = responseData.details ? ` (Details: ${responseData.details})` : '';
+        const code = responseData.code ? ` [Code: ${responseData.code}]` : '';
+        throw new Error(errorMsg + details + code);
+      }
+      
       fetchSchedules();
       handleCancelEdit();
     } catch (err) {
+      console.error('Frontend - Save error:', err);
       alert('저장 실패: ' + (err instanceof Error ? err.message : 'Unknown error'));
     }
   };
