@@ -30,7 +30,11 @@ export async function GET(
       return NextResponse.json({ error: 'Material not found' }, { status: 404 });
     }
 
-    return NextResponse.json(material);
+    const response = NextResponse.json(material);
+    response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+    response.headers.set('Pragma', 'no-cache');
+    response.headers.set('Expires', '0');
+    return response;
   } catch (error) {
     console.error('Error fetching material:', error);
     return NextResponse.json({ error: 'Failed to fetch material' }, { status: 500 });

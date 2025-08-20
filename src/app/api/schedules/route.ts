@@ -32,7 +32,11 @@ export async function GET(request: Request) {
     return response;
   } catch (error) {
     console.error('Error fetching schedules:', error);
-    return NextResponse.json([]);
+    const response = NextResponse.json([]);
+    response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+    response.headers.set('Pragma', 'no-cache');
+    response.headers.set('Expires', '0');
+    return response;
   }
 }
 

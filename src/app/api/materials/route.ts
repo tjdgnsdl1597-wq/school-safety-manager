@@ -53,11 +53,19 @@ export async function GET(request: Request) {
       prisma.material.count({ where: whereClause }),
     ]);
 
-    return NextResponse.json({ data: materials, totalCount });
+    const response = NextResponse.json({ data: materials, totalCount });
+    response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+    response.headers.set('Pragma', 'no-cache');
+    response.headers.set('Expires', '0');
+    return response;
 
   } catch (error) {
     console.error('Error fetching materials:', error);
-    return NextResponse.json({ data: [], totalCount: 0 });
+    const response = NextResponse.json({ data: [], totalCount: 0 });
+    response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+    response.headers.set('Pragma', 'no-cache');
+    response.headers.set('Expires', '0');
+    return response;
   }
 }
 
