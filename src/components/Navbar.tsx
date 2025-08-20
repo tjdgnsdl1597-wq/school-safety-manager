@@ -40,7 +40,17 @@ export default function Navbar() {
   const handleDataCenterToggle = (e: React.MouseEvent | React.TouchEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsDataCenterOpen(!isDataCenterOpen);
+    setIsDataCenterOpen(prev => !prev);
+  };
+
+  // 터치 전용 핸들러 (이벤트 중복 방지)
+  const handleTouchToggle = (e: React.TouchEvent) => {
+    // 터치 디바이스에서만 동작하고, onClick과 중복 실행 방지
+    if (isTouchDevice()) {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsDataCenterOpen(prev => !prev);
+    }
   };
 
   // 자료마당 서브메뉴
@@ -149,8 +159,8 @@ export default function Navbar() {
                 return (
                   <div key={item.name} className="relative" ref={dropdownRef}>
                     <button
-                      onClick={handleDataCenterToggle}
-                      onTouchStart={isTouchDevice() ? handleDataCenterToggle : undefined}
+                      onClick={isTouchDevice() ? undefined : handleDataCenterToggle}
+                      onTouchEnd={isTouchDevice() ? handleDataCenterToggle : undefined}
                       aria-expanded={isDataCenterOpen}
                       aria-haspopup="true"
                       aria-label="자료마당 메뉴 열기/닫기"
@@ -275,8 +285,8 @@ export default function Navbar() {
                   return (
                     <div key={item.name}>
                       <button
-                        onClick={handleDataCenterToggle}
-                        onTouchStart={isTouchDevice() ? handleDataCenterToggle : undefined}
+                        onClick={isTouchDevice() ? undefined : handleDataCenterToggle}
+                        onTouchEnd={isTouchDevice() ? handleDataCenterToggle : undefined}
                         aria-expanded={isDataCenterOpen}
                         aria-haspopup="true"
                         aria-label="자료마당 메뉴 열기/닫기"

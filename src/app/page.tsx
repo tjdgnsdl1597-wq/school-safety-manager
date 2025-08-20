@@ -91,10 +91,9 @@ const InitialSelectionScreen = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.8 }}
-            className="flex-1 flex flex-col max-w-2xl mx-auto w-full"
+            className="flex-1 flex flex-col md:grid md:grid-cols-2 max-w-4xl mx-auto w-full gap-6 md:gap-8"
             style={{ 
-              minHeight: '0',
-              gap: 'clamp(12px, 3vw, 24px)'
+              minHeight: '0'
             }}
           >
             {/* 학교 관계자 버튼 */}
@@ -102,13 +101,13 @@ const InitialSelectionScreen = () => {
               onClick={handleVisitorClick}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="group relative bg-white/10 backdrop-blur-sm border border-white/20 rounded-3xl hover:bg-white/20 transition-all duration-500 hover:shadow-2xl hover:border-white/40 flex-1 flex items-center"
+              className="group relative bg-white/10 backdrop-blur-sm border border-white/20 rounded-3xl hover:bg-white/20 transition-all duration-500 hover:shadow-2xl hover:border-white/40 flex-1 flex items-center md:flex-col md:text-center md:justify-center p-6 md:p-10"
               style={{ 
-                minHeight: 'clamp(120px, 20vh, 200px)',
-                padding: 'clamp(12px, 3vw, 24px)'
+                minHeight: 'clamp(120px, 20vh, 200px)'
               }}
             >
-              <div className="flex items-center text-left w-full">
+              {/* 모바일: 가로 레이아웃 */}
+              <div className="flex items-center text-left w-full md:hidden">
                 <div 
                   className="bg-gradient-to-r from-green-400 to-emerald-500 rounded-3xl flex items-center justify-center mr-6 group-hover:scale-110 transition-transform duration-300 shadow-2xl flex-shrink-0"
                   style={{
@@ -133,6 +132,18 @@ const InitialSelectionScreen = () => {
                   </p>
                 </div>
               </div>
+
+              {/* 데스크톱: 세로 레이아웃 */}
+              <div className="hidden md:flex md:flex-col md:items-center md:text-center">
+                <div className="w-32 h-32 bg-gradient-to-r from-green-400 to-emerald-500 rounded-3xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-300 shadow-2xl">
+                  <span className="text-white text-6xl">🏫</span>
+                </div>
+                <h2 className="text-2xl md:text-3xl font-bold text-white mb-6">학교 관계자</h2>
+                <p className="text-gray-300 leading-relaxed text-lg">
+                  학교안전보건 정보와<br />
+                  교육자료를 확인하실 수 있습니다
+                </p>
+              </div>
               
               {/* Hover Effect */}
               <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-green-400/20 to-emerald-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -143,13 +154,13 @@ const InitialSelectionScreen = () => {
               onClick={handleManagerClick}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="group relative bg-white/10 backdrop-blur-sm border border-white/20 rounded-3xl hover:bg-white/20 transition-all duration-500 hover:shadow-2xl hover:border-white/40 flex-1 flex items-center"
+              className="group relative bg-white/10 backdrop-blur-sm border border-white/20 rounded-3xl hover:bg-white/20 transition-all duration-500 hover:shadow-2xl hover:border-white/40 flex-1 flex items-center md:flex-col md:text-center md:justify-center p-6 md:p-10"
               style={{ 
-                minHeight: 'clamp(120px, 20vh, 200px)',
-                padding: 'clamp(12px, 3vw, 24px)'
+                minHeight: 'clamp(120px, 20vh, 200px)'
               }}
             >
-              <div className="flex items-center text-left w-full">
+              {/* 모바일: 가로 레이아웃 */}
+              <div className="flex items-center text-left w-full md:hidden">
                 <div 
                   className="bg-gradient-to-r from-blue-400 to-blue-500 rounded-3xl flex items-center justify-center mr-6 group-hover:scale-110 transition-transform duration-300 shadow-2xl flex-shrink-0"
                   style={{
@@ -173,6 +184,18 @@ const InitialSelectionScreen = () => {
                     시스템 관리 및<br />안전업무를 수행하실 수 있습니다
                   </p>
                 </div>
+              </div>
+
+              {/* 데스크톱: 세로 레이아웃 */}
+              <div className="hidden md:flex md:flex-col md:items-center md:text-center">
+                <div className="w-32 h-32 bg-gradient-to-r from-blue-400 to-blue-500 rounded-3xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-300 shadow-2xl">
+                  <span className="text-white text-6xl">⛑️</span>
+                </div>
+                <h2 className="text-2xl md:text-3xl font-bold text-white mb-6">공제회 관리자</h2>
+                <p className="text-gray-300 leading-relaxed text-lg">
+                  시스템 관리 및<br />
+                  안전업무를 수행하실 수 있습니다
+                </p>
               </div>
               
               {/* Hover Effect */}
