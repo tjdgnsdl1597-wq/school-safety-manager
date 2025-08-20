@@ -25,7 +25,7 @@ const InitialSelectionScreen = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-[9999] min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center overflow-y-auto">
+    <div className="fixed inset-0 z-[9999] bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex flex-col overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-20">
         <div className="absolute top-10 left-10 w-32 h-32 bg-blue-400 rounded-full blur-3xl animate-pulse"></div>
@@ -35,22 +35,33 @@ const InitialSelectionScreen = () => {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 container mx-auto px-4 sm:px-6 text-center max-w-4xl py-safe">
+      <div className="relative z-10 flex-1 flex flex-col px-4 sm:px-6 text-center py-safe" style={{
+        height: 'calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom))',
+        minHeight: 'calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom))',
+        maxHeight: 'calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom))'
+      }}>
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
+          className="flex-1 flex flex-col justify-center"
         >
           {/* Logo/Title */}
-          <div className="mb-12">
+          <div className="flex-shrink-0 mb-8">
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="mb-6"
+              className="mb-4"
             >
-              <div className="w-24 h-24 mx-auto mb-6 bg-white/10 backdrop-blur-sm rounded-3xl flex items-center justify-center border border-white/20">
-                <span className="text-4xl">🏫</span>
+              <div 
+                className="mx-auto mb-4 bg-white/10 backdrop-blur-sm rounded-3xl flex items-center justify-center border border-white/20"
+                style={{
+                  width: 'clamp(60px, 15vw, 96px)',
+                  height: 'clamp(60px, 15vw, 96px)'
+                }}
+              >
+                <span style={{ fontSize: 'clamp(24px, 6vw, 48px)' }}>🏫</span>
               </div>
             </motion.div>
 
@@ -58,7 +69,8 @@ const InitialSelectionScreen = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
-              className="text-4xl md:text-6xl font-bold text-white mb-4 leading-tight"
+              className="font-bold text-white mb-2 leading-tight"
+              style={{ fontSize: 'clamp(24px, 6vw, 48px)' }}
             >
               학교안전보건 관리시스템
             </motion.h1>
@@ -67,7 +79,8 @@ const InitialSelectionScreen = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.6 }}
-              className="text-xl md:text-2xl text-blue-200 mb-12"
+              className="text-blue-200 mb-6"
+              style={{ fontSize: 'clamp(14px, 3.5vw, 20px)' }}
             >
               인천광역시학교안전공제회
             </motion.p>
@@ -78,24 +91,47 @@ const InitialSelectionScreen = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.8 }}
-            className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto"
+            className="flex-1 flex flex-col max-w-2xl mx-auto w-full"
+            style={{ 
+              minHeight: '0',
+              gap: 'clamp(12px, 3vw, 24px)'
+            }}
           >
             {/* 학교 관계자 버튼 */}
             <motion.button
               onClick={handleVisitorClick}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="group relative bg-white/10 backdrop-blur-sm border border-white/20 rounded-3xl p-10 hover:bg-white/20 transition-all duration-500 hover:shadow-2xl hover:border-white/40"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="group relative bg-white/10 backdrop-blur-sm border border-white/20 rounded-3xl hover:bg-white/20 transition-all duration-500 hover:shadow-2xl hover:border-white/40 flex-1 flex items-center"
+              style={{ 
+                minHeight: 'clamp(120px, 20vh, 200px)',
+                padding: 'clamp(12px, 3vw, 24px)'
+              }}
             >
-              <div className="text-center">
-                <div className="w-32 h-32 bg-gradient-to-r from-green-400 to-emerald-500 rounded-3xl flex items-center justify-center mx-auto mb-8 group-hover:scale-110 transition-transform duration-300 shadow-2xl">
-                  <span className="text-white text-6xl">🏫</span>
+              <div className="flex items-center text-left w-full">
+                <div 
+                  className="bg-gradient-to-r from-green-400 to-emerald-500 rounded-3xl flex items-center justify-center mr-6 group-hover:scale-110 transition-transform duration-300 shadow-2xl flex-shrink-0"
+                  style={{
+                    width: 'clamp(60px, 12vw, 100px)',
+                    height: 'clamp(60px, 12vw, 100px)'
+                  }}
+                >
+                  <span className="text-white" style={{ fontSize: 'clamp(24px, 5vw, 40px)' }}>🏫</span>
                 </div>
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-6">학교 관계자</h2>
-                <p className="text-gray-300 leading-relaxed text-lg">
-                  학교안전보건 정보와<br />
-                  교육자료를 확인하실 수 있습니다
-                </p>
+                <div className="flex-1">
+                  <h2 
+                    className="font-bold text-white mb-2 leading-tight"
+                    style={{ fontSize: 'clamp(18px, 4vw, 28px)' }}
+                  >
+                    학교 관계자
+                  </h2>
+                  <p 
+                    className="text-gray-300 leading-relaxed"
+                    style={{ fontSize: 'clamp(12px, 2.5vw, 16px)' }}
+                  >
+                    학교안전보건 정보와<br />교육자료를 확인하실 수 있습니다
+                  </p>
+                </div>
               </div>
               
               {/* Hover Effect */}
@@ -105,19 +141,38 @@ const InitialSelectionScreen = () => {
             {/* 공제회 관리자 버튼 */}
             <motion.button
               onClick={handleManagerClick}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="group relative bg-white/10 backdrop-blur-sm border border-white/20 rounded-3xl p-10 hover:bg-white/20 transition-all duration-500 hover:shadow-2xl hover:border-white/40"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="group relative bg-white/10 backdrop-blur-sm border border-white/20 rounded-3xl hover:bg-white/20 transition-all duration-500 hover:shadow-2xl hover:border-white/40 flex-1 flex items-center"
+              style={{ 
+                minHeight: 'clamp(120px, 20vh, 200px)',
+                padding: 'clamp(12px, 3vw, 24px)'
+              }}
             >
-              <div className="text-center">
-                <div className="w-32 h-32 bg-gradient-to-r from-blue-400 to-blue-500 rounded-3xl flex items-center justify-center mx-auto mb-8 group-hover:scale-110 transition-transform duration-300 shadow-2xl">
-                  <span className="text-white text-6xl">⛑️</span>
+              <div className="flex items-center text-left w-full">
+                <div 
+                  className="bg-gradient-to-r from-blue-400 to-blue-500 rounded-3xl flex items-center justify-center mr-6 group-hover:scale-110 transition-transform duration-300 shadow-2xl flex-shrink-0"
+                  style={{
+                    width: 'clamp(60px, 12vw, 100px)',
+                    height: 'clamp(60px, 12vw, 100px)'
+                  }}
+                >
+                  <span className="text-white" style={{ fontSize: 'clamp(24px, 5vw, 40px)' }}>⛑️</span>
                 </div>
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-6">공제회 관리자</h2>
-                <p className="text-gray-300 leading-relaxed text-lg">
-                  시스템 관리 및<br />
-                  안전업무를 수행하실 수 있습니다
-                </p>
+                <div className="flex-1">
+                  <h2 
+                    className="font-bold text-white mb-2 leading-tight"
+                    style={{ fontSize: 'clamp(18px, 4vw, 28px)' }}
+                  >
+                    공제회 관리자
+                  </h2>
+                  <p 
+                    className="text-gray-300 leading-relaxed"
+                    style={{ fontSize: 'clamp(12px, 2.5vw, 16px)' }}
+                  >
+                    시스템 관리 및<br />안전업무를 수행하실 수 있습니다
+                  </p>
+                </div>
               </div>
               
               {/* Hover Effect */}
