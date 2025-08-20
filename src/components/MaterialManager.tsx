@@ -152,10 +152,37 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
     console.log('handleFileSubmit 호출됨:', { category, isEditing });
     console.log('Vercel Pro 방식 사용 - 모든 카테고리 동일한 업로드');
 
-    // 기존 방식 (산업재해 또는 편집 모드)
     e.preventDefault();
-    setUploading(true);
+    
+    // 파일 크기 사전 체크
     const formData = new FormData(e.currentTarget);
+    const files = Array.from(formData.getAll('files') as File[]).filter(file => file.size > 0);
+    
+    if (files.length > 0) {
+      // 파일 개수 검증 (최대 5개)
+      if (files.length > 5) {
+        alert('최대 5개의 파일만 업로드할 수 있습니다.');
+        return;
+      }
+
+      // 전체 파일 크기 검증 (총합 50MB)
+      const totalSize = files.reduce((sum, file) => sum + file.size, 0);
+      const maxTotalSize = 50 * 1024 * 1024; // 50MB
+      
+      if (totalSize > maxTotalSize) {
+        const totalSizeMB = (totalSize / (1024 * 1024)).toFixed(2);
+        alert(`⚠️ 파일 용량이 초과되었습니다!\n\n현재 총 용량: ${totalSizeMB}MB\n최대 허용 용량: 50MB\n\n파일 크기를 줄이거나 파일 개수를 줄여주세요.`);
+        return;
+      }
+      
+      console.log('파일 크기 검증 통과:', {
+        fileCount: files.length,
+        totalSizeMB: (totalSize / (1024 * 1024)).toFixed(2),
+        files: files.map(f => ({ name: f.name, sizeMB: (f.size / (1024 * 1024)).toFixed(2) }))
+      });
+    }
+    
+    setUploading(true);
     formData.append('category', category);
     
     // 사용자 정보 추가

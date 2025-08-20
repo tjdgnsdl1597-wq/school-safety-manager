@@ -1,8 +1,7 @@
 {
   "functions": {
     "src/app/api/**/*.ts": {
-      "maxDuration": 60,
-      "maxRequestBodySize": "50mb"
+      "maxDuration": 60
     }
   },
   "regions": ["icn1"]
