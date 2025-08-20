@@ -10,6 +10,12 @@ export default function SignIn() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  
+  // 모달 상태
+  const [showFindIdModal, setShowFindIdModal] = useState(false);
+  const [showFindPasswordModal, setShowFindPasswordModal] = useState(false);
+  const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
+  
   const { login } = useAuth();
   const router = useRouter();
 
@@ -140,13 +146,13 @@ export default function SignIn() {
           
           <div className="flex space-x-2">
             <button
-              onClick={() => alert('아이디 찾기 기능은 준비 중입니다.')}
+              onClick={() => setShowFindIdModal(true)}
               className="flex-1 bg-gray-600 hover:bg-gray-700 text-white text-sm py-2 px-3 rounded-md transition-colors duration-200"
             >
               아이디 찾기
             </button>
             <button
-              onClick={() => alert('비밀번호 찾기 기능은 준비 중입니다.')}
+              onClick={() => setShowFindPasswordModal(true)}
               className="flex-1 bg-gray-600 hover:bg-gray-700 text-white text-sm py-2 px-3 rounded-md transition-colors duration-200"
             >
               비밀번호 찾기
@@ -155,13 +161,432 @@ export default function SignIn() {
           
           <div className="text-center">
             <button
-              onClick={() => alert('비밀번호 변경 기능은 준비 중입니다.')}
+              onClick={() => setShowChangePasswordModal(true)}
               className="w-full bg-orange-600 hover:bg-orange-700 text-white text-sm py-2 px-4 rounded-md transition-colors duration-200"
             >
               비밀번호 변경
             </button>
           </div>
         </div>
+        
+        {/* 아이디 찾기 모달 */}
+        {showFindIdModal && (
+          <FindIdModal 
+            onClose={() => setShowFindIdModal(false)} 
+          />
+        )}
+        
+        {/* 비밀번호 찾기 모달 */}
+        {showFindPasswordModal && (
+          <FindPasswordModal 
+            onClose={() => setShowFindPasswordModal(false)} 
+          />
+        )}
+        
+        {/* 비밀번호 변경 모달 */}
+        {showChangePasswordModal && (
+          <ChangePasswordModal 
+            onClose={() => setShowChangePasswordModal(false)} 
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+
+// 아이디 찾기 모달 컴포넌트
+function FindIdModal({ onClose }: { onClose: () => void }) {
+  const [name, setName] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [result, setResult] = useState<string[] | null>(null);
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError('');
+    setResult(null);
+
+    try {
+      const response = await fetch('/api/auth/find-id', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, phoneNumber }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setResult(data.usernames);
+      } else {
+        setError(data.error);
+      }
+    } catch {
+      setError('서버 오류가 발생했습니다.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-semibold text-gray-900">아이디 찾기</h3>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600"
+          >
+            ✕
+          </button>
+        </div>
+        
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+              이름
+            </label>
+            <input
+              id="name"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="이름을 입력하세요"
+              required
+            />
+          </div>
+          
+          <div>
+            <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 mb-1">
+              전화번호
+            </label>
+            <input
+              id="phoneNumber"
+              type="tel"
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="전화번호를 입력하세요"
+              required
+            />
+          </div>
+          
+          {error && (
+            <div className="text-red-500 text-sm">{error}</div>
+          )}
+          
+          {result && (
+            <div className="bg-green-50 border border-green-200 rounded-md p-3">
+              <p className="text-green-800 font-medium mb-2">찾은 아이디:</p>
+              <ul className="space-y-1">
+                {result.map((username, index) => (
+                  <li key={index} className="text-green-700 font-mono">
+                    {username}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          
+          <div className="flex space-x-3">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
+            >
+              취소
+            </button>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+            >
+              {isLoading ? '검색 중...' : '아이디 찾기'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+// 비밀번호 찾기 모달 컴포넌트
+function FindPasswordModal({ onClose }: { onClose: () => void }) {
+  const [username, setUsername] = useState('');
+  const [name, setName] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [result, setResult] = useState<string | null>(null);
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError('');
+    setResult(null);
+
+    try {
+      const response = await fetch('/api/auth/find-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, name, phoneNumber }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setResult(data.password);
+      } else {
+        setError(data.error);
+      }
+    } catch {
+      setError('서버 오류가 발생했습니다.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-semibold text-gray-900">비밀번호 찾기</h3>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600"
+          >
+            ✕
+          </button>
+        </div>
+        
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
+              아이디
+            </label>
+            <input
+              id="username"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="아이디를 입력하세요"
+              required
+            />
+          </div>
+          
+          <div>
+            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+              이름
+            </label>
+            <input
+              id="name"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="이름을 입력하세요"
+              required
+            />
+          </div>
+          
+          <div>
+            <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 mb-1">
+              전화번호
+            </label>
+            <input
+              id="phoneNumber"
+              type="tel"
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="전화번호를 입력하세요"
+              required
+            />
+          </div>
+          
+          {error && (
+            <div className="text-red-500 text-sm">{error}</div>
+          )}
+          
+          {result && (
+            <div className="bg-green-50 border border-green-200 rounded-md p-3">
+              <p className="text-green-800 font-medium mb-2">찾은 비밀번호:</p>
+              <p className="text-green-700 font-mono text-lg">{result}</p>
+            </div>
+          )}
+          
+          <div className="flex space-x-3">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
+            >
+              취소
+            </button>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+            >
+              {isLoading ? '검색 중...' : '비밀번호 찾기'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+// 비밀번호 변경 모달 컴포넌트
+function ChangePasswordModal({ onClose }: { onClose: () => void }) {
+  const [username, setUsername] = useState('');
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError('');
+    setSuccess(false);
+
+    try {
+      const response = await fetch('/api/auth/change-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, currentPassword, newPassword, confirmPassword }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setSuccess(true);
+        setTimeout(() => {
+          onClose();
+        }, 2000);
+      } else {
+        setError(data.error);
+      }
+    } catch {
+      setError('서버 오류가 발생했습니다.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-semibold text-gray-900">비밀번호 변경</h3>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600"
+          >
+            ✕
+          </button>
+        </div>
+        
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
+              아이디
+            </label>
+            <input
+              id="username"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="아이디를 입력하세요"
+              required
+            />
+          </div>
+          
+          <div>
+            <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700 mb-1">
+              현재 비밀번호
+            </label>
+            <input
+              id="currentPassword"
+              type="password"
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="현재 비밀번호를 입력하세요"
+              required
+            />
+          </div>
+          
+          <div>
+            <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 mb-1">
+              새 비밀번호
+            </label>
+            <input
+              id="newPassword"
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="새 비밀번호를 입력하세요"
+              required
+            />
+          </div>
+          
+          <div>
+            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
+              새 비밀번호 확인
+            </label>
+            <input
+              id="confirmPassword"
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="새 비밀번호를 다시 입력하세요"
+              required
+            />
+          </div>
+          
+          {error && (
+            <div className="text-red-500 text-sm">{error}</div>
+          )}
+          
+          {success && (
+            <div className="bg-green-50 border border-green-200 rounded-md p-3">
+              <p className="text-green-800 font-medium">비밀번호가 성공적으로 변경되었습니다!</p>
+            </div>
+          )}
+          
+          <div className="flex space-x-3">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
+            >
+              취소
+            </button>
+            <button
+              type="submit"
+              disabled={isLoading || success}
+              className="flex-1 px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 disabled:opacity-50"
+            >
+              {isLoading ? '변경 중...' : '비밀번호 변경'}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
