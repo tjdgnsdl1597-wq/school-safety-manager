@@ -82,7 +82,16 @@ export default function DashboardPage() {
   const fetchSchedules = async () => {
     try {
       setSchedulesLoading(true);
-      const response = await fetch('/api/schedules');
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json'
+      };
+      
+      if (user) {
+        headers['x-user-id'] = user.id;
+        headers['x-user-role'] = user.role;
+      }
+      
+      const response = await fetch('/api/schedules', { headers });
       const data = await response.json();
       setSchedules(Array.isArray(data) ? data : []);
     } catch (error) {
@@ -96,7 +105,16 @@ export default function DashboardPage() {
   const fetchSchools = async () => {
     try {
       setSchoolsLoading(true);
-      const response = await fetch('/api/schools');
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json'
+      };
+      
+      if (user) {
+        headers['x-user-id'] = user.id;
+        headers['x-user-role'] = user.role;
+      }
+      
+      const response = await fetch('/api/schools', { headers });
       const data = await response.json();
       setSchools(Array.isArray(data) ? data : []);
     } catch (error) {

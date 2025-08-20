@@ -8,16 +8,16 @@ This is a **School Safety Management System** (학교 안전보건 관리 시스
 
 ## Development Commands
 
-- **Development server**: `npm run dev` (starts on http://localhost:3000, but may use port 3001 if 3000 is occupied)
+- **Development server**: `npm run dev` (starts on http://localhost:3000, auto-increments port if occupied, e.g., 3004)
 - **Build**: `npm run build` 
 - **Production server**: `npm start`
 - **Linting**: `npm run lint`
-- **Vercel build**: `npm run vercel-build` (custom build script that handles Prisma generation and database setup with `--accept-data-loss` flag)
+- **Vercel build**: `npm run vercel-build` (custom build script that handles Prisma generation and database setup with `--force-reset` flag)
 - **Database operations**: 
   - `npx prisma migrate dev --name descriptive_name` (create and apply migrations)
   - `npx prisma generate` (regenerate Prisma client)
   - `npx prisma studio` (open database browser)
-  - `npx prisma db push --accept-data-loss` (sync schema to database, used in deployment)
+  - `npx prisma db push --force-reset` (sync schema to database, used in deployment with data loss acceptance)
 
 ## Architecture Overview
 
@@ -85,11 +85,12 @@ Materials are blog-style posts with title, content, and up to 5 file attachments
 - **Color Coding**: Holiday schedules display in yellow (#fbbf24) background with black text (#000000)
 
 #### Authentication & Authorization
-- **Public Pages**: `/`, `/educational-materials`, `/industrial-accidents`, `/auth/signin` - accessible without login
-- **Admin Pages**: `/schools`, `/schedules` - require admin authentication
-- **Role Check**: `user?.role === 'admin'` from useAuth() hook determines admin status
-- **Auto Redirect**: Non-admin users accessing admin pages → educational materials page
-- **Authentication Flow**: Simple username/password (admin/rkddkwl12.) with localStorage persistence
+- **Public Pages**: `/`, `/educational-materials`, `/industrial-accidents`, `/auth/signin`, `/auth/signup` - accessible without login
+- **User Pages**: `/dashboard`, `/schools`, `/schedules` - require user authentication (both regular users and super admins)
+- **Admin Pages**: `/admin/*` - require super admin authentication only
+- **Role Check**: `isSuperAdmin(user)` from `@/lib/authUtils` determines super admin status
+- **Data Separation**: User-specific data (schools, schedules, dashboard memos) stored per user, shared data (educational materials, industrial accidents) accessible to all
+- **Authentication Flow**: Simple username/password with localStorage persistence, includes user registration with approval system
 
 ## Development Guidelines
 
@@ -104,10 +105,11 @@ npx prisma generate
 All API routes include Prisma error handling for common scenarios (P2002 unique constraint, P2025 not found).
 
 ### Role-Based UI Patterns
-Components use `const { user, isAuthenticated } = useAuth()` and `const isAdmin = user?.role === 'admin'` for:
-- Conditional rendering of admin-only features (upload buttons, delete controls, checkboxes)
-- Navigation menu items (admin sees all pages, public sees only educational materials and industrial accidents)
-- Page access redirects (handled by individual page components and AuthCheck wrapper)
+Components use `const { user, isAuthenticated } = useAuth()` and `isSuperAdmin(user)` from `@/lib/authUtils` for:
+- Conditional rendering of admin-only features (upload buttons, delete controls, user approval popup)
+- Navigation menu items (authenticated users see dashboard/schools/schedules, super admins see additional admin features)
+- Page access redirects (handled by AuthCheck wrapper with PUBLIC_PAGES and USER_PAGES arrays)
+- Data access control (user-specific vs. shared data patterns)
 
 ### Multi-File Upload Architecture
 - **MaterialManager Component**: Handles both display and upload functionality with role-based controls, supports multiple file selection
@@ -215,29 +217,39 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 
 ## Dashboard Features
 
+### Dashboard Layout (7-column grid)
+- **Left Panel (2/7 width)**: User information, today's schedule, monthly statistics, recent industrial accidents
+- **Right Panel (5/7 width)**: FullCalendar with minimum 600px height, memo system below calendar
+
+### User Information Section
+- **Profile Display**: Profile photo (20x20, circular) with 2-column information layout
+- **Information Fields**: Department/position, contact number, name, email with fallback values
+- **Real-time Clock**: Updates every second in YYYY.MM.DD HH:mm:ss format
+
 ### Monthly Statistics Display
-- **Purpose Prioritization**: 월점검 (monthly inspection) always appears first in statistics
-- **Detailed Breakdown**: Each purpose shows total count with completion status (방문완료/방문예정)
+- **Purpose Prioritization**: 월점검 appears first with simplified display (progress bar only)
+- **Other Purposes**: Detailed breakdown showing completion status (완료/예정/총 for regular purposes, 발생/총 for 산업재해)
 - **Color-Coded Status**: Completed schools in light green, upcoming schools in light purple
-- **School Sorting**: Completed schools displayed first, then upcoming schools, each group sorted alphabetically
-- **Visual Enhancement**: Stronger section borders and background colors for better distinction
-- **School Name Display**: Non-월점검 purposes show related school names in 2-column grid
-- **Mobile Responsive**: Adapts to single column on mobile, proper text wrapping and truncation
-- **Data Exclusions**: Holiday schedules (휴무일정) are excluded from monthly statistics
-- **Sorting**: School names sorted using Korean locale (`localeCompare(b, 'ko')`)
+- **School Display**: 3-column grid layout, completed schools shown first
+- **Visual Enhancement**: Strong borders, gradient backgrounds, progress bars
+- **Data Exclusions**: Holiday schedules excluded from statistics
+- **Purpose Order**: 월점검, 위험성평가, 근골조사, 교육, 산업재해
 
 ### Today's Schedule Section
 - Shows current day's schedules with time and school abbreviations
+- Real-time clock display in header
 - Uses safe parsing for schedule purposes to prevent JSON errors
 
-### Admin Dashboard Layout
-- **Left Panel**: Today's schedules and quick links
-- **Center Panel**: Monthly statistics with detailed breakdown
-- **Right Panel**: Upcoming school visits (formerly "미완료 업무")
+### Memo System
+- **User-Specific Storage**: Memos stored with key `dashboard-memos-${user.id}` in localStorage
+- **CRUD Operations**: Single-line input, save/edit/delete functionality 
+- **Auto-Load**: Memos automatically loaded on user login
+- **UI**: Input field with Enter key support, scrollable list with max-height 240px
 
 ### Calendar UI Patterns
 - **Event Display**: 2-line format (time on first line, "school, purpose" on second line)
 - **Holiday Events**: Yellow background (#fbbf24) with black text, 2-line format showing time and holiday reason
+- **Vacation Events**: Yellow background for 휴가/휴가일정 purposes (휴가 일정 also gets yellow styling)
 - **Regular Events**: Blue background (#3b82f6) with white text, truncated text with ellipsis for overflow
 - **Toolbar Layout**: Horizontal arrangement - prev button (left), title (center), next + view buttons (right)
 - **No Today Button**: Removed from toolbar for cleaner interface

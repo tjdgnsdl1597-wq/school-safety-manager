@@ -87,9 +87,6 @@ Prisma.NullTypes = {
  * Enums
  */
 exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
-  ReadUncommitted: 'ReadUncommitted',
-  ReadCommitted: 'ReadCommitted',
-  RepeatableRead: 'RepeatableRead',
   Serializable: 'Serializable'
 });
 
@@ -162,11 +159,6 @@ exports.Prisma.SortOrder = {
   desc: 'desc'
 };
 
-exports.Prisma.QueryMode = {
-  default: 'default',
-  insensitive: 'insensitive'
-};
-
 exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
@@ -191,7 +183,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "C:\\Users\\gram\\school-safety-manager\\src\\generated\\prisma",
+      "value": "C:\\Users\\PC\\school-safety-manager\\src\\generated\\prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -205,7 +197,7 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "C:\\Users\\gram\\school-safety-manager\\prisma\\schema.prisma",
+    "sourceFilePath": "C:\\Users\\PC\\school-safety-manager\\prisma\\schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
@@ -218,7 +210,7 @@ const config = {
   "datasourceNames": [
     "db"
   ],
-  "activeProvider": "postgresql",
+  "activeProvider": "sqlite",
   "postinstall": false,
   "inlineDatasources": {
     "db": {
@@ -228,8 +220,8 @@ const config = {
       }
     }
   },
-  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/prisma\" // Output Prisma Client to src/generated/prisma\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  id           String   @id @default(uuid())\n  username     String   @unique // 로그인용 아이디 (중복 불가)\n  password     String // 비밀번호 (나중에 암호화 예정)\n  name         String // 사용자 실명 (한글명)\n  position     String? // 직급\n  phoneNumber  String? // 전화번호\n  email        String? // 이메일 주소\n  department   String   @default(\"산업안전팀\") // 부서 (자동선택)\n  profilePhoto String? // 프로필 사진 URL (Google Cloud Storage)\n  role         String   @default(\"user\") // \"super_admin\" 또는 \"user\"\n  isActive     Boolean  @default(false) // 계정 활성화 여부 (승인 전까지 비활성화)\n  createdAt    DateTime @default(now())\n  updatedAt    DateTime @updatedAt\n\n  // 관계 설정 (나중에 연결할 예정)\n  schools   School[]\n  schedules Schedule[]\n}\n\nmodel School {\n  id            String     @id @default(uuid())\n  name          String     @unique\n  phoneNumber   String?\n  contactPerson String?\n  email         String? // 학교 이메일\n  userId        String // 어느 사용자가 등록했는지\n  user          User       @relation(fields: [userId], references: [id])\n  schedules     Schedule[]\n}\n\nmodel Schedule {\n  id            String   @id @default(uuid())\n  date          DateTime\n  schoolId      String\n  school        School   @relation(fields: [schoolId], references: [id])\n  userId        String // 어느 사용자가 등록했는지\n  user          User     @relation(fields: [userId], references: [id])\n  ampm          String // \"AM\" or \"PM\"\n  startTime     String // e.g., \"08:00\"\n  endTime       String // e.g., \"09:00\"\n  purpose       String // Store as JSON string, e.g., \"[\"월점검\", \"교육\"]\"\n  otherReason   String? // Only if \"기타\" or \"교육\" is selected\n  isHoliday     Boolean  @default(false) // 휴무일정 여부\n  holidayReason String? // 휴무 사유\n  createdAt     DateTime @default(now())\n  updatedAt     DateTime @updatedAt\n}\n\nmodel Material {\n  id          String               @id @default(uuid())\n  title       String // 게시글 제목\n  content     String? // 게시글 내용\n  attachments MaterialAttachment[] // 첨부파일들 (최대 5개)\n  uploadedAt  DateTime             @default(now())\n  uploader    String\n  category    String // \"교육자료\" or \"산업재해\"\n  createdAt   DateTime             @default(now())\n  updatedAt   DateTime             @updatedAt\n}\n\nmodel MaterialAttachment {\n  id            String   @id @default(uuid())\n  materialId    String\n  material      Material @relation(fields: [materialId], references: [id], onDelete: Cascade)\n  filename      String // 원본 파일명\n  filePath      String // GCS 저장 경로\n  fileSize      Int // 파일 크기 (bytes)\n  mimeType      String // MIME 타입\n  thumbnailPath String? // 썸네일 경로 (이미지인 경우)\n  uploadOrder   Int // 업로드 순서 (1-5)\n  createdAt     DateTime @default(now())\n}\n",
-  "inlineSchemaHash": "0aa587f8e6087780d66621bd97c5aa295a1e5535bcc9228ae282dbc9b10914b2",
+  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/prisma\" // Output Prisma Client to src/generated/prisma\n}\n\ndatasource db {\n  provider = \"sqlite\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  id           String   @id @default(uuid())\n  username     String   @unique // 로그인용 아이디 (중복 불가)\n  password     String // 비밀번호 (나중에 암호화 예정)\n  name         String // 사용자 실명 (한글명)\n  position     String? // 직급\n  phoneNumber  String? // 전화번호\n  email        String? // 이메일 주소\n  department   String   @default(\"산업안전팀\") // 부서 (자동선택)\n  profilePhoto String? // 프로필 사진 URL (Google Cloud Storage)\n  role         String   @default(\"user\") // \"super_admin\" 또는 \"user\"\n  isActive     Boolean  @default(false) // 계정 활성화 여부 (승인 전까지 비활성화)\n  createdAt    DateTime @default(now())\n  updatedAt    DateTime @updatedAt\n\n  // 관계 설정 (나중에 연결할 예정)\n  schools   School[]\n  schedules Schedule[]\n}\n\nmodel School {\n  id            String     @id @default(uuid())\n  name          String     @unique\n  phoneNumber   String?\n  contactPerson String?\n  email         String? // 학교 이메일\n  userId        String // 어느 사용자가 등록했는지\n  user          User       @relation(fields: [userId], references: [id])\n  schedules     Schedule[]\n}\n\nmodel Schedule {\n  id            String   @id @default(uuid())\n  date          DateTime\n  schoolId      String\n  school        School   @relation(fields: [schoolId], references: [id])\n  userId        String // 어느 사용자가 등록했는지\n  user          User     @relation(fields: [userId], references: [id])\n  ampm          String // \"AM\" or \"PM\"\n  startTime     String // e.g., \"08:00\"\n  endTime       String // e.g., \"09:00\"\n  purpose       String // Store as JSON string, e.g., \"[\"월점검\", \"교육\"]\"\n  otherReason   String? // Only if \"기타\" or \"교육\" is selected\n  isHoliday     Boolean  @default(false) // 휴무일정 여부\n  holidayReason String? // 휴무 사유\n  createdAt     DateTime @default(now())\n  updatedAt     DateTime @updatedAt\n}\n\nmodel Material {\n  id          String               @id @default(uuid())\n  title       String // 게시글 제목\n  content     String? // 게시글 내용\n  attachments MaterialAttachment[] // 첨부파일들 (최대 5개)\n  uploadedAt  DateTime             @default(now())\n  uploader    String\n  category    String // \"교육자료\" or \"산업재해\"\n  createdAt   DateTime             @default(now())\n  updatedAt   DateTime             @updatedAt\n}\n\nmodel MaterialAttachment {\n  id            String   @id @default(uuid())\n  materialId    String\n  material      Material @relation(fields: [materialId], references: [id], onDelete: Cascade)\n  filename      String // 원본 파일명\n  filePath      String // GCS 저장 경로\n  fileSize      Int // 파일 크기 (bytes)\n  mimeType      String // MIME 타입\n  thumbnailPath String? // 썸네일 경로 (이미지인 경우)\n  uploadOrder   Int // 업로드 순서 (1-5)\n  createdAt     DateTime @default(now())\n}\n",
+  "inlineSchemaHash": "82868fb2753e14822f39a155acc210c36d4a908272670d1982d3a67c18c10f60",
   "copyEngine": true
 }
 
