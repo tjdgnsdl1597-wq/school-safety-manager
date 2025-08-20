@@ -395,6 +395,27 @@ export default function DashboardPage() {
       const purposes = JSON.parse(schedule.purpose || '[]');
       const scheduleDate = new Date(schedule.date);
       return purposes.includes('산업재해') && scheduleDate >= sixMonthsAgo;
+    }).map(schedule => {
+      // otherReason에서 산재발생일 추출
+      let accidentDate = schedule.date; // 기본값은 방문일
+      if (schedule.otherReason) {
+        const match = schedule.otherReason.match(/산재발생일:\s*([^/]+)/);
+        if (match) {
+          const dateStr = match[1].trim();
+          // YYYY-MM-DD 형식인지 확인하고 유효한 날짜로 변환
+          if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+            try {
+              const parsedDate = new Date(dateStr);
+              if (!isNaN(parsedDate.getTime())) {
+                accidentDate = dateStr;
+              }
+            } catch (e) {
+              // 파싱 실패시 기본값 유지
+            }
+          }
+        }
+      }
+      return { ...schedule, accidentDate };
     }).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 10);
   }, [schedules]);
 
@@ -663,13 +684,13 @@ export default function DashboardPage() {
               </h3>
               {recentAccidentSchedules.length > 0 ? (
                 <div className="grid grid-cols-2 gap-2">
-                  {recentAccidentSchedules.slice(0, 10).map((schedule) => (
+                  {recentAccidentSchedules.slice(0, 10).map((schedule: any) => (
                     <div key={schedule.id} className="p-2 bg-red-50 rounded-lg border border-red-200">
                       <div className="text-xs text-red-700 font-medium">
                         {schedule.school.abbreviation || schedule.school.name}
                       </div>
                       <div className="text-xs text-red-900 mt-1">
-                        발생일: {new Date(schedule.date).toLocaleDateString('ko-KR').replace(/\./g, '.').replace(/\s/g, '')}
+                        발생일: {new Date(schedule.accidentDate).toLocaleDateString('ko-KR').replace(/\./g, '.').replace(/\s/g, '')}
                       </div>
                     </div>
                   ))}
