@@ -42,7 +42,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const { date, schoolId, ampm, startTime, endTime, purpose, otherReason, isHoliday, holidayReason } = await request.json();
+    const { date, schoolId, ampm, startTime, endTime, purpose, otherReason, isHoliday, holidayReason, accidentDate } = await request.json();
     const userId = request.headers.get('x-user-id');
     
     if (!userId) {
@@ -98,6 +98,7 @@ export async function POST(request: Request) {
         otherReason: otherReason || null,
         isHoliday: isHoliday || false,
         holidayReason: holidayReason || null,
+        accidentDate: accidentDate ? new Date(accidentDate) : null,
       },
     });
     return NextResponse.json(newSchedule, { status: 201 });
@@ -109,7 +110,7 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
   try {
-    const { id, date, schoolId, ampm, startTime, endTime, purpose, otherReason, isHoliday, holidayReason } = await request.json();
+    const { id, date, schoolId, ampm, startTime, endTime, purpose, otherReason, isHoliday, holidayReason, accidentDate } = await request.json();
     const userId = request.headers.get('x-user-id');
     
     if (!userId) {
@@ -165,6 +166,7 @@ export async function PUT(request: Request) {
         otherReason: otherReason || null,
         isHoliday: isHoliday || false,
         holidayReason: holidayReason || null,
+        accidentDate: accidentDate ? new Date(accidentDate) : null,
       },
     });
     return NextResponse.json(updatedSchedule);
