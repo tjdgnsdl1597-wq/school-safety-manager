@@ -40,9 +40,12 @@ const bucketName = process.env.GOOGLE_CLOUD_BUCKET_NAME!;
 
 export async function POST(request: Request) {
   try {
+    console.log('Signed URL API 호출됨');
     const { filename, contentType, category } = await request.json();
+    console.log('요청 데이터:', { filename, contentType, category });
 
     if (!filename || !contentType || !category) {
+      console.log('필수 필드 누락');
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
@@ -75,17 +78,22 @@ export async function POST(request: Request) {
     const timestamp = Date.now();
     const safeFilename = filename.replace(/[^a-zA-Z0-9._-]/g, '_');
     const filePath = `${category}/${timestamp}_${safeFilename}`;
+    console.log('파일 경로 생성:', filePath);
 
     // Signed URL 생성 (업로드용)
+    console.log('Storage 클라이언트 생성 중...');
     const bucket = storage.bucket(bucketName);
     const file = bucket.file(filePath);
+    console.log('버킷과 파일 객체 생성 완료');
 
+    console.log('Signed URL 생성 시도...');
     const [signedUrl] = await file.getSignedUrl({
       version: 'v4',
       action: 'write',
       expires: Date.now() + 15 * 60 * 1000, // 15분 후 만료
       contentType: contentType,
     });
+    console.log('Signed URL 생성 성공');
 
     // 공개 URL 생성
     const publicUrl = `https://storage.googleapis.com/${bucketName}/${filePath}`;
@@ -97,7 +105,15 @@ export async function POST(request: Request) {
     });
 
   } catch (error) {
-    console.error('Error generating signed URL:', error);
-    return NextResponse.json({ error: 'Failed to generate signed URL' }, { status: 500 });
+    console.error('Signed URL 생성 오류:', error);
+    console.error('오류 상세:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      name: error instanceof Error ? error.name : undefined,
+    });
+    return NextResponse.json({ 
+      error: 'Failed to generate signed URL',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    }, { status: 500 });
   }
 }
