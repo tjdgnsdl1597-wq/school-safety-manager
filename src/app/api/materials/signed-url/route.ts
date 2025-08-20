@@ -3,21 +3,28 @@ import { Storage } from '@google-cloud/storage';
 
 // Google Cloud Storage 클라이언트 초기화
 const getCredentials = () => {
+  console.log('getCredentials 호출됨');
+  
   if (process.env.GOOGLE_CLOUD_CREDENTIALS) {
     try {
       const credentialsStr = process.env.GOOGLE_CLOUD_CREDENTIALS;
+      console.log('GOOGLE_CLOUD_CREDENTIALS 환경변수 존재:', credentialsStr.substring(0, 50) + '...');
+      
       const isBase64 = /^[A-Za-z0-9+/=]+$/.test(credentialsStr);
+      console.log('Base64 형식인가?', isBase64);
       
       let parsedCredentials;
       
       if (isBase64) {
         const decodedStr = Buffer.from(credentialsStr, 'base64').toString('utf-8');
         parsedCredentials = JSON.parse(decodedStr);
+        console.log('Base64 디코딩 후 파싱 완료');
       } else {
         parsedCredentials = JSON.parse(credentialsStr);
+        console.log('JSON 직접 파싱 완료');
       }
       
-      return parsedCredentials;
+      return { credentials: parsedCredentials };
     } catch (error) {
       console.error('Error parsing GOOGLE_CLOUD_CREDENTIALS:', error);
       throw error;
@@ -25,6 +32,7 @@ const getCredentials = () => {
   }
   
   if (process.env.GOOGLE_CLOUD_KEY_FILE) {
+    console.log('키 파일 사용:', process.env.GOOGLE_CLOUD_KEY_FILE);
     return { keyFilename: process.env.GOOGLE_CLOUD_KEY_FILE };
   }
   
@@ -32,9 +40,13 @@ const getCredentials = () => {
 };
 
 const createStorageClient = () => {
+  console.log('createStorageClient 호출됨');
+  const credentials = getCredentials();
+  console.log('자격증명 가져오기 완료');
+  
   return new Storage({
     projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
-    ...getCredentials(),
+    ...credentials,
   });
 };
 
