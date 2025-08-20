@@ -154,17 +154,32 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
         // 편집 모드
         formData.append('id', editingPost.id);
         const res = await fetch('/api/materials', { method: 'PUT', body: formData });
-        if (!res.ok) throw new Error((await res.json()).error || 'Update failed');
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.error || 'Update failed');
+        }
       } else {
         // 새 게시글 생성
         const res = await fetch('/api/materials', { method: 'POST', body: formData });
-        if (!res.ok) throw new Error((await res.json()).error || 'Upload failed');
+        if (!res.ok) {
+          const errorData = await res.json();
+          // 413 에러인 경우 특별 처리
+          if (res.status === 413) {
+            throw new Error('파일이 커서 못넣습니다. 전체 파일 크기를 줄여주세요.');
+          }
+          throw new Error(errorData.error || 'Upload failed');
+        }
       }
       fetchMaterials(); // Refresh list
       setIsModalOpen(false);
       handleCancelEdit(); // 편집 상태 초기화
     } catch (err) {
-      alert((isEditing ? 'Update' : 'Upload') + ' failed: ' + (err instanceof Error ? err.message : 'Unknown error'));
+      // 413 에러 특별 처리
+      if (err instanceof Error && err.message.includes('파일이 커서 못넣습니다')) {
+        alert('파일이 커서 못넣습니다. 전체 파일 크기를 줄여주세요.');
+      } else {
+        alert((isEditing ? '수정' : '업로드') + ' 실패: ' + (err instanceof Error ? err.message : '알 수 없는 오류'));
+      }
     } finally {
       setUploading(false);
     }
