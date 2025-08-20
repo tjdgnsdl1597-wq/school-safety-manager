@@ -41,6 +41,16 @@ const bucketName = process.env.GOOGLE_CLOUD_BUCKET_NAME!;
 export async function POST(request: Request) {
   try {
     console.log('Signed URL API 호출됨');
+    
+    // 환경변수 확인
+    console.log('환경변수 확인:', {
+      hasProjectId: !!process.env.GOOGLE_CLOUD_PROJECT_ID,
+      hasBucketName: !!process.env.GOOGLE_CLOUD_BUCKET_NAME,
+      hasCredentials: !!process.env.GOOGLE_CLOUD_CREDENTIALS,
+      projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
+      bucketName: process.env.GOOGLE_CLOUD_BUCKET_NAME,
+    });
+    
     const { filename, contentType, category } = await request.json();
     console.log('요청 데이터:', { filename, contentType, category });
 
