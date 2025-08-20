@@ -482,8 +482,8 @@ export default function DashboardPage() {
               </div>
             </div>
             
-            {/* 오늘의 일정 - 현재시간 포함 - 모바일에서 세번째 */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6 order-3">
+            {/* 오늘의 일정 - 현재시간 포함 - 모바일에서 두번째 */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6 order-2">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold text-gray-900">오늘의 일정</h3>
                 <div className="text-sm font-bold text-gray-700">
@@ -705,8 +705,8 @@ export default function DashboardPage() {
           {/* 우측: 캘린더 + 메모장 (5/7) */}
           <div className="lg:col-span-5 space-y-4">
             
-            {/* 캘린더 - 세로 높이 증가 - 모바일에서 두번째 */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 order-2">
+            {/* 캘린더 - 세로 높이 증가 - 모바일에서 세번째 */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 order-3">
               <div className="p-4 border-b border-gray-200">
                 <h2 className="text-xl font-semibold text-gray-900">일정 캘린더</h2>
                 {selectedDate && (
