@@ -137,8 +137,110 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
     setIsModalOpen(false);
   };
 
+  // 교육자료용 직접 GCS 업로드
+  const handleDirectGCSUpload = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setUploading(true);
+    
+    const formData = new FormData(e.currentTarget);
+    const title = formData.get('title') as string;
+    const content = formData.get('content') as string;
+    const files = Array.from(formData.getAll('files') as File[]).filter(file => file.size > 0);
+
+    try {
+      // 파일 개수 검증
+      if (files.length > 5) {
+        throw new Error('최대 5개의 파일만 업로드할 수 있습니다.');
+      }
+
+      // 총 파일 크기 검증 (50MB)
+      const totalSize = files.reduce((sum, file) => sum + file.size, 0);
+      if (totalSize > 50 * 1024 * 1024) {
+        throw new Error(`파일이 커서 못넣습니다. 전체 파일 크기가 50MB를 초과합니다. 현재: ${(totalSize / (1024 * 1024)).toFixed(2)}MB`);
+      }
+
+      const attachments = [];
+
+      // 각 파일에 대해 Signed URL 생성 및 업로드
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        
+        // Signed URL 요청
+        const signedUrlRes = await fetch('/api/materials/signed-url', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            filename: file.name,
+            contentType: file.type,
+            category
+          })
+        });
+
+        if (!signedUrlRes.ok) {
+          throw new Error('Signed URL 생성 실패');
+        }
+
+        const { signedUrl, publicUrl, filePath } = await signedUrlRes.json();
+
+        // GCS에 직접 파일 업로드
+        const uploadRes = await fetch(signedUrl, {
+          method: 'PUT',
+          headers: { 'Content-Type': file.type },
+          body: file
+        });
+
+        if (!uploadRes.ok) {
+          throw new Error(`파일 업로드 실패: ${file.name}`);
+        }
+
+        // 첨부파일 정보 저장
+        attachments.push({
+          filename: file.name,
+          filePath: publicUrl,
+          fileSize: file.size,
+          mimeType: file.type,
+          uploadOrder: i + 1
+        });
+      }
+
+      // 메타데이터를 데이터베이스에 저장
+      const materialData = {
+        title,
+        content,
+        category,
+        uploader: user?.name || user?.username || '알 수 없는 사용자',
+        attachments
+      };
+
+      const saveRes = await fetch('/api/materials/metadata', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(materialData)
+      });
+
+      if (!saveRes.ok) {
+        throw new Error('메타데이터 저장 실패');
+      }
+
+      fetchMaterials();
+      setIsModalOpen(false);
+      handleCancelEdit();
+      
+    } catch (err) {
+      alert('업로드 실패: ' + (err instanceof Error ? err.message : '알 수 없는 오류'));
+    } finally {
+      setUploading(false);
+    }
+  };
+
   // Handle file upload/update
   const handleFileSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    // 교육자료인 경우 직접 GCS 업로드 사용
+    if (category === '교육자료' && !isEditing) {
+      return handleDirectGCSUpload(e);
+    }
+
+    // 기존 방식 (산업재해 또는 편집 모드)
     e.preventDefault();
     setUploading(true);
     const formData = new FormData(e.currentTarget);
@@ -159,7 +261,7 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
           throw new Error(errorData.error || 'Update failed');
         }
       } else {
-        // 새 게시글 생성
+        // 새 게시글 생성 (산업재해용)
         const res = await fetch('/api/materials', { method: 'POST', body: formData });
         if (!res.ok) {
           const errorData = await res.json();
