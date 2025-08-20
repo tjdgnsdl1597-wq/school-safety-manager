@@ -147,14 +147,123 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
   };
 
 
+  // 교육자료용 직접 GCS 업로드
+  const handleDirectGCSUpload = async (e: React.FormEvent<HTMLFormElement>) => {
+    console.log('handleDirectGCSUpload 시작');
+    e.preventDefault();
+    setUploading(true);
+    
+    const formData = new FormData(e.currentTarget);
+    const title = formData.get('title') as string;
+    const content = formData.get('content') as string;
+    const files = Array.from(formData.getAll('files') as File[]).filter(file => file.size > 0);
+    
+    console.log('업로드할 파일들:', files.map(f => ({ name: f.name, size: f.size })));
+
+    try {
+      // 파일 개수 검증 (최대 5개)
+      if (files.length > 5) {
+        throw new Error('최대 5개의 파일만 업로드할 수 있습니다.');
+      }
+
+      // 전체 파일 크기 검증 (총합 50MB)
+      const totalSize = files.reduce((sum, file) => sum + file.size, 0);
+      const maxTotalSize = 50 * 1024 * 1024; // 50MB
+      
+      if (totalSize > maxTotalSize) {
+        const totalSizeMB = (totalSize / (1024 * 1024)).toFixed(2);
+        throw new Error(`⚠️ 파일 용량이 초과되었습니다!\n\n현재 총 용량: ${totalSizeMB}MB\n최대 허용 용량: 50MB\n\n파일 크기를 줄이거나 파일 개수를 줄여주세요.`);
+      }
+
+      const attachments = [];
+
+      // 각 파일에 대해 Signed URL 생성 및 업로드
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        
+        // Signed URL 요청
+        const signedUrlRes = await fetch('/api/materials/signed-url', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            filename: file.name,
+            contentType: file.type,
+            category
+          })
+        });
+
+        if (!signedUrlRes.ok) {
+          throw new Error('Signed URL 생성 실패');
+        }
+
+        const { signedUrl, publicUrl, filePath } = await signedUrlRes.json();
+
+        // GCS에 직접 파일 업로드
+        const uploadRes = await fetch(signedUrl, {
+          method: 'PUT',
+          headers: { 'Content-Type': file.type },
+          body: file
+        });
+
+        if (!uploadRes.ok) {
+          throw new Error(`파일 업로드 실패: ${file.name}`);
+        }
+
+        // 첨부파일 정보 저장
+        attachments.push({
+          filename: file.name,
+          publicUrl: publicUrl,
+          fileSize: file.size,
+          mimeType: file.type,
+          uploadOrder: i + 1
+        });
+      }
+
+      // 메타데이터를 데이터베이스에 저장
+      const materialData = {
+        title,
+        content,
+        category,
+        uploader: user?.name || user?.username || '알 수 없는 사용자',
+        attachments
+      };
+
+      const saveRes = await fetch('/api/materials/metadata', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(materialData)
+      });
+
+      if (!saveRes.ok) {
+        throw new Error('메타데이터 저장 실패');
+      }
+
+      fetchMaterials();
+      setIsModalOpen(false);
+      handleCancelEdit();
+      
+    } catch (err) {
+      alert('업로드 실패: ' + (err instanceof Error ? err.message : '알 수 없는 오류'));
+    } finally {
+      setUploading(false);
+    }
+  };
+
   // Handle file upload/update
   const handleFileSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     console.log('handleFileSubmit 호출됨:', { category, isEditing });
-    console.log('Vercel Pro 방식 사용 - 모든 카테고리 동일한 업로드');
+    
+    // 교육자료인 경우 직접 GCS 업로드 사용
+    if (category === '교육자료' && !isEditing) {
+      console.log('직접 GCS 업로드 사용');
+      return handleDirectGCSUpload(e);
+    }
+    
+    console.log('기존 Vercel 방식 사용 (산업재해 또는 편집 모드)');
 
     e.preventDefault();
     
-    // 파일 크기 사전 체크
+    // 파일 크기 사전 체크 (기존 방식용)
     const formData = new FormData(e.currentTarget);
     const files = Array.from(formData.getAll('files') as File[]).filter(file => file.size > 0);
     
@@ -165,17 +274,17 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
         return;
       }
 
-      // 전체 파일 크기 검증 (총합 50MB)
+      // 전체 파일 크기 검증 (기존 방식은 4.5MB 제한)
       const totalSize = files.reduce((sum, file) => sum + file.size, 0);
-      const maxTotalSize = 50 * 1024 * 1024; // 50MB
+      const maxTotalSize = 4.5 * 1024 * 1024; // 4.5MB (Vercel 제한)
       
       if (totalSize > maxTotalSize) {
         const totalSizeMB = (totalSize / (1024 * 1024)).toFixed(2);
-        alert(`⚠️ 파일 용량이 초과되었습니다!\n\n현재 총 용량: ${totalSizeMB}MB\n최대 허용 용량: 50MB\n\n파일 크기를 줄이거나 파일 개수를 줄여주세요.`);
+        alert(`⚠️ 파일 용량이 초과되었습니다!\n\n현재 총 용량: ${totalSizeMB}MB\n최대 허용 용량: 4.5MB\n\n파일 크기를 줄이거나 파일 개수를 줄여주세요.`);
         return;
       }
       
-      console.log('파일 크기 검증 통과:', {
+      console.log('파일 크기 검증 통과 (기존 방식):', {
         fileCount: files.length,
         totalSizeMB: (totalSize / (1024 * 1024)).toFixed(2),
         files: files.map(f => ({ name: f.name, sizeMB: (f.size / (1024 * 1024)).toFixed(2) }))
