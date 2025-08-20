@@ -108,7 +108,7 @@ export async function POST(request: Request) {
       expires: Date.now() + 15 * 60 * 1000, // 15분 후 만료
       contentType: contentType,
     });
-    console.log('Signed URL 생성 성공');
+    console.log('Signed URL 생성 성공:', signedUrl.substring(0, 100) + '...');
 
     // 공개 URL 생성
     const publicUrl = `https://storage.googleapis.com/${bucketName}/${filePath}`;
