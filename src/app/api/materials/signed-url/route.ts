@@ -109,11 +109,12 @@ export async function POST(request: Request) {
     console.log('버킷과 파일 객체 생성 완료');
 
     console.log('Signed URL 생성 시도...');
+    console.log('ContentType:', contentType);
     const [signedUrl] = await file.getSignedUrl({
       version: 'v4',
       action: 'write',
       expires: Date.now() + 15 * 60 * 1000, // 15분 후 만료
-      contentType: contentType,
+      // contentType을 제거하여 서명 오류 방지
     });
     console.log('Signed URL 생성 성공:', signedUrl.substring(0, 100) + '...');
 
