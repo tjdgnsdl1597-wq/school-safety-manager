@@ -39,6 +39,15 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
   const { user, isAuthenticated } = useAuth();
   const isAdmin = user?.role === 'super_admin';
   const canEdit = isAuthenticated; // 로그인한 사용자는 모두 추가/수정 가능
+  
+  // 사용자가 특정 게시물을 삭제할 수 있는지 확인
+  const canDeleteMaterial = (material: Material) => {
+    if (!isAuthenticated) return false; // 비로그인자는 삭제 불가
+    if (isAdmin) return true; // 관리자는 모든 게시물 삭제 가능
+    // 일반 로그인 사용자는 자신이 작성한 게시물만 삭제 가능
+    const currentUserName = user?.name || user?.username || '알 수 없는 사용자';
+    return material.uploader === currentUserName;
+  };
 
   // State variables
   const [materials, setMaterials] = useState<Material[]>([]);
@@ -293,19 +302,35 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
       alert('삭제할 항목을 선택하세요.');
       return;
     }
-    if (!confirm(`선택된 ${selectedItems.length}개의 항목을 정말로 삭제하시겠습니까?`)) return;
+    
+    // 삭제 권한이 있는 게시물만 필터링
+    const deletableMaterialIds = selectedItems.filter(id => {
+      const material = materials.find(m => m.id === id);
+      return material && canDeleteMaterial(material);
+    });
+    
+    if (deletableMaterialIds.length === 0) {
+      alert('삭제할 수 있는 게시물이 없습니다.');
+      return;
+    }
+    
+    if (deletableMaterialIds.length !== selectedItems.length) {
+      alert(`선택된 ${selectedItems.length}개 중 ${deletableMaterialIds.length}개만 삭제할 수 있습니다.`);
+    }
+    
+    if (!confirm(`${deletableMaterialIds.length}개의 항목을 정말로 삭제하시겠습니까?`)) return;
 
     try {
       const res = await fetch('/api/materials', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ids: selectedItems }),
+        body: JSON.stringify({ ids: deletableMaterialIds }),
       });
       if (!res.ok) throw new Error((await res.json()).error || 'Deletion failed');
       setSelectedItems([]);
       fetchMaterials(); // Refresh list
     } catch (err) {
-      alert('Deletion failed: ' + (err instanceof Error ? err.message : 'Unknown error'));
+      alert('삭제 실패: ' + (err instanceof Error ? err.message : '알 수 없는 오류'));
     }
   };
 
@@ -316,12 +341,21 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
     );
   };
 
-  // Toggle selection for all items on the current page
+  // Toggle selection for all items on the current page (only deletable materials)
   const handleSelectAll = () => {
-    if (selectedItems.length === materials.length) {
-      setSelectedItems([]);
+    const deletableMaterials = materials.filter(m => canDeleteMaterial(m));
+    const deletableMaterialIds = deletableMaterials.map(m => m.id);
+    
+    // 현재 선택된 삭제 가능한 게시물 수 확인
+    const selectedDeletableMaterials = selectedItems.filter(id => deletableMaterialIds.includes(id));
+    
+    if (selectedDeletableMaterials.length === deletableMaterials.length && deletableMaterials.length > 0) {
+      // 모든 삭제 가능한 게시물이 선택된 상태 -> 전체 해제
+      setSelectedItems(selectedItems.filter(id => !deletableMaterialIds.includes(id)));
     } else {
-      setSelectedItems(materials.map(m => m.id));
+      // 전체 선택 (삭제 가능한 게시물만)
+      const nonDeletableSelected = selectedItems.filter(id => !deletableMaterialIds.includes(id));
+      setSelectedItems([...nonDeletableSelected, ...deletableMaterialIds]);
     }
   };
 
@@ -433,7 +467,13 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
                   <input 
                     type="checkbox" 
                     onChange={handleSelectAll} 
-                    checked={selectedItems.length === materials.length && materials.length > 0}
+                    checked={(() => {
+                      const deletableMaterials = materials.filter(m => canDeleteMaterial(m));
+                      const selectedDeletableMaterials = selectedItems.filter(id => 
+                        deletableMaterials.some(m => m.id === id)
+                      );
+                      return deletableMaterials.length > 0 && selectedDeletableMaterials.length === deletableMaterials.length;
+                    })()}
                     className="rounded"
                   />
                   <span className="text-sm text-gray-700">전체 선택</span>
@@ -455,7 +495,13 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
                       <input 
                         type="checkbox" 
                         onChange={handleSelectAll} 
-                        checked={selectedItems.length === materials.length && materials.length > 0}
+                        checked={(() => {
+                          const deletableMaterials = materials.filter(m => canDeleteMaterial(m));
+                          const selectedDeletableMaterials = selectedItems.filter(id => 
+                            deletableMaterials.some(m => m.id === id)
+                          );
+                          return deletableMaterials.length > 0 && selectedDeletableMaterials.length === deletableMaterials.length;
+                        })()}
                         className="rounded"
                       />
                     </th>
@@ -487,12 +533,16 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
                   >
                     {canEdit && (
                       <td className="px-6 py-4 whitespace-nowrap w-12">
-                        <input 
-                          type="checkbox" 
-                          checked={selectedItems.includes(material.id)} 
-                          onChange={() => handleSelectItem(material.id)}
-                          className="rounded"
-                        />
+                        {canDeleteMaterial(material) ? (
+                          <input 
+                            type="checkbox" 
+                            checked={selectedItems.includes(material.id)} 
+                            onChange={() => handleSelectItem(material.id)}
+                            className="rounded"
+                          />
+                        ) : (
+                          <span className="w-4 h-4 inline-block"></span>
+                        )}
                       </td>
                     )}
                     <td className="px-6 py-4">
@@ -614,7 +664,7 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex space-x-2 justify-end">
-                        {canEdit && (
+                        {canDeleteMaterial(material) && (
                           <button
                             onClick={() => handleEditPost(material)}
                             className="text-green-600 hover:text-green-900 text-xs px-2 py-1 border border-green-300 rounded hover:bg-green-50"
@@ -646,16 +696,14 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
         {canEdit && (
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-8 space-y-3 sm:space-y-0">
             <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
-              {isAdmin && (
-                <button 
-                  onClick={handleBulkDelete} 
-                  className="bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-lg hover:from-red-600 hover:to-red-700 disabled:from-gray-300 disabled:to-gray-400 text-sm sm:text-base w-full sm:w-auto transition-all duration-200 shadow-md hover:shadow-lg disabled:shadow-none flex items-center justify-center space-x-2" 
-                  disabled={selectedItems.length === 0}
-                >
-                  <span>🗑️</span>
-                  <span>선택 삭제</span>
-                </button>
-              )}
+              <button 
+                onClick={handleBulkDelete} 
+                className="bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-lg hover:from-red-600 hover:to-red-700 disabled:from-gray-300 disabled:to-gray-400 text-sm sm:text-base w-full sm:w-auto transition-all duration-200 shadow-md hover:shadow-lg disabled:shadow-none flex items-center justify-center space-x-2" 
+                disabled={selectedItems.length === 0}
+              >
+                <span>🗑️</span>
+                <span>선택 삭제</span>
+              </button>
             </div>
             <button 
               onClick={() => setIsModalOpen(true)} 
