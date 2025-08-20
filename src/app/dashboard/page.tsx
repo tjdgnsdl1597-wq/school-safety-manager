@@ -410,15 +410,15 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <div className="grid grid-cols-1 lg:grid-cols-7 gap-8">
+    <div className="min-h-screen bg-gray-50 overflow-x-hidden">
+      <div className="max-w-full mx-auto px-2 sm:px-4 lg:px-8 py-2 sm:py-4">
+        <div className="grid grid-cols-1 lg:grid-cols-7 gap-4 lg:gap-8">
           
           {/* 좌측: 정보 패널 (2/7로 적당한 크기) */}
-          <div className="lg:col-span-2 space-y-4">
+          <div className="lg:col-span-2 space-y-3 lg:space-y-4">
             
             {/* 담당자 정보 */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-3 sm:p-4">
               <h3 className="text-lg font-semibold text-gray-900 mb-3">담당자 정보</h3>
               <div className="flex items-start space-x-4">
                 {/* 프로필 사진 */}
@@ -439,29 +439,29 @@ export default function DashboardPage() {
                 </div>
                 
                 {/* 정보 2열 배치 */}
-                <div className="flex-1 grid grid-cols-2 gap-x-4 gap-y-2" style={{ fontSize: '12.5px' }}>
+                <div className="flex-1 grid grid-cols-2 gap-x-4 gap-y-3" style={{ fontSize: '13px' }}>
                   <div>
-                    <span className="text-gray-500">부서/직급:</span>
-                    <span className="ml-1 text-gray-900">{user?.department || '산업안전팀'} {user?.position || '대리'}</span>
+                    <div className="text-gray-600 font-bold">[부서/직급]</div>
+                    <div className="text-gray-900">{user?.department || '산업안전팀'} {user?.position || '대리'}</div>
                   </div>
                   <div>
-                    <span className="text-gray-500">연락처:</span>
-                    <span className="ml-1 text-gray-900">{user?.phoneNumber || '010-8764-2428'}</span>
+                    <div className="text-gray-600 font-bold">[연락처]</div>
+                    <div className="text-gray-900">{user?.phoneNumber || '010-8764-2428'}</div>
                   </div>
                   <div>
-                    <span className="text-gray-500">담당자명:</span>
-                    <span className="ml-1 text-gray-900">{user?.name || '강성훈'}</span>
+                    <div className="text-gray-600 font-bold">[담당자명]</div>
+                    <div className="text-gray-900">{user?.name || '강성훈'}</div>
                   </div>
                   <div>
-                    <span className="text-gray-500">e-mail:</span>
-                    <span className="ml-1 text-gray-900">{user?.email || 'safe08@ssif.or.kr'}</span>
+                    <div className="text-gray-600 font-bold">[이메일]</div>
+                    <div className="text-gray-900">{user?.email || 'safe08@ssif.or.kr'}</div>
                   </div>
                 </div>
               </div>
             </div>
             
             {/* 오늘의 일정 - 현재시간 포함 */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold text-gray-900">오늘의 일정</h3>
                 <div className="text-xs text-gray-500">
@@ -469,27 +469,71 @@ export default function DashboardPage() {
                 </div>
               </div>
               {todaySchedules.length > 0 ? (
-                <div className="space-y-3">
-                  {todaySchedules.map((schedule) => (
-                    <div key={schedule.id} className="p-3 bg-blue-50 rounded-lg border border-blue-200">
-                      <div className="text-sm font-medium text-blue-900">
-                        {schedule.startTime} - {schedule.endTime}
-                      </div>
-                      <div className="text-sm text-blue-700 mt-1">
-                        {schedule.isHoliday ? (
-                          <span>🏖️ {schedule.holidayReason}</span>
-                        ) : (
-                          <span>{schedule.school.name}</span>
-                        )}
-                      </div>
-                      {!schedule.isHoliday && (
-                        <div className="text-xs text-blue-600 mt-1">
-                          {JSON.parse(schedule.purpose || '[]').join(', ')}
+                (() => {
+                  // 시간별로 정렬하여 빠른 방문과 늦은 방문으로 분류
+                  const sortedSchedules = [...todaySchedules].sort((a, b) => 
+                    a.startTime.localeCompare(b.startTime)
+                  );
+                  const midPoint = Math.ceil(sortedSchedules.length / 2);
+                  const earlySchedules = sortedSchedules.slice(0, midPoint);
+                  const lateSchedules = sortedSchedules.slice(midPoint);
+                  
+                  return (
+                    <div className="grid grid-cols-2 gap-4">
+                      {/* 빠른 방문 (왼쪽) */}
+                      <div>
+                        <h4 className="text-sm font-semibold text-gray-700 mb-2">빠른 방문</h4>
+                        <div className="space-y-2">
+                          {earlySchedules.map((schedule) => (
+                            <div key={schedule.id} className="p-2 bg-blue-50 rounded-lg border border-blue-200">
+                              <div className="text-xs font-medium text-blue-900">
+                                {schedule.startTime} - {schedule.endTime}
+                              </div>
+                              <div className="text-xs text-blue-700 mt-1">
+                                {schedule.isHoliday ? (
+                                  <span>🏖️ {schedule.holidayReason}</span>
+                                ) : (
+                                  <span>{schedule.school.name}</span>
+                                )}
+                              </div>
+                              {!schedule.isHoliday && (
+                                <div className="text-xs text-blue-600 mt-1">
+                                  {JSON.parse(schedule.purpose || '[]').join(', ')}
+                                </div>
+                              )}
+                            </div>
+                          ))}
                         </div>
-                      )}
+                      </div>
+                      
+                      {/* 늦은 방문 (오른쪽) */}
+                      <div>
+                        <h4 className="text-sm font-semibold text-gray-700 mb-2">늦은 방문</h4>
+                        <div className="space-y-2">
+                          {lateSchedules.map((schedule) => (
+                            <div key={schedule.id} className="p-2 bg-blue-50 rounded-lg border border-blue-200">
+                              <div className="text-xs font-medium text-blue-900">
+                                {schedule.startTime} - {schedule.endTime}
+                              </div>
+                              <div className="text-xs text-blue-700 mt-1">
+                                {schedule.isHoliday ? (
+                                  <span>🏖️ {schedule.holidayReason}</span>
+                                ) : (
+                                  <span>{schedule.school.name}</span>
+                                )}
+                              </div>
+                              {!schedule.isHoliday && (
+                                <div className="text-xs text-blue-600 mt-1">
+                                  {JSON.parse(schedule.purpose || '[]').join(', ')}
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
                     </div>
-                  ))}
-                </div>
+                  );
+                })()
               ) : (
                 <p className="text-gray-500 text-center py-4">오늘 일정이 없습니다</p>
               )}
@@ -648,7 +692,7 @@ export default function DashboardPage() {
                 )}
               </div>
               
-              <div className="p-4" style={{ minHeight: '600px' }}>
+              <div className="p-2 sm:p-4" style={{ minHeight: '400px' }}>
                 <DynamicScheduleCalendar 
                   events={calendarEvents}
                   onEventClick={handleEventClick}
@@ -744,7 +788,7 @@ export default function DashboardPage() {
       
       {/* 일정 상세 정보 모달 */}
       {showScheduleModal && selectedSchedule && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4 shadow-2xl border-2 border-blue-200">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold text-gray-900">일정 상세 정보</h3>
