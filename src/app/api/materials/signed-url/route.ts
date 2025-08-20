@@ -31,12 +31,12 @@ const getCredentials = () => {
   throw new Error('Google Cloud credentials not found');
 };
 
-const storage = new Storage({
-  projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
-  ...getCredentials(),
-});
-
-const bucketName = process.env.GOOGLE_CLOUD_BUCKET_NAME!;
+const createStorageClient = () => {
+  return new Storage({
+    projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
+    ...getCredentials(),
+  });
+};
 
 export async function POST(request: Request) {
   try {
@@ -92,6 +92,8 @@ export async function POST(request: Request) {
 
     // Signed URL 생성 (업로드용)
     console.log('Storage 클라이언트 생성 중...');
+    const storage = createStorageClient();
+    const bucketName = process.env.GOOGLE_CLOUD_BUCKET_NAME!;
     const bucket = storage.bucket(bucketName);
     const file = bucket.file(filePath);
     console.log('버킷과 파일 객체 생성 완료');
