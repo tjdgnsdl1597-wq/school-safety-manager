@@ -25,7 +25,11 @@ export async function GET(request: Request) {
         date: 'asc',
       },
     });
-    return NextResponse.json(schedules);
+    const response = NextResponse.json(schedules);
+    response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+    response.headers.set('Pragma', 'no-cache');
+    response.headers.set('Expires', '0');
+    return response;
   } catch (error) {
     console.error('Error fetching schedules:', error);
     return NextResponse.json([]);
