@@ -2,6 +2,52 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## 🚨 **중요: 데이터 보호 규정** 🚨
+
+### **절대 금지 사항 (NEVER DELETE)**
+**⚠️ 다음 데이터들은 어떤 상황에서도 삭제하면 안됩니다:**
+
+1. **개인정보 및 사용자 데이터**
+   - 담당자 정보 (강성훈 대리 프로필, 연락처, 이메일 등)
+   - 사용자 계정 정보 및 인증 데이터
+   - 사용자별 메모 및 개인 설정
+
+2. **업로드된 자료**
+   - 교육자료, 산업재해 관련 업로드 파일
+   - Google Cloud Storage의 모든 파일
+   - MaterialAttachment 테이블의 모든 데이터
+
+3. **등록 학교 정보**
+   - 사용자별로 다르게 등록된 학교 데이터
+   - School 테이블의 모든 데이터 
+   - Schedule 테이블의 모든 일정 데이터
+
+### **필수 백업 정책**
+- **주기적 백업**: 모든 데이터는 정기적으로 백업해야 함
+- **로컬 환경 초기화 전**: 반드시 백업 완료 후 진행
+- **데이터베이스 작업 전**: Prisma migration/reset 전 백업 필수
+
+### **작업 승인 절차**
+**데이터 손실 위험이 있는 작업 시:**
+
+1. **반드시 백업 먼저 수행**
+2. **한글로 사용자에게 확인 요청**
+   - 예시: "이런 상황이 있어서 어쩔 수 없어요, 해도 될까요?"
+   - 데이터 손실 가능성과 이유를 명확히 설명
+3. **사용자 승인 후에만 진행**
+4. **백업 완료를 우선시하고 진행**
+
+### **위험한 명령어들**
+```bash
+# 이런 명령어들은 특히 주의!
+npx prisma db push --force-reset  # 데이터 삭제됨
+npx prisma migrate reset           # 모든 데이터 초기화
+rm -rf prisma/                    # 데이터베이스 파일 삭제
+git reset --hard                  # 커밋되지 않은 변경사항 손실
+```
+
+---
+
 ## Project Overview
 
 This is a **School Safety Management System** (학교 안전보건 관리 시스템) built for Incheon Metropolitan Office of Education Safety Mutual Aid Association. It's a Next.js 15 application with TypeScript, using Prisma ORM with PostgreSQL database (SQLite for development), custom React Context authentication, and styled with Tailwind CSS v4.
