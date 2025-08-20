@@ -325,6 +325,7 @@ export default function DashboardPage() {
         end: endTime.toISOString(),
         backgroundColor,
         textColor,
+        className: schedule.isHoliday ? 'fc-holiday-event' : 'fc-custom-event',
         extendedProps: {
           schoolName: schedule.school.name,
           schoolAbbreviation: schedule.school.abbreviation,
