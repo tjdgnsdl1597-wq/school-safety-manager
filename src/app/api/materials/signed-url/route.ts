@@ -89,9 +89,16 @@ export async function POST(request: Request) {
 
     // GCS 파일 경로 생성
     const timestamp = Date.now();
-    const safeFilename = filename.replace(/[^a-zA-Z0-9._-]/g, '_');
+    // 파일명을 더 안전하게 정리 - 한글/특수문자 제거 후 길이 제한
+    const cleanFilename = filename
+      .replace(/[^a-zA-Z0-9._-]/g, '')  // 영숫자, 점, 언더스코어, 하이픈만 허용
+      .replace(/_{2,}/g, '_')           // 연속된 언더스코어를 하나로 줄임  
+      .substring(0, 50);                // 파일명 길이 제한
+    const safeFilename = cleanFilename || 'file'; // 빈 문자열 방지
     const filePath = `${category}/${timestamp}_${safeFilename}`;
-    console.log('파일 경로 생성:', filePath);
+    console.log('원본 파일명:', filename);
+    console.log('정리된 파일명:', safeFilename);
+    console.log('최종 파일 경로:', filePath);
 
     // Signed URL 생성 (업로드용)
     console.log('Storage 클라이언트 생성 중...');
