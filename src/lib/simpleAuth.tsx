@@ -12,6 +12,8 @@ interface User {
   department?: string;
   profilePhoto?: string;
   role: string;
+  homeAddress?: string;
+  officeAddress?: string;
 }
 
 interface AuthContextType {
@@ -19,6 +21,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   login: (username: string, password: string) => Promise<boolean>;
   logout: () => void;
+  refreshUser: () => Promise<void>;
   loading: boolean;
 }
 
@@ -98,12 +101,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const refreshUser = async () => {
+    if (!user?.id) return;
+    
+    try {
+      const response = await fetch(`/api/user/${user.id}`);
+      if (response.ok) {
+        const updatedUser = await response.json();
+        setUser(updatedUser);
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('auth-user', JSON.stringify(updatedUser));
+        }
+      }
+    } catch (error) {
+      console.error('사용자 정보 새로고침 실패:', error);
+    }
+  };
+
   return (
     <AuthContext.Provider value={{
       user,
       isAuthenticated: !!user,
       login,
       logout,
+      refreshUser,
       loading
     }}>
       {children}

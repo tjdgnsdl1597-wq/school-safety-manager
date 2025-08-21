@@ -38,6 +38,11 @@ export type Material = $Result.DefaultSelection<Prisma.$MaterialPayload>
  * 
  */
 export type MaterialAttachment = $Result.DefaultSelection<Prisma.$MaterialAttachmentPayload>
+/**
+ * Model TravelTime
+ * 
+ */
+export type TravelTime = $Result.DefaultSelection<Prisma.$TravelTimePayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -206,6 +211,16 @@ export class PrismaClient<
     * ```
     */
   get materialAttachment(): Prisma.MaterialAttachmentDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.travelTime`: Exposes CRUD operations for the **TravelTime** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more TravelTimes
+    * const travelTimes = await prisma.travelTime.findMany()
+    * ```
+    */
+  get travelTime(): Prisma.TravelTimeDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -650,7 +665,8 @@ export namespace Prisma {
     School: 'School',
     Schedule: 'Schedule',
     Material: 'Material',
-    MaterialAttachment: 'MaterialAttachment'
+    MaterialAttachment: 'MaterialAttachment',
+    TravelTime: 'TravelTime'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -669,7 +685,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "school" | "schedule" | "material" | "materialAttachment"
+      modelProps: "user" | "school" | "schedule" | "material" | "materialAttachment" | "travelTime"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1043,6 +1059,80 @@ export namespace Prisma {
           }
         }
       }
+      TravelTime: {
+        payload: Prisma.$TravelTimePayload<ExtArgs>
+        fields: Prisma.TravelTimeFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.TravelTimeFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TravelTimePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.TravelTimeFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TravelTimePayload>
+          }
+          findFirst: {
+            args: Prisma.TravelTimeFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TravelTimePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.TravelTimeFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TravelTimePayload>
+          }
+          findMany: {
+            args: Prisma.TravelTimeFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TravelTimePayload>[]
+          }
+          create: {
+            args: Prisma.TravelTimeCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TravelTimePayload>
+          }
+          createMany: {
+            args: Prisma.TravelTimeCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.TravelTimeCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TravelTimePayload>[]
+          }
+          delete: {
+            args: Prisma.TravelTimeDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TravelTimePayload>
+          }
+          update: {
+            args: Prisma.TravelTimeUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TravelTimePayload>
+          }
+          deleteMany: {
+            args: Prisma.TravelTimeDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.TravelTimeUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.TravelTimeUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TravelTimePayload>[]
+          }
+          upsert: {
+            args: Prisma.TravelTimeUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TravelTimePayload>
+          }
+          aggregate: {
+            args: Prisma.TravelTimeAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateTravelTime>
+          }
+          groupBy: {
+            args: Prisma.TravelTimeGroupByArgs<ExtArgs>
+            result: $Utils.Optional<TravelTimeGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.TravelTimeCountArgs<ExtArgs>
+            result: $Utils.Optional<TravelTimeCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1140,6 +1230,7 @@ export namespace Prisma {
     schedule?: ScheduleOmit
     material?: MaterialOmit
     materialAttachment?: MaterialAttachmentOmit
+    travelTime?: TravelTimeOmit
   }
 
   /* Types for Logging */
@@ -1220,13 +1311,15 @@ export namespace Prisma {
    */
 
   export type UserCountOutputType = {
-    schools: number
     schedules: number
+    schools: number
+    travelTimes: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    schools?: boolean | UserCountOutputTypeCountSchoolsArgs
     schedules?: boolean | UserCountOutputTypeCountSchedulesArgs
+    schools?: boolean | UserCountOutputTypeCountSchoolsArgs
+    travelTimes?: boolean | UserCountOutputTypeCountTravelTimesArgs
   }
 
   // Custom InputTypes
@@ -1243,6 +1336,13 @@ export namespace Prisma {
   /**
    * UserCountOutputType without action
    */
+  export type UserCountOutputTypeCountSchedulesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ScheduleWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
   export type UserCountOutputTypeCountSchoolsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: SchoolWhereInput
   }
@@ -1250,8 +1350,8 @@ export namespace Prisma {
   /**
    * UserCountOutputType without action
    */
-  export type UserCountOutputTypeCountSchedulesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: ScheduleWhereInput
+  export type UserCountOutputTypeCountTravelTimesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TravelTimeWhereInput
   }
 
 
@@ -1343,6 +1443,8 @@ export namespace Prisma {
     profilePhoto: string | null
     role: string | null
     isActive: boolean | null
+    homeAddress: string | null
+    officeAddress: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -1359,6 +1461,8 @@ export namespace Prisma {
     profilePhoto: string | null
     role: string | null
     isActive: boolean | null
+    homeAddress: string | null
+    officeAddress: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -1375,6 +1479,8 @@ export namespace Prisma {
     profilePhoto: number
     role: number
     isActive: number
+    homeAddress: number
+    officeAddress: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -1393,6 +1499,8 @@ export namespace Prisma {
     profilePhoto?: true
     role?: true
     isActive?: true
+    homeAddress?: true
+    officeAddress?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -1409,6 +1517,8 @@ export namespace Prisma {
     profilePhoto?: true
     role?: true
     isActive?: true
+    homeAddress?: true
+    officeAddress?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -1425,6 +1535,8 @@ export namespace Prisma {
     profilePhoto?: true
     role?: true
     isActive?: true
+    homeAddress?: true
+    officeAddress?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -1514,6 +1626,8 @@ export namespace Prisma {
     profilePhoto: string | null
     role: string
     isActive: boolean
+    homeAddress: string | null
+    officeAddress: string | null
     createdAt: Date
     updatedAt: Date
     _count: UserCountAggregateOutputType | null
@@ -1547,10 +1661,13 @@ export namespace Prisma {
     profilePhoto?: boolean
     role?: boolean
     isActive?: boolean
+    homeAddress?: boolean
+    officeAddress?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    schools?: boolean | User$schoolsArgs<ExtArgs>
     schedules?: boolean | User$schedulesArgs<ExtArgs>
+    schools?: boolean | User$schoolsArgs<ExtArgs>
+    travelTimes?: boolean | User$travelTimesArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -1566,6 +1683,8 @@ export namespace Prisma {
     profilePhoto?: boolean
     role?: boolean
     isActive?: boolean
+    homeAddress?: boolean
+    officeAddress?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["user"]>
@@ -1582,6 +1701,8 @@ export namespace Prisma {
     profilePhoto?: boolean
     role?: boolean
     isActive?: boolean
+    homeAddress?: boolean
+    officeAddress?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["user"]>
@@ -1598,14 +1719,17 @@ export namespace Prisma {
     profilePhoto?: boolean
     role?: boolean
     isActive?: boolean
+    homeAddress?: boolean
+    officeAddress?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "username" | "password" | "name" | "position" | "phoneNumber" | "email" | "department" | "profilePhoto" | "role" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "username" | "password" | "name" | "position" | "phoneNumber" | "email" | "department" | "profilePhoto" | "role" | "isActive" | "homeAddress" | "officeAddress" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    schools?: boolean | User$schoolsArgs<ExtArgs>
     schedules?: boolean | User$schedulesArgs<ExtArgs>
+    schools?: boolean | User$schoolsArgs<ExtArgs>
+    travelTimes?: boolean | User$travelTimesArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -1614,8 +1738,9 @@ export namespace Prisma {
   export type $UserPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "User"
     objects: {
-      schools: Prisma.$SchoolPayload<ExtArgs>[]
       schedules: Prisma.$SchedulePayload<ExtArgs>[]
+      schools: Prisma.$SchoolPayload<ExtArgs>[]
+      travelTimes: Prisma.$TravelTimePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -1629,6 +1754,8 @@ export namespace Prisma {
       profilePhoto: string | null
       role: string
       isActive: boolean
+      homeAddress: string | null
+      officeAddress: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["user"]>
@@ -2025,8 +2152,9 @@ export namespace Prisma {
    */
   export interface Prisma__UserClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    schools<T extends User$schoolsArgs<ExtArgs> = {}>(args?: Subset<T, User$schoolsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SchoolPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     schedules<T extends User$schedulesArgs<ExtArgs> = {}>(args?: Subset<T, User$schedulesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SchedulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    schools<T extends User$schoolsArgs<ExtArgs> = {}>(args?: Subset<T, User$schoolsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SchoolPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    travelTimes<T extends User$travelTimesArgs<ExtArgs> = {}>(args?: Subset<T, User$travelTimesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TravelTimePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2067,6 +2195,8 @@ export namespace Prisma {
     readonly profilePhoto: FieldRef<"User", 'String'>
     readonly role: FieldRef<"User", 'String'>
     readonly isActive: FieldRef<"User", 'Boolean'>
+    readonly homeAddress: FieldRef<"User", 'String'>
+    readonly officeAddress: FieldRef<"User", 'String'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
   }
@@ -2298,7 +2428,6 @@ export namespace Prisma {
      * The data used to create many Users.
      */
     data: UserCreateManyInput | UserCreateManyInput[]
-    skipDuplicates?: boolean
   }
 
   /**
@@ -2317,7 +2446,6 @@ export namespace Prisma {
      * The data used to create many Users.
      */
     data: UserCreateManyInput | UserCreateManyInput[]
-    skipDuplicates?: boolean
   }
 
   /**
@@ -2457,6 +2585,30 @@ export namespace Prisma {
   }
 
   /**
+   * User.schedules
+   */
+  export type User$schedulesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Schedule
+     */
+    select?: ScheduleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Schedule
+     */
+    omit?: ScheduleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScheduleInclude<ExtArgs> | null
+    where?: ScheduleWhereInput
+    orderBy?: ScheduleOrderByWithRelationInput | ScheduleOrderByWithRelationInput[]
+    cursor?: ScheduleWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ScheduleScalarFieldEnum | ScheduleScalarFieldEnum[]
+  }
+
+  /**
    * User.schools
    */
   export type User$schoolsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2481,27 +2633,27 @@ export namespace Prisma {
   }
 
   /**
-   * User.schedules
+   * User.travelTimes
    */
-  export type User$schedulesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type User$travelTimesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Schedule
+     * Select specific fields to fetch from the TravelTime
      */
-    select?: ScheduleSelect<ExtArgs> | null
+    select?: TravelTimeSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Schedule
+     * Omit specific fields from the TravelTime
      */
-    omit?: ScheduleOmit<ExtArgs> | null
+    omit?: TravelTimeOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: ScheduleInclude<ExtArgs> | null
-    where?: ScheduleWhereInput
-    orderBy?: ScheduleOrderByWithRelationInput | ScheduleOrderByWithRelationInput[]
-    cursor?: ScheduleWhereUniqueInput
+    include?: TravelTimeInclude<ExtArgs> | null
+    where?: TravelTimeWhereInput
+    orderBy?: TravelTimeOrderByWithRelationInput | TravelTimeOrderByWithRelationInput[]
+    cursor?: TravelTimeWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: ScheduleScalarFieldEnum | ScheduleScalarFieldEnum[]
+    distinct?: TravelTimeScalarFieldEnum | TravelTimeScalarFieldEnum[]
   }
 
   /**
@@ -2539,6 +2691,7 @@ export namespace Prisma {
     phoneNumber: string | null
     contactPerson: string | null
     email: string | null
+    address: string | null
     userId: string | null
   }
 
@@ -2548,6 +2701,7 @@ export namespace Prisma {
     phoneNumber: string | null
     contactPerson: string | null
     email: string | null
+    address: string | null
     userId: string | null
   }
 
@@ -2557,6 +2711,7 @@ export namespace Prisma {
     phoneNumber: number
     contactPerson: number
     email: number
+    address: number
     userId: number
     _all: number
   }
@@ -2568,6 +2723,7 @@ export namespace Prisma {
     phoneNumber?: true
     contactPerson?: true
     email?: true
+    address?: true
     userId?: true
   }
 
@@ -2577,6 +2733,7 @@ export namespace Prisma {
     phoneNumber?: true
     contactPerson?: true
     email?: true
+    address?: true
     userId?: true
   }
 
@@ -2586,6 +2743,7 @@ export namespace Prisma {
     phoneNumber?: true
     contactPerson?: true
     email?: true
+    address?: true
     userId?: true
     _all?: true
   }
@@ -2668,6 +2826,7 @@ export namespace Prisma {
     phoneNumber: string | null
     contactPerson: string | null
     email: string | null
+    address: string | null
     userId: string
     _count: SchoolCountAggregateOutputType | null
     _min: SchoolMinAggregateOutputType | null
@@ -2694,9 +2853,10 @@ export namespace Prisma {
     phoneNumber?: boolean
     contactPerson?: boolean
     email?: boolean
+    address?: boolean
     userId?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
     schedules?: boolean | School$schedulesArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
     _count?: boolean | SchoolCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["school"]>
 
@@ -2706,6 +2866,7 @@ export namespace Prisma {
     phoneNumber?: boolean
     contactPerson?: boolean
     email?: boolean
+    address?: boolean
     userId?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["school"]>
@@ -2716,6 +2877,7 @@ export namespace Prisma {
     phoneNumber?: boolean
     contactPerson?: boolean
     email?: boolean
+    address?: boolean
     userId?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["school"]>
@@ -2726,13 +2888,14 @@ export namespace Prisma {
     phoneNumber?: boolean
     contactPerson?: boolean
     email?: boolean
+    address?: boolean
     userId?: boolean
   }
 
-  export type SchoolOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "phoneNumber" | "contactPerson" | "email" | "userId", ExtArgs["result"]["school"]>
+  export type SchoolOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "phoneNumber" | "contactPerson" | "email" | "address" | "userId", ExtArgs["result"]["school"]>
   export type SchoolInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
     schedules?: boolean | School$schedulesArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
     _count?: boolean | SchoolCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type SchoolIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2745,8 +2908,8 @@ export namespace Prisma {
   export type $SchoolPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "School"
     objects: {
-      user: Prisma.$UserPayload<ExtArgs>
       schedules: Prisma.$SchedulePayload<ExtArgs>[]
+      user: Prisma.$UserPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -2754,6 +2917,7 @@ export namespace Prisma {
       phoneNumber: string | null
       contactPerson: string | null
       email: string | null
+      address: string | null
       userId: string
     }, ExtArgs["result"]["school"]>
     composites: {}
@@ -3149,8 +3313,8 @@ export namespace Prisma {
    */
   export interface Prisma__SchoolClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     schedules<T extends School$schedulesArgs<ExtArgs> = {}>(args?: Subset<T, School$schedulesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SchedulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3185,6 +3349,7 @@ export namespace Prisma {
     readonly phoneNumber: FieldRef<"School", 'String'>
     readonly contactPerson: FieldRef<"School", 'String'>
     readonly email: FieldRef<"School", 'String'>
+    readonly address: FieldRef<"School", 'String'>
     readonly userId: FieldRef<"School", 'String'>
   }
     
@@ -3415,7 +3580,6 @@ export namespace Prisma {
      * The data used to create many Schools.
      */
     data: SchoolCreateManyInput | SchoolCreateManyInput[]
-    skipDuplicates?: boolean
   }
 
   /**
@@ -3434,7 +3598,6 @@ export namespace Prisma {
      * The data used to create many Schools.
      */
     data: SchoolCreateManyInput | SchoolCreateManyInput[]
-    skipDuplicates?: boolean
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -3852,8 +4015,9 @@ export namespace Prisma {
     holidayReason?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    school?: boolean | SchoolDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
+    school?: boolean | SchoolDefaultArgs<ExtArgs>
+    travelTime?: boolean | Schedule$travelTimeArgs<ExtArgs>
   }, ExtArgs["result"]["schedule"]>
 
   export type ScheduleSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -3870,8 +4034,8 @@ export namespace Prisma {
     holidayReason?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    school?: boolean | SchoolDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
+    school?: boolean | SchoolDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["schedule"]>
 
   export type ScheduleSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -3888,8 +4052,8 @@ export namespace Prisma {
     holidayReason?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    school?: boolean | SchoolDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
+    school?: boolean | SchoolDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["schedule"]>
 
   export type ScheduleSelectScalar = {
@@ -3910,23 +4074,25 @@ export namespace Prisma {
 
   export type ScheduleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "date" | "schoolId" | "userId" | "ampm" | "startTime" | "endTime" | "purpose" | "otherReason" | "isHoliday" | "holidayReason" | "createdAt" | "updatedAt", ExtArgs["result"]["schedule"]>
   export type ScheduleInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    school?: boolean | SchoolDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
+    school?: boolean | SchoolDefaultArgs<ExtArgs>
+    travelTime?: boolean | Schedule$travelTimeArgs<ExtArgs>
   }
   export type ScheduleIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    school?: boolean | SchoolDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
+    school?: boolean | SchoolDefaultArgs<ExtArgs>
   }
   export type ScheduleIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    school?: boolean | SchoolDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
+    school?: boolean | SchoolDefaultArgs<ExtArgs>
   }
 
   export type $SchedulePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Schedule"
     objects: {
-      school: Prisma.$SchoolPayload<ExtArgs>
       user: Prisma.$UserPayload<ExtArgs>
+      school: Prisma.$SchoolPayload<ExtArgs>
+      travelTime: Prisma.$TravelTimePayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -4336,8 +4502,9 @@ export namespace Prisma {
    */
   export interface Prisma__ScheduleClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    school<T extends SchoolDefaultArgs<ExtArgs> = {}>(args?: Subset<T, SchoolDefaultArgs<ExtArgs>>): Prisma__SchoolClient<$Result.GetResult<Prisma.$SchoolPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    school<T extends SchoolDefaultArgs<ExtArgs> = {}>(args?: Subset<T, SchoolDefaultArgs<ExtArgs>>): Prisma__SchoolClient<$Result.GetResult<Prisma.$SchoolPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    travelTime<T extends Schedule$travelTimeArgs<ExtArgs> = {}>(args?: Subset<T, Schedule$travelTimeArgs<ExtArgs>>): Prisma__TravelTimeClient<$Result.GetResult<Prisma.$TravelTimePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4609,7 +4776,6 @@ export namespace Prisma {
      * The data used to create many Schedules.
      */
     data: ScheduleCreateManyInput | ScheduleCreateManyInput[]
-    skipDuplicates?: boolean
   }
 
   /**
@@ -4628,7 +4794,6 @@ export namespace Prisma {
      * The data used to create many Schedules.
      */
     data: ScheduleCreateManyInput | ScheduleCreateManyInput[]
-    skipDuplicates?: boolean
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -4773,6 +4938,25 @@ export namespace Prisma {
      * Limit how many Schedules to delete.
      */
     limit?: number
+  }
+
+  /**
+   * Schedule.travelTime
+   */
+  export type Schedule$travelTimeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TravelTime
+     */
+    select?: TravelTimeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TravelTime
+     */
+    omit?: TravelTimeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TravelTimeInclude<ExtArgs> | null
+    where?: TravelTimeWhereInput
   }
 
   /**
@@ -5702,7 +5886,6 @@ export namespace Prisma {
      * The data used to create many Materials.
      */
     data: MaterialCreateManyInput | MaterialCreateManyInput[]
-    skipDuplicates?: boolean
   }
 
   /**
@@ -5721,7 +5904,6 @@ export namespace Prisma {
      * The data used to create many Materials.
      */
     data: MaterialCreateManyInput | MaterialCreateManyInput[]
-    skipDuplicates?: boolean
   }
 
   /**
@@ -6866,7 +7048,6 @@ export namespace Prisma {
      * The data used to create many MaterialAttachments.
      */
     data: MaterialAttachmentCreateManyInput | MaterialAttachmentCreateManyInput[]
-    skipDuplicates?: boolean
   }
 
   /**
@@ -6885,7 +7066,6 @@ export namespace Prisma {
      * The data used to create many MaterialAttachments.
      */
     data: MaterialAttachmentCreateManyInput | MaterialAttachmentCreateManyInput[]
-    skipDuplicates?: boolean
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -7052,13 +7232,1152 @@ export namespace Prisma {
 
 
   /**
+   * Model TravelTime
+   */
+
+  export type AggregateTravelTime = {
+    _count: TravelTimeCountAggregateOutputType | null
+    _min: TravelTimeMinAggregateOutputType | null
+    _max: TravelTimeMaxAggregateOutputType | null
+  }
+
+  export type TravelTimeMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    scheduleId: string | null
+    fromOfficeTime: string | null
+    fromHomeTime: string | null
+    toPreviousTime: string | null
+    duration: string | null
+    distance: string | null
+    origin: string | null
+    calculatedAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type TravelTimeMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    scheduleId: string | null
+    fromOfficeTime: string | null
+    fromHomeTime: string | null
+    toPreviousTime: string | null
+    duration: string | null
+    distance: string | null
+    origin: string | null
+    calculatedAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type TravelTimeCountAggregateOutputType = {
+    id: number
+    userId: number
+    scheduleId: number
+    fromOfficeTime: number
+    fromHomeTime: number
+    toPreviousTime: number
+    duration: number
+    distance: number
+    origin: number
+    calculatedAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type TravelTimeMinAggregateInputType = {
+    id?: true
+    userId?: true
+    scheduleId?: true
+    fromOfficeTime?: true
+    fromHomeTime?: true
+    toPreviousTime?: true
+    duration?: true
+    distance?: true
+    origin?: true
+    calculatedAt?: true
+    updatedAt?: true
+  }
+
+  export type TravelTimeMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    scheduleId?: true
+    fromOfficeTime?: true
+    fromHomeTime?: true
+    toPreviousTime?: true
+    duration?: true
+    distance?: true
+    origin?: true
+    calculatedAt?: true
+    updatedAt?: true
+  }
+
+  export type TravelTimeCountAggregateInputType = {
+    id?: true
+    userId?: true
+    scheduleId?: true
+    fromOfficeTime?: true
+    fromHomeTime?: true
+    toPreviousTime?: true
+    duration?: true
+    distance?: true
+    origin?: true
+    calculatedAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type TravelTimeAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TravelTime to aggregate.
+     */
+    where?: TravelTimeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TravelTimes to fetch.
+     */
+    orderBy?: TravelTimeOrderByWithRelationInput | TravelTimeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: TravelTimeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TravelTimes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TravelTimes.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned TravelTimes
+    **/
+    _count?: true | TravelTimeCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: TravelTimeMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: TravelTimeMaxAggregateInputType
+  }
+
+  export type GetTravelTimeAggregateType<T extends TravelTimeAggregateArgs> = {
+        [P in keyof T & keyof AggregateTravelTime]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateTravelTime[P]>
+      : GetScalarType<T[P], AggregateTravelTime[P]>
+  }
+
+
+
+
+  export type TravelTimeGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TravelTimeWhereInput
+    orderBy?: TravelTimeOrderByWithAggregationInput | TravelTimeOrderByWithAggregationInput[]
+    by: TravelTimeScalarFieldEnum[] | TravelTimeScalarFieldEnum
+    having?: TravelTimeScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: TravelTimeCountAggregateInputType | true
+    _min?: TravelTimeMinAggregateInputType
+    _max?: TravelTimeMaxAggregateInputType
+  }
+
+  export type TravelTimeGroupByOutputType = {
+    id: string
+    userId: string
+    scheduleId: string
+    fromOfficeTime: string | null
+    fromHomeTime: string | null
+    toPreviousTime: string | null
+    duration: string | null
+    distance: string | null
+    origin: string | null
+    calculatedAt: Date
+    updatedAt: Date
+    _count: TravelTimeCountAggregateOutputType | null
+    _min: TravelTimeMinAggregateOutputType | null
+    _max: TravelTimeMaxAggregateOutputType | null
+  }
+
+  type GetTravelTimeGroupByPayload<T extends TravelTimeGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<TravelTimeGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof TravelTimeGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], TravelTimeGroupByOutputType[P]>
+            : GetScalarType<T[P], TravelTimeGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type TravelTimeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    scheduleId?: boolean
+    fromOfficeTime?: boolean
+    fromHomeTime?: boolean
+    toPreviousTime?: boolean
+    duration?: boolean
+    distance?: boolean
+    origin?: boolean
+    calculatedAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    schedule?: boolean | ScheduleDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["travelTime"]>
+
+  export type TravelTimeSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    scheduleId?: boolean
+    fromOfficeTime?: boolean
+    fromHomeTime?: boolean
+    toPreviousTime?: boolean
+    duration?: boolean
+    distance?: boolean
+    origin?: boolean
+    calculatedAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    schedule?: boolean | ScheduleDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["travelTime"]>
+
+  export type TravelTimeSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    scheduleId?: boolean
+    fromOfficeTime?: boolean
+    fromHomeTime?: boolean
+    toPreviousTime?: boolean
+    duration?: boolean
+    distance?: boolean
+    origin?: boolean
+    calculatedAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    schedule?: boolean | ScheduleDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["travelTime"]>
+
+  export type TravelTimeSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    scheduleId?: boolean
+    fromOfficeTime?: boolean
+    fromHomeTime?: boolean
+    toPreviousTime?: boolean
+    duration?: boolean
+    distance?: boolean
+    origin?: boolean
+    calculatedAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type TravelTimeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "scheduleId" | "fromOfficeTime" | "fromHomeTime" | "toPreviousTime" | "duration" | "distance" | "origin" | "calculatedAt" | "updatedAt", ExtArgs["result"]["travelTime"]>
+  export type TravelTimeInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    schedule?: boolean | ScheduleDefaultArgs<ExtArgs>
+  }
+  export type TravelTimeIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    schedule?: boolean | ScheduleDefaultArgs<ExtArgs>
+  }
+  export type TravelTimeIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    schedule?: boolean | ScheduleDefaultArgs<ExtArgs>
+  }
+
+  export type $TravelTimePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "TravelTime"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+      schedule: Prisma.$SchedulePayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      scheduleId: string
+      fromOfficeTime: string | null
+      fromHomeTime: string | null
+      toPreviousTime: string | null
+      duration: string | null
+      distance: string | null
+      origin: string | null
+      calculatedAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["travelTime"]>
+    composites: {}
+  }
+
+  type TravelTimeGetPayload<S extends boolean | null | undefined | TravelTimeDefaultArgs> = $Result.GetResult<Prisma.$TravelTimePayload, S>
+
+  type TravelTimeCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<TravelTimeFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: TravelTimeCountAggregateInputType | true
+    }
+
+  export interface TravelTimeDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['TravelTime'], meta: { name: 'TravelTime' } }
+    /**
+     * Find zero or one TravelTime that matches the filter.
+     * @param {TravelTimeFindUniqueArgs} args - Arguments to find a TravelTime
+     * @example
+     * // Get one TravelTime
+     * const travelTime = await prisma.travelTime.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends TravelTimeFindUniqueArgs>(args: SelectSubset<T, TravelTimeFindUniqueArgs<ExtArgs>>): Prisma__TravelTimeClient<$Result.GetResult<Prisma.$TravelTimePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one TravelTime that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {TravelTimeFindUniqueOrThrowArgs} args - Arguments to find a TravelTime
+     * @example
+     * // Get one TravelTime
+     * const travelTime = await prisma.travelTime.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends TravelTimeFindUniqueOrThrowArgs>(args: SelectSubset<T, TravelTimeFindUniqueOrThrowArgs<ExtArgs>>): Prisma__TravelTimeClient<$Result.GetResult<Prisma.$TravelTimePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first TravelTime that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TravelTimeFindFirstArgs} args - Arguments to find a TravelTime
+     * @example
+     * // Get one TravelTime
+     * const travelTime = await prisma.travelTime.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends TravelTimeFindFirstArgs>(args?: SelectSubset<T, TravelTimeFindFirstArgs<ExtArgs>>): Prisma__TravelTimeClient<$Result.GetResult<Prisma.$TravelTimePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first TravelTime that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TravelTimeFindFirstOrThrowArgs} args - Arguments to find a TravelTime
+     * @example
+     * // Get one TravelTime
+     * const travelTime = await prisma.travelTime.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends TravelTimeFindFirstOrThrowArgs>(args?: SelectSubset<T, TravelTimeFindFirstOrThrowArgs<ExtArgs>>): Prisma__TravelTimeClient<$Result.GetResult<Prisma.$TravelTimePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more TravelTimes that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TravelTimeFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all TravelTimes
+     * const travelTimes = await prisma.travelTime.findMany()
+     * 
+     * // Get first 10 TravelTimes
+     * const travelTimes = await prisma.travelTime.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const travelTimeWithIdOnly = await prisma.travelTime.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends TravelTimeFindManyArgs>(args?: SelectSubset<T, TravelTimeFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TravelTimePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a TravelTime.
+     * @param {TravelTimeCreateArgs} args - Arguments to create a TravelTime.
+     * @example
+     * // Create one TravelTime
+     * const TravelTime = await prisma.travelTime.create({
+     *   data: {
+     *     // ... data to create a TravelTime
+     *   }
+     * })
+     * 
+     */
+    create<T extends TravelTimeCreateArgs>(args: SelectSubset<T, TravelTimeCreateArgs<ExtArgs>>): Prisma__TravelTimeClient<$Result.GetResult<Prisma.$TravelTimePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many TravelTimes.
+     * @param {TravelTimeCreateManyArgs} args - Arguments to create many TravelTimes.
+     * @example
+     * // Create many TravelTimes
+     * const travelTime = await prisma.travelTime.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends TravelTimeCreateManyArgs>(args?: SelectSubset<T, TravelTimeCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many TravelTimes and returns the data saved in the database.
+     * @param {TravelTimeCreateManyAndReturnArgs} args - Arguments to create many TravelTimes.
+     * @example
+     * // Create many TravelTimes
+     * const travelTime = await prisma.travelTime.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many TravelTimes and only return the `id`
+     * const travelTimeWithIdOnly = await prisma.travelTime.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends TravelTimeCreateManyAndReturnArgs>(args?: SelectSubset<T, TravelTimeCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TravelTimePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a TravelTime.
+     * @param {TravelTimeDeleteArgs} args - Arguments to delete one TravelTime.
+     * @example
+     * // Delete one TravelTime
+     * const TravelTime = await prisma.travelTime.delete({
+     *   where: {
+     *     // ... filter to delete one TravelTime
+     *   }
+     * })
+     * 
+     */
+    delete<T extends TravelTimeDeleteArgs>(args: SelectSubset<T, TravelTimeDeleteArgs<ExtArgs>>): Prisma__TravelTimeClient<$Result.GetResult<Prisma.$TravelTimePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one TravelTime.
+     * @param {TravelTimeUpdateArgs} args - Arguments to update one TravelTime.
+     * @example
+     * // Update one TravelTime
+     * const travelTime = await prisma.travelTime.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends TravelTimeUpdateArgs>(args: SelectSubset<T, TravelTimeUpdateArgs<ExtArgs>>): Prisma__TravelTimeClient<$Result.GetResult<Prisma.$TravelTimePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more TravelTimes.
+     * @param {TravelTimeDeleteManyArgs} args - Arguments to filter TravelTimes to delete.
+     * @example
+     * // Delete a few TravelTimes
+     * const { count } = await prisma.travelTime.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends TravelTimeDeleteManyArgs>(args?: SelectSubset<T, TravelTimeDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more TravelTimes.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TravelTimeUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many TravelTimes
+     * const travelTime = await prisma.travelTime.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends TravelTimeUpdateManyArgs>(args: SelectSubset<T, TravelTimeUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more TravelTimes and returns the data updated in the database.
+     * @param {TravelTimeUpdateManyAndReturnArgs} args - Arguments to update many TravelTimes.
+     * @example
+     * // Update many TravelTimes
+     * const travelTime = await prisma.travelTime.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more TravelTimes and only return the `id`
+     * const travelTimeWithIdOnly = await prisma.travelTime.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends TravelTimeUpdateManyAndReturnArgs>(args: SelectSubset<T, TravelTimeUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TravelTimePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one TravelTime.
+     * @param {TravelTimeUpsertArgs} args - Arguments to update or create a TravelTime.
+     * @example
+     * // Update or create a TravelTime
+     * const travelTime = await prisma.travelTime.upsert({
+     *   create: {
+     *     // ... data to create a TravelTime
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the TravelTime we want to update
+     *   }
+     * })
+     */
+    upsert<T extends TravelTimeUpsertArgs>(args: SelectSubset<T, TravelTimeUpsertArgs<ExtArgs>>): Prisma__TravelTimeClient<$Result.GetResult<Prisma.$TravelTimePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of TravelTimes.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TravelTimeCountArgs} args - Arguments to filter TravelTimes to count.
+     * @example
+     * // Count the number of TravelTimes
+     * const count = await prisma.travelTime.count({
+     *   where: {
+     *     // ... the filter for the TravelTimes we want to count
+     *   }
+     * })
+    **/
+    count<T extends TravelTimeCountArgs>(
+      args?: Subset<T, TravelTimeCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], TravelTimeCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a TravelTime.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TravelTimeAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends TravelTimeAggregateArgs>(args: Subset<T, TravelTimeAggregateArgs>): Prisma.PrismaPromise<GetTravelTimeAggregateType<T>>
+
+    /**
+     * Group by TravelTime.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TravelTimeGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends TravelTimeGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: TravelTimeGroupByArgs['orderBy'] }
+        : { orderBy?: TravelTimeGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, TravelTimeGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTravelTimeGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the TravelTime model
+   */
+  readonly fields: TravelTimeFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for TravelTime.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__TravelTimeClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    schedule<T extends ScheduleDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ScheduleDefaultArgs<ExtArgs>>): Prisma__ScheduleClient<$Result.GetResult<Prisma.$SchedulePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the TravelTime model
+   */
+  interface TravelTimeFieldRefs {
+    readonly id: FieldRef<"TravelTime", 'String'>
+    readonly userId: FieldRef<"TravelTime", 'String'>
+    readonly scheduleId: FieldRef<"TravelTime", 'String'>
+    readonly fromOfficeTime: FieldRef<"TravelTime", 'String'>
+    readonly fromHomeTime: FieldRef<"TravelTime", 'String'>
+    readonly toPreviousTime: FieldRef<"TravelTime", 'String'>
+    readonly duration: FieldRef<"TravelTime", 'String'>
+    readonly distance: FieldRef<"TravelTime", 'String'>
+    readonly origin: FieldRef<"TravelTime", 'String'>
+    readonly calculatedAt: FieldRef<"TravelTime", 'DateTime'>
+    readonly updatedAt: FieldRef<"TravelTime", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * TravelTime findUnique
+   */
+  export type TravelTimeFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TravelTime
+     */
+    select?: TravelTimeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TravelTime
+     */
+    omit?: TravelTimeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TravelTimeInclude<ExtArgs> | null
+    /**
+     * Filter, which TravelTime to fetch.
+     */
+    where: TravelTimeWhereUniqueInput
+  }
+
+  /**
+   * TravelTime findUniqueOrThrow
+   */
+  export type TravelTimeFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TravelTime
+     */
+    select?: TravelTimeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TravelTime
+     */
+    omit?: TravelTimeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TravelTimeInclude<ExtArgs> | null
+    /**
+     * Filter, which TravelTime to fetch.
+     */
+    where: TravelTimeWhereUniqueInput
+  }
+
+  /**
+   * TravelTime findFirst
+   */
+  export type TravelTimeFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TravelTime
+     */
+    select?: TravelTimeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TravelTime
+     */
+    omit?: TravelTimeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TravelTimeInclude<ExtArgs> | null
+    /**
+     * Filter, which TravelTime to fetch.
+     */
+    where?: TravelTimeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TravelTimes to fetch.
+     */
+    orderBy?: TravelTimeOrderByWithRelationInput | TravelTimeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TravelTimes.
+     */
+    cursor?: TravelTimeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TravelTimes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TravelTimes.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TravelTimes.
+     */
+    distinct?: TravelTimeScalarFieldEnum | TravelTimeScalarFieldEnum[]
+  }
+
+  /**
+   * TravelTime findFirstOrThrow
+   */
+  export type TravelTimeFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TravelTime
+     */
+    select?: TravelTimeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TravelTime
+     */
+    omit?: TravelTimeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TravelTimeInclude<ExtArgs> | null
+    /**
+     * Filter, which TravelTime to fetch.
+     */
+    where?: TravelTimeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TravelTimes to fetch.
+     */
+    orderBy?: TravelTimeOrderByWithRelationInput | TravelTimeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TravelTimes.
+     */
+    cursor?: TravelTimeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TravelTimes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TravelTimes.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TravelTimes.
+     */
+    distinct?: TravelTimeScalarFieldEnum | TravelTimeScalarFieldEnum[]
+  }
+
+  /**
+   * TravelTime findMany
+   */
+  export type TravelTimeFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TravelTime
+     */
+    select?: TravelTimeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TravelTime
+     */
+    omit?: TravelTimeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TravelTimeInclude<ExtArgs> | null
+    /**
+     * Filter, which TravelTimes to fetch.
+     */
+    where?: TravelTimeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TravelTimes to fetch.
+     */
+    orderBy?: TravelTimeOrderByWithRelationInput | TravelTimeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing TravelTimes.
+     */
+    cursor?: TravelTimeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TravelTimes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TravelTimes.
+     */
+    skip?: number
+    distinct?: TravelTimeScalarFieldEnum | TravelTimeScalarFieldEnum[]
+  }
+
+  /**
+   * TravelTime create
+   */
+  export type TravelTimeCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TravelTime
+     */
+    select?: TravelTimeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TravelTime
+     */
+    omit?: TravelTimeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TravelTimeInclude<ExtArgs> | null
+    /**
+     * The data needed to create a TravelTime.
+     */
+    data: XOR<TravelTimeCreateInput, TravelTimeUncheckedCreateInput>
+  }
+
+  /**
+   * TravelTime createMany
+   */
+  export type TravelTimeCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many TravelTimes.
+     */
+    data: TravelTimeCreateManyInput | TravelTimeCreateManyInput[]
+  }
+
+  /**
+   * TravelTime createManyAndReturn
+   */
+  export type TravelTimeCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TravelTime
+     */
+    select?: TravelTimeSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the TravelTime
+     */
+    omit?: TravelTimeOmit<ExtArgs> | null
+    /**
+     * The data used to create many TravelTimes.
+     */
+    data: TravelTimeCreateManyInput | TravelTimeCreateManyInput[]
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TravelTimeIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * TravelTime update
+   */
+  export type TravelTimeUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TravelTime
+     */
+    select?: TravelTimeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TravelTime
+     */
+    omit?: TravelTimeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TravelTimeInclude<ExtArgs> | null
+    /**
+     * The data needed to update a TravelTime.
+     */
+    data: XOR<TravelTimeUpdateInput, TravelTimeUncheckedUpdateInput>
+    /**
+     * Choose, which TravelTime to update.
+     */
+    where: TravelTimeWhereUniqueInput
+  }
+
+  /**
+   * TravelTime updateMany
+   */
+  export type TravelTimeUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update TravelTimes.
+     */
+    data: XOR<TravelTimeUpdateManyMutationInput, TravelTimeUncheckedUpdateManyInput>
+    /**
+     * Filter which TravelTimes to update
+     */
+    where?: TravelTimeWhereInput
+    /**
+     * Limit how many TravelTimes to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * TravelTime updateManyAndReturn
+   */
+  export type TravelTimeUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TravelTime
+     */
+    select?: TravelTimeSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the TravelTime
+     */
+    omit?: TravelTimeOmit<ExtArgs> | null
+    /**
+     * The data used to update TravelTimes.
+     */
+    data: XOR<TravelTimeUpdateManyMutationInput, TravelTimeUncheckedUpdateManyInput>
+    /**
+     * Filter which TravelTimes to update
+     */
+    where?: TravelTimeWhereInput
+    /**
+     * Limit how many TravelTimes to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TravelTimeIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * TravelTime upsert
+   */
+  export type TravelTimeUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TravelTime
+     */
+    select?: TravelTimeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TravelTime
+     */
+    omit?: TravelTimeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TravelTimeInclude<ExtArgs> | null
+    /**
+     * The filter to search for the TravelTime to update in case it exists.
+     */
+    where: TravelTimeWhereUniqueInput
+    /**
+     * In case the TravelTime found by the `where` argument doesn't exist, create a new TravelTime with this data.
+     */
+    create: XOR<TravelTimeCreateInput, TravelTimeUncheckedCreateInput>
+    /**
+     * In case the TravelTime was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<TravelTimeUpdateInput, TravelTimeUncheckedUpdateInput>
+  }
+
+  /**
+   * TravelTime delete
+   */
+  export type TravelTimeDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TravelTime
+     */
+    select?: TravelTimeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TravelTime
+     */
+    omit?: TravelTimeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TravelTimeInclude<ExtArgs> | null
+    /**
+     * Filter which TravelTime to delete.
+     */
+    where: TravelTimeWhereUniqueInput
+  }
+
+  /**
+   * TravelTime deleteMany
+   */
+  export type TravelTimeDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TravelTimes to delete
+     */
+    where?: TravelTimeWhereInput
+    /**
+     * Limit how many TravelTimes to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * TravelTime without action
+   */
+  export type TravelTimeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TravelTime
+     */
+    select?: TravelTimeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TravelTime
+     */
+    omit?: TravelTimeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TravelTimeInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
   export const TransactionIsolationLevel: {
-    ReadUncommitted: 'ReadUncommitted',
-    ReadCommitted: 'ReadCommitted',
-    RepeatableRead: 'RepeatableRead',
     Serializable: 'Serializable'
   };
 
@@ -7077,6 +8396,8 @@ export namespace Prisma {
     profilePhoto: 'profilePhoto',
     role: 'role',
     isActive: 'isActive',
+    homeAddress: 'homeAddress',
+    officeAddress: 'officeAddress',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -7090,6 +8411,7 @@ export namespace Prisma {
     phoneNumber: 'phoneNumber',
     contactPerson: 'contactPerson',
     email: 'email',
+    address: 'address',
     userId: 'userId'
   };
 
@@ -7144,20 +8466,29 @@ export namespace Prisma {
   export type MaterialAttachmentScalarFieldEnum = (typeof MaterialAttachmentScalarFieldEnum)[keyof typeof MaterialAttachmentScalarFieldEnum]
 
 
+  export const TravelTimeScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    scheduleId: 'scheduleId',
+    fromOfficeTime: 'fromOfficeTime',
+    fromHomeTime: 'fromHomeTime',
+    toPreviousTime: 'toPreviousTime',
+    duration: 'duration',
+    distance: 'distance',
+    origin: 'origin',
+    calculatedAt: 'calculatedAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type TravelTimeScalarFieldEnum = (typeof TravelTimeScalarFieldEnum)[keyof typeof TravelTimeScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
   };
 
   export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
-
-
-  export const QueryMode: {
-    default: 'default',
-    insensitive: 'insensitive'
-  };
-
-  export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
 
 
   export const NullsOrder: {
@@ -7181,13 +8512,6 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'String[]'
-   */
-  export type ListStringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'String[]'>
-    
-
-
-  /**
    * Reference to a field of type 'Boolean'
    */
   export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
@@ -7202,13 +8526,6 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'DateTime[]'
-   */
-  export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
-    
-
-
-  /**
    * Reference to a field of type 'Int'
    */
   export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
@@ -7216,23 +8533,9 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'Int[]'
-   */
-  export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
-    
-
-
-  /**
    * Reference to a field of type 'Float'
    */
   export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
-    
-
-
-  /**
-   * Reference to a field of type 'Float[]'
-   */
-  export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
     
   /**
    * Deep Input Types
@@ -7254,10 +8557,13 @@ export namespace Prisma {
     profilePhoto?: StringNullableFilter<"User"> | string | null
     role?: StringFilter<"User"> | string
     isActive?: BoolFilter<"User"> | boolean
+    homeAddress?: StringNullableFilter<"User"> | string | null
+    officeAddress?: StringNullableFilter<"User"> | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
-    schools?: SchoolListRelationFilter
     schedules?: ScheduleListRelationFilter
+    schools?: SchoolListRelationFilter
+    travelTimes?: TravelTimeListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -7272,10 +8578,13 @@ export namespace Prisma {
     profilePhoto?: SortOrderInput | SortOrder
     role?: SortOrder
     isActive?: SortOrder
+    homeAddress?: SortOrderInput | SortOrder
+    officeAddress?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    schools?: SchoolOrderByRelationAggregateInput
     schedules?: ScheduleOrderByRelationAggregateInput
+    schools?: SchoolOrderByRelationAggregateInput
+    travelTimes?: TravelTimeOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -7293,10 +8602,13 @@ export namespace Prisma {
     profilePhoto?: StringNullableFilter<"User"> | string | null
     role?: StringFilter<"User"> | string
     isActive?: BoolFilter<"User"> | boolean
+    homeAddress?: StringNullableFilter<"User"> | string | null
+    officeAddress?: StringNullableFilter<"User"> | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
-    schools?: SchoolListRelationFilter
     schedules?: ScheduleListRelationFilter
+    schools?: SchoolListRelationFilter
+    travelTimes?: TravelTimeListRelationFilter
   }, "id" | "username">
 
   export type UserOrderByWithAggregationInput = {
@@ -7311,6 +8623,8 @@ export namespace Prisma {
     profilePhoto?: SortOrderInput | SortOrder
     role?: SortOrder
     isActive?: SortOrder
+    homeAddress?: SortOrderInput | SortOrder
+    officeAddress?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: UserCountOrderByAggregateInput
@@ -7333,6 +8647,8 @@ export namespace Prisma {
     profilePhoto?: StringNullableWithAggregatesFilter<"User"> | string | null
     role?: StringWithAggregatesFilter<"User"> | string
     isActive?: BoolWithAggregatesFilter<"User"> | boolean
+    homeAddress?: StringNullableWithAggregatesFilter<"User"> | string | null
+    officeAddress?: StringNullableWithAggregatesFilter<"User"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
   }
@@ -7346,9 +8662,10 @@ export namespace Prisma {
     phoneNumber?: StringNullableFilter<"School"> | string | null
     contactPerson?: StringNullableFilter<"School"> | string | null
     email?: StringNullableFilter<"School"> | string | null
+    address?: StringNullableFilter<"School"> | string | null
     userId?: StringFilter<"School"> | string
-    user?: XOR<UserScalarRelationFilter, UserWhereInput>
     schedules?: ScheduleListRelationFilter
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
 
   export type SchoolOrderByWithRelationInput = {
@@ -7357,9 +8674,10 @@ export namespace Prisma {
     phoneNumber?: SortOrderInput | SortOrder
     contactPerson?: SortOrderInput | SortOrder
     email?: SortOrderInput | SortOrder
+    address?: SortOrderInput | SortOrder
     userId?: SortOrder
-    user?: UserOrderByWithRelationInput
     schedules?: ScheduleOrderByRelationAggregateInput
+    user?: UserOrderByWithRelationInput
   }
 
   export type SchoolWhereUniqueInput = Prisma.AtLeast<{
@@ -7371,9 +8689,10 @@ export namespace Prisma {
     phoneNumber?: StringNullableFilter<"School"> | string | null
     contactPerson?: StringNullableFilter<"School"> | string | null
     email?: StringNullableFilter<"School"> | string | null
+    address?: StringNullableFilter<"School"> | string | null
     userId?: StringFilter<"School"> | string
-    user?: XOR<UserScalarRelationFilter, UserWhereInput>
     schedules?: ScheduleListRelationFilter
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id" | "name">
 
   export type SchoolOrderByWithAggregationInput = {
@@ -7382,6 +8701,7 @@ export namespace Prisma {
     phoneNumber?: SortOrderInput | SortOrder
     contactPerson?: SortOrderInput | SortOrder
     email?: SortOrderInput | SortOrder
+    address?: SortOrderInput | SortOrder
     userId?: SortOrder
     _count?: SchoolCountOrderByAggregateInput
     _max?: SchoolMaxOrderByAggregateInput
@@ -7397,6 +8717,7 @@ export namespace Prisma {
     phoneNumber?: StringNullableWithAggregatesFilter<"School"> | string | null
     contactPerson?: StringNullableWithAggregatesFilter<"School"> | string | null
     email?: StringNullableWithAggregatesFilter<"School"> | string | null
+    address?: StringNullableWithAggregatesFilter<"School"> | string | null
     userId?: StringWithAggregatesFilter<"School"> | string
   }
 
@@ -7417,8 +8738,9 @@ export namespace Prisma {
     holidayReason?: StringNullableFilter<"Schedule"> | string | null
     createdAt?: DateTimeFilter<"Schedule"> | Date | string
     updatedAt?: DateTimeFilter<"Schedule"> | Date | string
-    school?: XOR<SchoolScalarRelationFilter, SchoolWhereInput>
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    school?: XOR<SchoolScalarRelationFilter, SchoolWhereInput>
+    travelTime?: XOR<TravelTimeNullableScalarRelationFilter, TravelTimeWhereInput> | null
   }
 
   export type ScheduleOrderByWithRelationInput = {
@@ -7435,8 +8757,9 @@ export namespace Prisma {
     holidayReason?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    school?: SchoolOrderByWithRelationInput
     user?: UserOrderByWithRelationInput
+    school?: SchoolOrderByWithRelationInput
+    travelTime?: TravelTimeOrderByWithRelationInput
   }
 
   export type ScheduleWhereUniqueInput = Prisma.AtLeast<{
@@ -7456,8 +8779,9 @@ export namespace Prisma {
     holidayReason?: StringNullableFilter<"Schedule"> | string | null
     createdAt?: DateTimeFilter<"Schedule"> | Date | string
     updatedAt?: DateTimeFilter<"Schedule"> | Date | string
-    school?: XOR<SchoolScalarRelationFilter, SchoolWhereInput>
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    school?: XOR<SchoolScalarRelationFilter, SchoolWhereInput>
+    travelTime?: XOR<TravelTimeNullableScalarRelationFilter, TravelTimeWhereInput> | null
   }, "id">
 
   export type ScheduleOrderByWithAggregationInput = {
@@ -7645,6 +8969,94 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"MaterialAttachment"> | Date | string
   }
 
+  export type TravelTimeWhereInput = {
+    AND?: TravelTimeWhereInput | TravelTimeWhereInput[]
+    OR?: TravelTimeWhereInput[]
+    NOT?: TravelTimeWhereInput | TravelTimeWhereInput[]
+    id?: StringFilter<"TravelTime"> | string
+    userId?: StringFilter<"TravelTime"> | string
+    scheduleId?: StringFilter<"TravelTime"> | string
+    fromOfficeTime?: StringNullableFilter<"TravelTime"> | string | null
+    fromHomeTime?: StringNullableFilter<"TravelTime"> | string | null
+    toPreviousTime?: StringNullableFilter<"TravelTime"> | string | null
+    duration?: StringNullableFilter<"TravelTime"> | string | null
+    distance?: StringNullableFilter<"TravelTime"> | string | null
+    origin?: StringNullableFilter<"TravelTime"> | string | null
+    calculatedAt?: DateTimeFilter<"TravelTime"> | Date | string
+    updatedAt?: DateTimeFilter<"TravelTime"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    schedule?: XOR<ScheduleScalarRelationFilter, ScheduleWhereInput>
+  }
+
+  export type TravelTimeOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    scheduleId?: SortOrder
+    fromOfficeTime?: SortOrderInput | SortOrder
+    fromHomeTime?: SortOrderInput | SortOrder
+    toPreviousTime?: SortOrderInput | SortOrder
+    duration?: SortOrderInput | SortOrder
+    distance?: SortOrderInput | SortOrder
+    origin?: SortOrderInput | SortOrder
+    calculatedAt?: SortOrder
+    updatedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+    schedule?: ScheduleOrderByWithRelationInput
+  }
+
+  export type TravelTimeWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    scheduleId?: string
+    AND?: TravelTimeWhereInput | TravelTimeWhereInput[]
+    OR?: TravelTimeWhereInput[]
+    NOT?: TravelTimeWhereInput | TravelTimeWhereInput[]
+    userId?: StringFilter<"TravelTime"> | string
+    fromOfficeTime?: StringNullableFilter<"TravelTime"> | string | null
+    fromHomeTime?: StringNullableFilter<"TravelTime"> | string | null
+    toPreviousTime?: StringNullableFilter<"TravelTime"> | string | null
+    duration?: StringNullableFilter<"TravelTime"> | string | null
+    distance?: StringNullableFilter<"TravelTime"> | string | null
+    origin?: StringNullableFilter<"TravelTime"> | string | null
+    calculatedAt?: DateTimeFilter<"TravelTime"> | Date | string
+    updatedAt?: DateTimeFilter<"TravelTime"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    schedule?: XOR<ScheduleScalarRelationFilter, ScheduleWhereInput>
+  }, "id" | "scheduleId">
+
+  export type TravelTimeOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    scheduleId?: SortOrder
+    fromOfficeTime?: SortOrderInput | SortOrder
+    fromHomeTime?: SortOrderInput | SortOrder
+    toPreviousTime?: SortOrderInput | SortOrder
+    duration?: SortOrderInput | SortOrder
+    distance?: SortOrderInput | SortOrder
+    origin?: SortOrderInput | SortOrder
+    calculatedAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: TravelTimeCountOrderByAggregateInput
+    _max?: TravelTimeMaxOrderByAggregateInput
+    _min?: TravelTimeMinOrderByAggregateInput
+  }
+
+  export type TravelTimeScalarWhereWithAggregatesInput = {
+    AND?: TravelTimeScalarWhereWithAggregatesInput | TravelTimeScalarWhereWithAggregatesInput[]
+    OR?: TravelTimeScalarWhereWithAggregatesInput[]
+    NOT?: TravelTimeScalarWhereWithAggregatesInput | TravelTimeScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"TravelTime"> | string
+    userId?: StringWithAggregatesFilter<"TravelTime"> | string
+    scheduleId?: StringWithAggregatesFilter<"TravelTime"> | string
+    fromOfficeTime?: StringNullableWithAggregatesFilter<"TravelTime"> | string | null
+    fromHomeTime?: StringNullableWithAggregatesFilter<"TravelTime"> | string | null
+    toPreviousTime?: StringNullableWithAggregatesFilter<"TravelTime"> | string | null
+    duration?: StringNullableWithAggregatesFilter<"TravelTime"> | string | null
+    distance?: StringNullableWithAggregatesFilter<"TravelTime"> | string | null
+    origin?: StringNullableWithAggregatesFilter<"TravelTime"> | string | null
+    calculatedAt?: DateTimeWithAggregatesFilter<"TravelTime"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"TravelTime"> | Date | string
+  }
+
   export type UserCreateInput = {
     id?: string
     username: string
@@ -7657,10 +9069,13 @@ export namespace Prisma {
     profilePhoto?: string | null
     role?: string
     isActive?: boolean
+    homeAddress?: string | null
+    officeAddress?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    schools?: SchoolCreateNestedManyWithoutUserInput
     schedules?: ScheduleCreateNestedManyWithoutUserInput
+    schools?: SchoolCreateNestedManyWithoutUserInput
+    travelTimes?: TravelTimeCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -7675,10 +9090,13 @@ export namespace Prisma {
     profilePhoto?: string | null
     role?: string
     isActive?: boolean
+    homeAddress?: string | null
+    officeAddress?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    schools?: SchoolUncheckedCreateNestedManyWithoutUserInput
     schedules?: ScheduleUncheckedCreateNestedManyWithoutUserInput
+    schools?: SchoolUncheckedCreateNestedManyWithoutUserInput
+    travelTimes?: TravelTimeUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -7693,10 +9111,13 @@ export namespace Prisma {
     profilePhoto?: NullableStringFieldUpdateOperationsInput | string | null
     role?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    homeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    officeAddress?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    schools?: SchoolUpdateManyWithoutUserNestedInput
     schedules?: ScheduleUpdateManyWithoutUserNestedInput
+    schools?: SchoolUpdateManyWithoutUserNestedInput
+    travelTimes?: TravelTimeUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -7711,10 +9132,13 @@ export namespace Prisma {
     profilePhoto?: NullableStringFieldUpdateOperationsInput | string | null
     role?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    homeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    officeAddress?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    schools?: SchoolUncheckedUpdateManyWithoutUserNestedInput
     schedules?: ScheduleUncheckedUpdateManyWithoutUserNestedInput
+    schools?: SchoolUncheckedUpdateManyWithoutUserNestedInput
+    travelTimes?: TravelTimeUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -7729,6 +9153,8 @@ export namespace Prisma {
     profilePhoto?: string | null
     role?: string
     isActive?: boolean
+    homeAddress?: string | null
+    officeAddress?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -7745,6 +9171,8 @@ export namespace Prisma {
     profilePhoto?: NullableStringFieldUpdateOperationsInput | string | null
     role?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    homeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    officeAddress?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -7761,6 +9189,8 @@ export namespace Prisma {
     profilePhoto?: NullableStringFieldUpdateOperationsInput | string | null
     role?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    homeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    officeAddress?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -7771,8 +9201,9 @@ export namespace Prisma {
     phoneNumber?: string | null
     contactPerson?: string | null
     email?: string | null
-    user: UserCreateNestedOneWithoutSchoolsInput
+    address?: string | null
     schedules?: ScheduleCreateNestedManyWithoutSchoolInput
+    user: UserCreateNestedOneWithoutSchoolsInput
   }
 
   export type SchoolUncheckedCreateInput = {
@@ -7781,6 +9212,7 @@ export namespace Prisma {
     phoneNumber?: string | null
     contactPerson?: string | null
     email?: string | null
+    address?: string | null
     userId: string
     schedules?: ScheduleUncheckedCreateNestedManyWithoutSchoolInput
   }
@@ -7791,8 +9223,9 @@ export namespace Prisma {
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     contactPerson?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
-    user?: UserUpdateOneRequiredWithoutSchoolsNestedInput
+    address?: NullableStringFieldUpdateOperationsInput | string | null
     schedules?: ScheduleUpdateManyWithoutSchoolNestedInput
+    user?: UserUpdateOneRequiredWithoutSchoolsNestedInput
   }
 
   export type SchoolUncheckedUpdateInput = {
@@ -7801,6 +9234,7 @@ export namespace Prisma {
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     contactPerson?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
     userId?: StringFieldUpdateOperationsInput | string
     schedules?: ScheduleUncheckedUpdateManyWithoutSchoolNestedInput
   }
@@ -7811,6 +9245,7 @@ export namespace Prisma {
     phoneNumber?: string | null
     contactPerson?: string | null
     email?: string | null
+    address?: string | null
     userId: string
   }
 
@@ -7820,6 +9255,7 @@ export namespace Prisma {
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     contactPerson?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type SchoolUncheckedUpdateManyInput = {
@@ -7828,6 +9264,7 @@ export namespace Prisma {
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     contactPerson?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
     userId?: StringFieldUpdateOperationsInput | string
   }
 
@@ -7843,8 +9280,9 @@ export namespace Prisma {
     holidayReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    school: SchoolCreateNestedOneWithoutSchedulesInput
     user: UserCreateNestedOneWithoutSchedulesInput
+    school: SchoolCreateNestedOneWithoutSchedulesInput
+    travelTime?: TravelTimeCreateNestedOneWithoutScheduleInput
   }
 
   export type ScheduleUncheckedCreateInput = {
@@ -7861,6 +9299,7 @@ export namespace Prisma {
     holidayReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    travelTime?: TravelTimeUncheckedCreateNestedOneWithoutScheduleInput
   }
 
   export type ScheduleUpdateInput = {
@@ -7875,8 +9314,9 @@ export namespace Prisma {
     holidayReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    school?: SchoolUpdateOneRequiredWithoutSchedulesNestedInput
     user?: UserUpdateOneRequiredWithoutSchedulesNestedInput
+    school?: SchoolUpdateOneRequiredWithoutSchedulesNestedInput
+    travelTime?: TravelTimeUpdateOneWithoutScheduleNestedInput
   }
 
   export type ScheduleUncheckedUpdateInput = {
@@ -7893,6 +9333,7 @@ export namespace Prisma {
     holidayReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    travelTime?: TravelTimeUncheckedUpdateOneWithoutScheduleNestedInput
   }
 
   export type ScheduleCreateManyInput = {
@@ -8105,10 +9546,106 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type TravelTimeCreateInput = {
+    id?: string
+    fromOfficeTime?: string | null
+    fromHomeTime?: string | null
+    toPreviousTime?: string | null
+    duration?: string | null
+    distance?: string | null
+    origin?: string | null
+    calculatedAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutTravelTimesInput
+    schedule: ScheduleCreateNestedOneWithoutTravelTimeInput
+  }
+
+  export type TravelTimeUncheckedCreateInput = {
+    id?: string
+    userId: string
+    scheduleId: string
+    fromOfficeTime?: string | null
+    fromHomeTime?: string | null
+    toPreviousTime?: string | null
+    duration?: string | null
+    distance?: string | null
+    origin?: string | null
+    calculatedAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TravelTimeUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    fromOfficeTime?: NullableStringFieldUpdateOperationsInput | string | null
+    fromHomeTime?: NullableStringFieldUpdateOperationsInput | string | null
+    toPreviousTime?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableStringFieldUpdateOperationsInput | string | null
+    distance?: NullableStringFieldUpdateOperationsInput | string | null
+    origin?: NullableStringFieldUpdateOperationsInput | string | null
+    calculatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutTravelTimesNestedInput
+    schedule?: ScheduleUpdateOneRequiredWithoutTravelTimeNestedInput
+  }
+
+  export type TravelTimeUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    scheduleId?: StringFieldUpdateOperationsInput | string
+    fromOfficeTime?: NullableStringFieldUpdateOperationsInput | string | null
+    fromHomeTime?: NullableStringFieldUpdateOperationsInput | string | null
+    toPreviousTime?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableStringFieldUpdateOperationsInput | string | null
+    distance?: NullableStringFieldUpdateOperationsInput | string | null
+    origin?: NullableStringFieldUpdateOperationsInput | string | null
+    calculatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TravelTimeCreateManyInput = {
+    id?: string
+    userId: string
+    scheduleId: string
+    fromOfficeTime?: string | null
+    fromHomeTime?: string | null
+    toPreviousTime?: string | null
+    duration?: string | null
+    distance?: string | null
+    origin?: string | null
+    calculatedAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TravelTimeUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    fromOfficeTime?: NullableStringFieldUpdateOperationsInput | string | null
+    fromHomeTime?: NullableStringFieldUpdateOperationsInput | string | null
+    toPreviousTime?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableStringFieldUpdateOperationsInput | string | null
+    distance?: NullableStringFieldUpdateOperationsInput | string | null
+    origin?: NullableStringFieldUpdateOperationsInput | string | null
+    calculatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TravelTimeUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    scheduleId?: StringFieldUpdateOperationsInput | string
+    fromOfficeTime?: NullableStringFieldUpdateOperationsInput | string | null
+    fromHomeTime?: NullableStringFieldUpdateOperationsInput | string | null
+    toPreviousTime?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableStringFieldUpdateOperationsInput | string | null
+    distance?: NullableStringFieldUpdateOperationsInput | string | null
+    origin?: NullableStringFieldUpdateOperationsInput | string | null
+    calculatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[] | ListStringFieldRefInput<$PrismaModel>
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    in?: string[]
+    notIn?: string[]
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -8116,14 +9653,13 @@ export namespace Prisma {
     contains?: string | StringFieldRefInput<$PrismaModel>
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
     not?: NestedStringFilter<$PrismaModel> | string
   }
 
   export type StringNullableFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    in?: string[] | null
+    notIn?: string[] | null
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -8131,7 +9667,6 @@ export namespace Prisma {
     contains?: string | StringFieldRefInput<$PrismaModel>
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
@@ -8142,19 +9677,13 @@ export namespace Prisma {
 
   export type DateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[]
+    notIn?: Date[] | string[]
     lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
-  }
-
-  export type SchoolListRelationFilter = {
-    every?: SchoolWhereInput
-    some?: SchoolWhereInput
-    none?: SchoolWhereInput
   }
 
   export type ScheduleListRelationFilter = {
@@ -8163,16 +9692,32 @@ export namespace Prisma {
     none?: ScheduleWhereInput
   }
 
+  export type SchoolListRelationFilter = {
+    every?: SchoolWhereInput
+    some?: SchoolWhereInput
+    none?: SchoolWhereInput
+  }
+
+  export type TravelTimeListRelationFilter = {
+    every?: TravelTimeWhereInput
+    some?: TravelTimeWhereInput
+    none?: TravelTimeWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
+  }
+
+  export type ScheduleOrderByRelationAggregateInput = {
+    _count?: SortOrder
   }
 
   export type SchoolOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
-  export type ScheduleOrderByRelationAggregateInput = {
+  export type TravelTimeOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -8188,6 +9733,8 @@ export namespace Prisma {
     profilePhoto?: SortOrder
     role?: SortOrder
     isActive?: SortOrder
+    homeAddress?: SortOrder
+    officeAddress?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -8204,6 +9751,8 @@ export namespace Prisma {
     profilePhoto?: SortOrder
     role?: SortOrder
     isActive?: SortOrder
+    homeAddress?: SortOrder
+    officeAddress?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -8220,14 +9769,16 @@ export namespace Prisma {
     profilePhoto?: SortOrder
     role?: SortOrder
     isActive?: SortOrder
+    homeAddress?: SortOrder
+    officeAddress?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type StringWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[] | ListStringFieldRefInput<$PrismaModel>
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    in?: string[]
+    notIn?: string[]
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -8235,7 +9786,6 @@ export namespace Prisma {
     contains?: string | StringFieldRefInput<$PrismaModel>
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
     not?: NestedStringWithAggregatesFilter<$PrismaModel> | string
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedStringFilter<$PrismaModel>
@@ -8244,8 +9794,8 @@ export namespace Prisma {
 
   export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    in?: string[] | null
+    notIn?: string[] | null
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -8253,7 +9803,6 @@ export namespace Prisma {
     contains?: string | StringFieldRefInput<$PrismaModel>
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
     not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedStringNullableFilter<$PrismaModel>
@@ -8270,8 +9819,8 @@ export namespace Prisma {
 
   export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[]
+    notIn?: Date[] | string[]
     lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
@@ -8293,6 +9842,7 @@ export namespace Prisma {
     phoneNumber?: SortOrder
     contactPerson?: SortOrder
     email?: SortOrder
+    address?: SortOrder
     userId?: SortOrder
   }
 
@@ -8302,6 +9852,7 @@ export namespace Prisma {
     phoneNumber?: SortOrder
     contactPerson?: SortOrder
     email?: SortOrder
+    address?: SortOrder
     userId?: SortOrder
   }
 
@@ -8311,12 +9862,18 @@ export namespace Prisma {
     phoneNumber?: SortOrder
     contactPerson?: SortOrder
     email?: SortOrder
+    address?: SortOrder
     userId?: SortOrder
   }
 
   export type SchoolScalarRelationFilter = {
     is?: SchoolWhereInput
     isNot?: SchoolWhereInput
+  }
+
+  export type TravelTimeNullableScalarRelationFilter = {
+    is?: TravelTimeWhereInput | null
+    isNot?: TravelTimeWhereInput | null
   }
 
   export type ScheduleCountOrderByAggregateInput = {
@@ -8412,8 +9969,8 @@ export namespace Prisma {
 
   export type IntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
     lt?: number | IntFieldRefInput<$PrismaModel>
     lte?: number | IntFieldRefInput<$PrismaModel>
     gt?: number | IntFieldRefInput<$PrismaModel>
@@ -8474,8 +10031,8 @@ export namespace Prisma {
 
   export type IntWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
     lt?: number | IntFieldRefInput<$PrismaModel>
     lte?: number | IntFieldRefInput<$PrismaModel>
     gt?: number | IntFieldRefInput<$PrismaModel>
@@ -8488,6 +10045,60 @@ export namespace Prisma {
     _max?: NestedIntFilter<$PrismaModel>
   }
 
+  export type ScheduleScalarRelationFilter = {
+    is?: ScheduleWhereInput
+    isNot?: ScheduleWhereInput
+  }
+
+  export type TravelTimeCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    scheduleId?: SortOrder
+    fromOfficeTime?: SortOrder
+    fromHomeTime?: SortOrder
+    toPreviousTime?: SortOrder
+    duration?: SortOrder
+    distance?: SortOrder
+    origin?: SortOrder
+    calculatedAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type TravelTimeMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    scheduleId?: SortOrder
+    fromOfficeTime?: SortOrder
+    fromHomeTime?: SortOrder
+    toPreviousTime?: SortOrder
+    duration?: SortOrder
+    distance?: SortOrder
+    origin?: SortOrder
+    calculatedAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type TravelTimeMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    scheduleId?: SortOrder
+    fromOfficeTime?: SortOrder
+    fromHomeTime?: SortOrder
+    toPreviousTime?: SortOrder
+    duration?: SortOrder
+    distance?: SortOrder
+    origin?: SortOrder
+    calculatedAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ScheduleCreateNestedManyWithoutUserInput = {
+    create?: XOR<ScheduleCreateWithoutUserInput, ScheduleUncheckedCreateWithoutUserInput> | ScheduleCreateWithoutUserInput[] | ScheduleUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ScheduleCreateOrConnectWithoutUserInput | ScheduleCreateOrConnectWithoutUserInput[]
+    createMany?: ScheduleCreateManyUserInputEnvelope
+    connect?: ScheduleWhereUniqueInput | ScheduleWhereUniqueInput[]
+  }
+
   export type SchoolCreateNestedManyWithoutUserInput = {
     create?: XOR<SchoolCreateWithoutUserInput, SchoolUncheckedCreateWithoutUserInput> | SchoolCreateWithoutUserInput[] | SchoolUncheckedCreateWithoutUserInput[]
     connectOrCreate?: SchoolCreateOrConnectWithoutUserInput | SchoolCreateOrConnectWithoutUserInput[]
@@ -8495,7 +10106,14 @@ export namespace Prisma {
     connect?: SchoolWhereUniqueInput | SchoolWhereUniqueInput[]
   }
 
-  export type ScheduleCreateNestedManyWithoutUserInput = {
+  export type TravelTimeCreateNestedManyWithoutUserInput = {
+    create?: XOR<TravelTimeCreateWithoutUserInput, TravelTimeUncheckedCreateWithoutUserInput> | TravelTimeCreateWithoutUserInput[] | TravelTimeUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: TravelTimeCreateOrConnectWithoutUserInput | TravelTimeCreateOrConnectWithoutUserInput[]
+    createMany?: TravelTimeCreateManyUserInputEnvelope
+    connect?: TravelTimeWhereUniqueInput | TravelTimeWhereUniqueInput[]
+  }
+
+  export type ScheduleUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<ScheduleCreateWithoutUserInput, ScheduleUncheckedCreateWithoutUserInput> | ScheduleCreateWithoutUserInput[] | ScheduleUncheckedCreateWithoutUserInput[]
     connectOrCreate?: ScheduleCreateOrConnectWithoutUserInput | ScheduleCreateOrConnectWithoutUserInput[]
     createMany?: ScheduleCreateManyUserInputEnvelope
@@ -8509,11 +10127,11 @@ export namespace Prisma {
     connect?: SchoolWhereUniqueInput | SchoolWhereUniqueInput[]
   }
 
-  export type ScheduleUncheckedCreateNestedManyWithoutUserInput = {
-    create?: XOR<ScheduleCreateWithoutUserInput, ScheduleUncheckedCreateWithoutUserInput> | ScheduleCreateWithoutUserInput[] | ScheduleUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: ScheduleCreateOrConnectWithoutUserInput | ScheduleCreateOrConnectWithoutUserInput[]
-    createMany?: ScheduleCreateManyUserInputEnvelope
-    connect?: ScheduleWhereUniqueInput | ScheduleWhereUniqueInput[]
+  export type TravelTimeUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<TravelTimeCreateWithoutUserInput, TravelTimeUncheckedCreateWithoutUserInput> | TravelTimeCreateWithoutUserInput[] | TravelTimeUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: TravelTimeCreateOrConnectWithoutUserInput | TravelTimeCreateOrConnectWithoutUserInput[]
+    createMany?: TravelTimeCreateManyUserInputEnvelope
+    connect?: TravelTimeWhereUniqueInput | TravelTimeWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -8532,6 +10150,20 @@ export namespace Prisma {
     set?: Date | string
   }
 
+  export type ScheduleUpdateManyWithoutUserNestedInput = {
+    create?: XOR<ScheduleCreateWithoutUserInput, ScheduleUncheckedCreateWithoutUserInput> | ScheduleCreateWithoutUserInput[] | ScheduleUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ScheduleCreateOrConnectWithoutUserInput | ScheduleCreateOrConnectWithoutUserInput[]
+    upsert?: ScheduleUpsertWithWhereUniqueWithoutUserInput | ScheduleUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: ScheduleCreateManyUserInputEnvelope
+    set?: ScheduleWhereUniqueInput | ScheduleWhereUniqueInput[]
+    disconnect?: ScheduleWhereUniqueInput | ScheduleWhereUniqueInput[]
+    delete?: ScheduleWhereUniqueInput | ScheduleWhereUniqueInput[]
+    connect?: ScheduleWhereUniqueInput | ScheduleWhereUniqueInput[]
+    update?: ScheduleUpdateWithWhereUniqueWithoutUserInput | ScheduleUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: ScheduleUpdateManyWithWhereWithoutUserInput | ScheduleUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: ScheduleScalarWhereInput | ScheduleScalarWhereInput[]
+  }
+
   export type SchoolUpdateManyWithoutUserNestedInput = {
     create?: XOR<SchoolCreateWithoutUserInput, SchoolUncheckedCreateWithoutUserInput> | SchoolCreateWithoutUserInput[] | SchoolUncheckedCreateWithoutUserInput[]
     connectOrCreate?: SchoolCreateOrConnectWithoutUserInput | SchoolCreateOrConnectWithoutUserInput[]
@@ -8546,7 +10178,21 @@ export namespace Prisma {
     deleteMany?: SchoolScalarWhereInput | SchoolScalarWhereInput[]
   }
 
-  export type ScheduleUpdateManyWithoutUserNestedInput = {
+  export type TravelTimeUpdateManyWithoutUserNestedInput = {
+    create?: XOR<TravelTimeCreateWithoutUserInput, TravelTimeUncheckedCreateWithoutUserInput> | TravelTimeCreateWithoutUserInput[] | TravelTimeUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: TravelTimeCreateOrConnectWithoutUserInput | TravelTimeCreateOrConnectWithoutUserInput[]
+    upsert?: TravelTimeUpsertWithWhereUniqueWithoutUserInput | TravelTimeUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: TravelTimeCreateManyUserInputEnvelope
+    set?: TravelTimeWhereUniqueInput | TravelTimeWhereUniqueInput[]
+    disconnect?: TravelTimeWhereUniqueInput | TravelTimeWhereUniqueInput[]
+    delete?: TravelTimeWhereUniqueInput | TravelTimeWhereUniqueInput[]
+    connect?: TravelTimeWhereUniqueInput | TravelTimeWhereUniqueInput[]
+    update?: TravelTimeUpdateWithWhereUniqueWithoutUserInput | TravelTimeUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: TravelTimeUpdateManyWithWhereWithoutUserInput | TravelTimeUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: TravelTimeScalarWhereInput | TravelTimeScalarWhereInput[]
+  }
+
+  export type ScheduleUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<ScheduleCreateWithoutUserInput, ScheduleUncheckedCreateWithoutUserInput> | ScheduleCreateWithoutUserInput[] | ScheduleUncheckedCreateWithoutUserInput[]
     connectOrCreate?: ScheduleCreateOrConnectWithoutUserInput | ScheduleCreateOrConnectWithoutUserInput[]
     upsert?: ScheduleUpsertWithWhereUniqueWithoutUserInput | ScheduleUpsertWithWhereUniqueWithoutUserInput[]
@@ -8574,24 +10220,18 @@ export namespace Prisma {
     deleteMany?: SchoolScalarWhereInput | SchoolScalarWhereInput[]
   }
 
-  export type ScheduleUncheckedUpdateManyWithoutUserNestedInput = {
-    create?: XOR<ScheduleCreateWithoutUserInput, ScheduleUncheckedCreateWithoutUserInput> | ScheduleCreateWithoutUserInput[] | ScheduleUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: ScheduleCreateOrConnectWithoutUserInput | ScheduleCreateOrConnectWithoutUserInput[]
-    upsert?: ScheduleUpsertWithWhereUniqueWithoutUserInput | ScheduleUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: ScheduleCreateManyUserInputEnvelope
-    set?: ScheduleWhereUniqueInput | ScheduleWhereUniqueInput[]
-    disconnect?: ScheduleWhereUniqueInput | ScheduleWhereUniqueInput[]
-    delete?: ScheduleWhereUniqueInput | ScheduleWhereUniqueInput[]
-    connect?: ScheduleWhereUniqueInput | ScheduleWhereUniqueInput[]
-    update?: ScheduleUpdateWithWhereUniqueWithoutUserInput | ScheduleUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: ScheduleUpdateManyWithWhereWithoutUserInput | ScheduleUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: ScheduleScalarWhereInput | ScheduleScalarWhereInput[]
-  }
-
-  export type UserCreateNestedOneWithoutSchoolsInput = {
-    create?: XOR<UserCreateWithoutSchoolsInput, UserUncheckedCreateWithoutSchoolsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutSchoolsInput
-    connect?: UserWhereUniqueInput
+  export type TravelTimeUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<TravelTimeCreateWithoutUserInput, TravelTimeUncheckedCreateWithoutUserInput> | TravelTimeCreateWithoutUserInput[] | TravelTimeUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: TravelTimeCreateOrConnectWithoutUserInput | TravelTimeCreateOrConnectWithoutUserInput[]
+    upsert?: TravelTimeUpsertWithWhereUniqueWithoutUserInput | TravelTimeUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: TravelTimeCreateManyUserInputEnvelope
+    set?: TravelTimeWhereUniqueInput | TravelTimeWhereUniqueInput[]
+    disconnect?: TravelTimeWhereUniqueInput | TravelTimeWhereUniqueInput[]
+    delete?: TravelTimeWhereUniqueInput | TravelTimeWhereUniqueInput[]
+    connect?: TravelTimeWhereUniqueInput | TravelTimeWhereUniqueInput[]
+    update?: TravelTimeUpdateWithWhereUniqueWithoutUserInput | TravelTimeUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: TravelTimeUpdateManyWithWhereWithoutUserInput | TravelTimeUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: TravelTimeScalarWhereInput | TravelTimeScalarWhereInput[]
   }
 
   export type ScheduleCreateNestedManyWithoutSchoolInput = {
@@ -8601,19 +10241,17 @@ export namespace Prisma {
     connect?: ScheduleWhereUniqueInput | ScheduleWhereUniqueInput[]
   }
 
+  export type UserCreateNestedOneWithoutSchoolsInput = {
+    create?: XOR<UserCreateWithoutSchoolsInput, UserUncheckedCreateWithoutSchoolsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutSchoolsInput
+    connect?: UserWhereUniqueInput
+  }
+
   export type ScheduleUncheckedCreateNestedManyWithoutSchoolInput = {
     create?: XOR<ScheduleCreateWithoutSchoolInput, ScheduleUncheckedCreateWithoutSchoolInput> | ScheduleCreateWithoutSchoolInput[] | ScheduleUncheckedCreateWithoutSchoolInput[]
     connectOrCreate?: ScheduleCreateOrConnectWithoutSchoolInput | ScheduleCreateOrConnectWithoutSchoolInput[]
     createMany?: ScheduleCreateManySchoolInputEnvelope
     connect?: ScheduleWhereUniqueInput | ScheduleWhereUniqueInput[]
-  }
-
-  export type UserUpdateOneRequiredWithoutSchoolsNestedInput = {
-    create?: XOR<UserCreateWithoutSchoolsInput, UserUncheckedCreateWithoutSchoolsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutSchoolsInput
-    upsert?: UserUpsertWithoutSchoolsInput
-    connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutSchoolsInput, UserUpdateWithoutSchoolsInput>, UserUncheckedUpdateWithoutSchoolsInput>
   }
 
   export type ScheduleUpdateManyWithoutSchoolNestedInput = {
@@ -8630,6 +10268,14 @@ export namespace Prisma {
     deleteMany?: ScheduleScalarWhereInput | ScheduleScalarWhereInput[]
   }
 
+  export type UserUpdateOneRequiredWithoutSchoolsNestedInput = {
+    create?: XOR<UserCreateWithoutSchoolsInput, UserUncheckedCreateWithoutSchoolsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutSchoolsInput
+    upsert?: UserUpsertWithoutSchoolsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutSchoolsInput, UserUpdateWithoutSchoolsInput>, UserUncheckedUpdateWithoutSchoolsInput>
+  }
+
   export type ScheduleUncheckedUpdateManyWithoutSchoolNestedInput = {
     create?: XOR<ScheduleCreateWithoutSchoolInput, ScheduleUncheckedCreateWithoutSchoolInput> | ScheduleCreateWithoutSchoolInput[] | ScheduleUncheckedCreateWithoutSchoolInput[]
     connectOrCreate?: ScheduleCreateOrConnectWithoutSchoolInput | ScheduleCreateOrConnectWithoutSchoolInput[]
@@ -8644,16 +10290,36 @@ export namespace Prisma {
     deleteMany?: ScheduleScalarWhereInput | ScheduleScalarWhereInput[]
   }
 
+  export type UserCreateNestedOneWithoutSchedulesInput = {
+    create?: XOR<UserCreateWithoutSchedulesInput, UserUncheckedCreateWithoutSchedulesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutSchedulesInput
+    connect?: UserWhereUniqueInput
+  }
+
   export type SchoolCreateNestedOneWithoutSchedulesInput = {
     create?: XOR<SchoolCreateWithoutSchedulesInput, SchoolUncheckedCreateWithoutSchedulesInput>
     connectOrCreate?: SchoolCreateOrConnectWithoutSchedulesInput
     connect?: SchoolWhereUniqueInput
   }
 
-  export type UserCreateNestedOneWithoutSchedulesInput = {
+  export type TravelTimeCreateNestedOneWithoutScheduleInput = {
+    create?: XOR<TravelTimeCreateWithoutScheduleInput, TravelTimeUncheckedCreateWithoutScheduleInput>
+    connectOrCreate?: TravelTimeCreateOrConnectWithoutScheduleInput
+    connect?: TravelTimeWhereUniqueInput
+  }
+
+  export type TravelTimeUncheckedCreateNestedOneWithoutScheduleInput = {
+    create?: XOR<TravelTimeCreateWithoutScheduleInput, TravelTimeUncheckedCreateWithoutScheduleInput>
+    connectOrCreate?: TravelTimeCreateOrConnectWithoutScheduleInput
+    connect?: TravelTimeWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutSchedulesNestedInput = {
     create?: XOR<UserCreateWithoutSchedulesInput, UserUncheckedCreateWithoutSchedulesInput>
     connectOrCreate?: UserCreateOrConnectWithoutSchedulesInput
+    upsert?: UserUpsertWithoutSchedulesInput
     connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutSchedulesInput, UserUpdateWithoutSchedulesInput>, UserUncheckedUpdateWithoutSchedulesInput>
   }
 
   export type SchoolUpdateOneRequiredWithoutSchedulesNestedInput = {
@@ -8664,12 +10330,24 @@ export namespace Prisma {
     update?: XOR<XOR<SchoolUpdateToOneWithWhereWithoutSchedulesInput, SchoolUpdateWithoutSchedulesInput>, SchoolUncheckedUpdateWithoutSchedulesInput>
   }
 
-  export type UserUpdateOneRequiredWithoutSchedulesNestedInput = {
-    create?: XOR<UserCreateWithoutSchedulesInput, UserUncheckedCreateWithoutSchedulesInput>
-    connectOrCreate?: UserCreateOrConnectWithoutSchedulesInput
-    upsert?: UserUpsertWithoutSchedulesInput
-    connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutSchedulesInput, UserUpdateWithoutSchedulesInput>, UserUncheckedUpdateWithoutSchedulesInput>
+  export type TravelTimeUpdateOneWithoutScheduleNestedInput = {
+    create?: XOR<TravelTimeCreateWithoutScheduleInput, TravelTimeUncheckedCreateWithoutScheduleInput>
+    connectOrCreate?: TravelTimeCreateOrConnectWithoutScheduleInput
+    upsert?: TravelTimeUpsertWithoutScheduleInput
+    disconnect?: TravelTimeWhereInput | boolean
+    delete?: TravelTimeWhereInput | boolean
+    connect?: TravelTimeWhereUniqueInput
+    update?: XOR<XOR<TravelTimeUpdateToOneWithWhereWithoutScheduleInput, TravelTimeUpdateWithoutScheduleInput>, TravelTimeUncheckedUpdateWithoutScheduleInput>
+  }
+
+  export type TravelTimeUncheckedUpdateOneWithoutScheduleNestedInput = {
+    create?: XOR<TravelTimeCreateWithoutScheduleInput, TravelTimeUncheckedCreateWithoutScheduleInput>
+    connectOrCreate?: TravelTimeCreateOrConnectWithoutScheduleInput
+    upsert?: TravelTimeUpsertWithoutScheduleInput
+    disconnect?: TravelTimeWhereInput | boolean
+    delete?: TravelTimeWhereInput | boolean
+    connect?: TravelTimeWhereUniqueInput
+    update?: XOR<XOR<TravelTimeUpdateToOneWithWhereWithoutScheduleInput, TravelTimeUpdateWithoutScheduleInput>, TravelTimeUncheckedUpdateWithoutScheduleInput>
   }
 
   export type MaterialAttachmentCreateNestedManyWithoutMaterialInput = {
@@ -8736,10 +10414,38 @@ export namespace Prisma {
     update?: XOR<XOR<MaterialUpdateToOneWithWhereWithoutAttachmentsInput, MaterialUpdateWithoutAttachmentsInput>, MaterialUncheckedUpdateWithoutAttachmentsInput>
   }
 
+  export type UserCreateNestedOneWithoutTravelTimesInput = {
+    create?: XOR<UserCreateWithoutTravelTimesInput, UserUncheckedCreateWithoutTravelTimesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutTravelTimesInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type ScheduleCreateNestedOneWithoutTravelTimeInput = {
+    create?: XOR<ScheduleCreateWithoutTravelTimeInput, ScheduleUncheckedCreateWithoutTravelTimeInput>
+    connectOrCreate?: ScheduleCreateOrConnectWithoutTravelTimeInput
+    connect?: ScheduleWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutTravelTimesNestedInput = {
+    create?: XOR<UserCreateWithoutTravelTimesInput, UserUncheckedCreateWithoutTravelTimesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutTravelTimesInput
+    upsert?: UserUpsertWithoutTravelTimesInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutTravelTimesInput, UserUpdateWithoutTravelTimesInput>, UserUncheckedUpdateWithoutTravelTimesInput>
+  }
+
+  export type ScheduleUpdateOneRequiredWithoutTravelTimeNestedInput = {
+    create?: XOR<ScheduleCreateWithoutTravelTimeInput, ScheduleUncheckedCreateWithoutTravelTimeInput>
+    connectOrCreate?: ScheduleCreateOrConnectWithoutTravelTimeInput
+    upsert?: ScheduleUpsertWithoutTravelTimeInput
+    connect?: ScheduleWhereUniqueInput
+    update?: XOR<XOR<ScheduleUpdateToOneWithWhereWithoutTravelTimeInput, ScheduleUpdateWithoutTravelTimeInput>, ScheduleUncheckedUpdateWithoutTravelTimeInput>
+  }
+
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[] | ListStringFieldRefInput<$PrismaModel>
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    in?: string[]
+    notIn?: string[]
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -8752,8 +10458,8 @@ export namespace Prisma {
 
   export type NestedStringNullableFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    in?: string[] | null
+    notIn?: string[] | null
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -8771,8 +10477,8 @@ export namespace Prisma {
 
   export type NestedDateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[]
+    notIn?: Date[] | string[]
     lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
@@ -8782,8 +10488,8 @@ export namespace Prisma {
 
   export type NestedStringWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[] | ListStringFieldRefInput<$PrismaModel>
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    in?: string[]
+    notIn?: string[]
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -8799,8 +10505,8 @@ export namespace Prisma {
 
   export type NestedIntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
     lt?: number | IntFieldRefInput<$PrismaModel>
     lte?: number | IntFieldRefInput<$PrismaModel>
     gt?: number | IntFieldRefInput<$PrismaModel>
@@ -8810,8 +10516,8 @@ export namespace Prisma {
 
   export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    in?: string[] | null
+    notIn?: string[] | null
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -8827,8 +10533,8 @@ export namespace Prisma {
 
   export type NestedIntNullableFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
     lt?: number | IntFieldRefInput<$PrismaModel>
     lte?: number | IntFieldRefInput<$PrismaModel>
     gt?: number | IntFieldRefInput<$PrismaModel>
@@ -8846,8 +10552,8 @@ export namespace Prisma {
 
   export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[]
+    notIn?: Date[] | string[]
     lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
@@ -8860,8 +10566,8 @@ export namespace Prisma {
 
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
     lt?: number | IntFieldRefInput<$PrismaModel>
     lte?: number | IntFieldRefInput<$PrismaModel>
     gt?: number | IntFieldRefInput<$PrismaModel>
@@ -8876,41 +10582,13 @@ export namespace Prisma {
 
   export type NestedFloatFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel>
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
     lt?: number | FloatFieldRefInput<$PrismaModel>
     lte?: number | FloatFieldRefInput<$PrismaModel>
     gt?: number | FloatFieldRefInput<$PrismaModel>
     gte?: number | FloatFieldRefInput<$PrismaModel>
     not?: NestedFloatFilter<$PrismaModel> | number
-  }
-
-  export type SchoolCreateWithoutUserInput = {
-    id?: string
-    name: string
-    phoneNumber?: string | null
-    contactPerson?: string | null
-    email?: string | null
-    schedules?: ScheduleCreateNestedManyWithoutSchoolInput
-  }
-
-  export type SchoolUncheckedCreateWithoutUserInput = {
-    id?: string
-    name: string
-    phoneNumber?: string | null
-    contactPerson?: string | null
-    email?: string | null
-    schedules?: ScheduleUncheckedCreateNestedManyWithoutSchoolInput
-  }
-
-  export type SchoolCreateOrConnectWithoutUserInput = {
-    where: SchoolWhereUniqueInput
-    create: XOR<SchoolCreateWithoutUserInput, SchoolUncheckedCreateWithoutUserInput>
-  }
-
-  export type SchoolCreateManyUserInputEnvelope = {
-    data: SchoolCreateManyUserInput | SchoolCreateManyUserInput[]
-    skipDuplicates?: boolean
   }
 
   export type ScheduleCreateWithoutUserInput = {
@@ -8926,6 +10604,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     school: SchoolCreateNestedOneWithoutSchedulesInput
+    travelTime?: TravelTimeCreateNestedOneWithoutScheduleInput
   }
 
   export type ScheduleUncheckedCreateWithoutUserInput = {
@@ -8941,6 +10620,7 @@ export namespace Prisma {
     holidayReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    travelTime?: TravelTimeUncheckedCreateNestedOneWithoutScheduleInput
   }
 
   export type ScheduleCreateOrConnectWithoutUserInput = {
@@ -8950,35 +10630,70 @@ export namespace Prisma {
 
   export type ScheduleCreateManyUserInputEnvelope = {
     data: ScheduleCreateManyUserInput | ScheduleCreateManyUserInput[]
-    skipDuplicates?: boolean
   }
 
-  export type SchoolUpsertWithWhereUniqueWithoutUserInput = {
+  export type SchoolCreateWithoutUserInput = {
+    id?: string
+    name: string
+    phoneNumber?: string | null
+    contactPerson?: string | null
+    email?: string | null
+    address?: string | null
+    schedules?: ScheduleCreateNestedManyWithoutSchoolInput
+  }
+
+  export type SchoolUncheckedCreateWithoutUserInput = {
+    id?: string
+    name: string
+    phoneNumber?: string | null
+    contactPerson?: string | null
+    email?: string | null
+    address?: string | null
+    schedules?: ScheduleUncheckedCreateNestedManyWithoutSchoolInput
+  }
+
+  export type SchoolCreateOrConnectWithoutUserInput = {
     where: SchoolWhereUniqueInput
-    update: XOR<SchoolUpdateWithoutUserInput, SchoolUncheckedUpdateWithoutUserInput>
     create: XOR<SchoolCreateWithoutUserInput, SchoolUncheckedCreateWithoutUserInput>
   }
 
-  export type SchoolUpdateWithWhereUniqueWithoutUserInput = {
-    where: SchoolWhereUniqueInput
-    data: XOR<SchoolUpdateWithoutUserInput, SchoolUncheckedUpdateWithoutUserInput>
+  export type SchoolCreateManyUserInputEnvelope = {
+    data: SchoolCreateManyUserInput | SchoolCreateManyUserInput[]
   }
 
-  export type SchoolUpdateManyWithWhereWithoutUserInput = {
-    where: SchoolScalarWhereInput
-    data: XOR<SchoolUpdateManyMutationInput, SchoolUncheckedUpdateManyWithoutUserInput>
+  export type TravelTimeCreateWithoutUserInput = {
+    id?: string
+    fromOfficeTime?: string | null
+    fromHomeTime?: string | null
+    toPreviousTime?: string | null
+    duration?: string | null
+    distance?: string | null
+    origin?: string | null
+    calculatedAt?: Date | string
+    updatedAt?: Date | string
+    schedule: ScheduleCreateNestedOneWithoutTravelTimeInput
   }
 
-  export type SchoolScalarWhereInput = {
-    AND?: SchoolScalarWhereInput | SchoolScalarWhereInput[]
-    OR?: SchoolScalarWhereInput[]
-    NOT?: SchoolScalarWhereInput | SchoolScalarWhereInput[]
-    id?: StringFilter<"School"> | string
-    name?: StringFilter<"School"> | string
-    phoneNumber?: StringNullableFilter<"School"> | string | null
-    contactPerson?: StringNullableFilter<"School"> | string | null
-    email?: StringNullableFilter<"School"> | string | null
-    userId?: StringFilter<"School"> | string
+  export type TravelTimeUncheckedCreateWithoutUserInput = {
+    id?: string
+    scheduleId: string
+    fromOfficeTime?: string | null
+    fromHomeTime?: string | null
+    toPreviousTime?: string | null
+    duration?: string | null
+    distance?: string | null
+    origin?: string | null
+    calculatedAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TravelTimeCreateOrConnectWithoutUserInput = {
+    where: TravelTimeWhereUniqueInput
+    create: XOR<TravelTimeCreateWithoutUserInput, TravelTimeUncheckedCreateWithoutUserInput>
+  }
+
+  export type TravelTimeCreateManyUserInputEnvelope = {
+    data: TravelTimeCreateManyUserInput | TravelTimeCreateManyUserInput[]
   }
 
   export type ScheduleUpsertWithWhereUniqueWithoutUserInput = {
@@ -9016,43 +10731,66 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Schedule"> | Date | string
   }
 
-  export type UserCreateWithoutSchoolsInput = {
-    id?: string
-    username: string
-    password: string
-    name: string
-    position?: string | null
-    phoneNumber?: string | null
-    email?: string | null
-    department?: string
-    profilePhoto?: string | null
-    role?: string
-    isActive?: boolean
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    schedules?: ScheduleCreateNestedManyWithoutUserInput
+  export type SchoolUpsertWithWhereUniqueWithoutUserInput = {
+    where: SchoolWhereUniqueInput
+    update: XOR<SchoolUpdateWithoutUserInput, SchoolUncheckedUpdateWithoutUserInput>
+    create: XOR<SchoolCreateWithoutUserInput, SchoolUncheckedCreateWithoutUserInput>
   }
 
-  export type UserUncheckedCreateWithoutSchoolsInput = {
-    id?: string
-    username: string
-    password: string
-    name: string
-    position?: string | null
-    phoneNumber?: string | null
-    email?: string | null
-    department?: string
-    profilePhoto?: string | null
-    role?: string
-    isActive?: boolean
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    schedules?: ScheduleUncheckedCreateNestedManyWithoutUserInput
+  export type SchoolUpdateWithWhereUniqueWithoutUserInput = {
+    where: SchoolWhereUniqueInput
+    data: XOR<SchoolUpdateWithoutUserInput, SchoolUncheckedUpdateWithoutUserInput>
   }
 
-  export type UserCreateOrConnectWithoutSchoolsInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutSchoolsInput, UserUncheckedCreateWithoutSchoolsInput>
+  export type SchoolUpdateManyWithWhereWithoutUserInput = {
+    where: SchoolScalarWhereInput
+    data: XOR<SchoolUpdateManyMutationInput, SchoolUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type SchoolScalarWhereInput = {
+    AND?: SchoolScalarWhereInput | SchoolScalarWhereInput[]
+    OR?: SchoolScalarWhereInput[]
+    NOT?: SchoolScalarWhereInput | SchoolScalarWhereInput[]
+    id?: StringFilter<"School"> | string
+    name?: StringFilter<"School"> | string
+    phoneNumber?: StringNullableFilter<"School"> | string | null
+    contactPerson?: StringNullableFilter<"School"> | string | null
+    email?: StringNullableFilter<"School"> | string | null
+    address?: StringNullableFilter<"School"> | string | null
+    userId?: StringFilter<"School"> | string
+  }
+
+  export type TravelTimeUpsertWithWhereUniqueWithoutUserInput = {
+    where: TravelTimeWhereUniqueInput
+    update: XOR<TravelTimeUpdateWithoutUserInput, TravelTimeUncheckedUpdateWithoutUserInput>
+    create: XOR<TravelTimeCreateWithoutUserInput, TravelTimeUncheckedCreateWithoutUserInput>
+  }
+
+  export type TravelTimeUpdateWithWhereUniqueWithoutUserInput = {
+    where: TravelTimeWhereUniqueInput
+    data: XOR<TravelTimeUpdateWithoutUserInput, TravelTimeUncheckedUpdateWithoutUserInput>
+  }
+
+  export type TravelTimeUpdateManyWithWhereWithoutUserInput = {
+    where: TravelTimeScalarWhereInput
+    data: XOR<TravelTimeUpdateManyMutationInput, TravelTimeUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type TravelTimeScalarWhereInput = {
+    AND?: TravelTimeScalarWhereInput | TravelTimeScalarWhereInput[]
+    OR?: TravelTimeScalarWhereInput[]
+    NOT?: TravelTimeScalarWhereInput | TravelTimeScalarWhereInput[]
+    id?: StringFilter<"TravelTime"> | string
+    userId?: StringFilter<"TravelTime"> | string
+    scheduleId?: StringFilter<"TravelTime"> | string
+    fromOfficeTime?: StringNullableFilter<"TravelTime"> | string | null
+    fromHomeTime?: StringNullableFilter<"TravelTime"> | string | null
+    toPreviousTime?: StringNullableFilter<"TravelTime"> | string | null
+    duration?: StringNullableFilter<"TravelTime"> | string | null
+    distance?: StringNullableFilter<"TravelTime"> | string | null
+    origin?: StringNullableFilter<"TravelTime"> | string | null
+    calculatedAt?: DateTimeFilter<"TravelTime"> | Date | string
+    updatedAt?: DateTimeFilter<"TravelTime"> | Date | string
   }
 
   export type ScheduleCreateWithoutSchoolInput = {
@@ -9068,6 +10806,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutSchedulesInput
+    travelTime?: TravelTimeCreateNestedOneWithoutScheduleInput
   }
 
   export type ScheduleUncheckedCreateWithoutSchoolInput = {
@@ -9083,6 +10822,7 @@ export namespace Prisma {
     holidayReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    travelTime?: TravelTimeUncheckedCreateNestedOneWithoutScheduleInput
   }
 
   export type ScheduleCreateOrConnectWithoutSchoolInput = {
@@ -9092,7 +10832,67 @@ export namespace Prisma {
 
   export type ScheduleCreateManySchoolInputEnvelope = {
     data: ScheduleCreateManySchoolInput | ScheduleCreateManySchoolInput[]
-    skipDuplicates?: boolean
+  }
+
+  export type UserCreateWithoutSchoolsInput = {
+    id?: string
+    username: string
+    password: string
+    name: string
+    position?: string | null
+    phoneNumber?: string | null
+    email?: string | null
+    department?: string
+    profilePhoto?: string | null
+    role?: string
+    isActive?: boolean
+    homeAddress?: string | null
+    officeAddress?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    schedules?: ScheduleCreateNestedManyWithoutUserInput
+    travelTimes?: TravelTimeCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutSchoolsInput = {
+    id?: string
+    username: string
+    password: string
+    name: string
+    position?: string | null
+    phoneNumber?: string | null
+    email?: string | null
+    department?: string
+    profilePhoto?: string | null
+    role?: string
+    isActive?: boolean
+    homeAddress?: string | null
+    officeAddress?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    schedules?: ScheduleUncheckedCreateNestedManyWithoutUserInput
+    travelTimes?: TravelTimeUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutSchoolsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutSchoolsInput, UserUncheckedCreateWithoutSchoolsInput>
+  }
+
+  export type ScheduleUpsertWithWhereUniqueWithoutSchoolInput = {
+    where: ScheduleWhereUniqueInput
+    update: XOR<ScheduleUpdateWithoutSchoolInput, ScheduleUncheckedUpdateWithoutSchoolInput>
+    create: XOR<ScheduleCreateWithoutSchoolInput, ScheduleUncheckedCreateWithoutSchoolInput>
+  }
+
+  export type ScheduleUpdateWithWhereUniqueWithoutSchoolInput = {
+    where: ScheduleWhereUniqueInput
+    data: XOR<ScheduleUpdateWithoutSchoolInput, ScheduleUncheckedUpdateWithoutSchoolInput>
+  }
+
+  export type ScheduleUpdateManyWithWhereWithoutSchoolInput = {
+    where: ScheduleScalarWhereInput
+    data: XOR<ScheduleUpdateManyMutationInput, ScheduleUncheckedUpdateManyWithoutSchoolInput>
   }
 
   export type UserUpsertWithoutSchoolsInput = {
@@ -9118,9 +10918,12 @@ export namespace Prisma {
     profilePhoto?: NullableStringFieldUpdateOperationsInput | string | null
     role?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    homeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    officeAddress?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     schedules?: ScheduleUpdateManyWithoutUserNestedInput
+    travelTimes?: TravelTimeUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSchoolsInput = {
@@ -9135,48 +10938,12 @@ export namespace Prisma {
     profilePhoto?: NullableStringFieldUpdateOperationsInput | string | null
     role?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    homeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    officeAddress?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     schedules?: ScheduleUncheckedUpdateManyWithoutUserNestedInput
-  }
-
-  export type ScheduleUpsertWithWhereUniqueWithoutSchoolInput = {
-    where: ScheduleWhereUniqueInput
-    update: XOR<ScheduleUpdateWithoutSchoolInput, ScheduleUncheckedUpdateWithoutSchoolInput>
-    create: XOR<ScheduleCreateWithoutSchoolInput, ScheduleUncheckedCreateWithoutSchoolInput>
-  }
-
-  export type ScheduleUpdateWithWhereUniqueWithoutSchoolInput = {
-    where: ScheduleWhereUniqueInput
-    data: XOR<ScheduleUpdateWithoutSchoolInput, ScheduleUncheckedUpdateWithoutSchoolInput>
-  }
-
-  export type ScheduleUpdateManyWithWhereWithoutSchoolInput = {
-    where: ScheduleScalarWhereInput
-    data: XOR<ScheduleUpdateManyMutationInput, ScheduleUncheckedUpdateManyWithoutSchoolInput>
-  }
-
-  export type SchoolCreateWithoutSchedulesInput = {
-    id?: string
-    name: string
-    phoneNumber?: string | null
-    contactPerson?: string | null
-    email?: string | null
-    user: UserCreateNestedOneWithoutSchoolsInput
-  }
-
-  export type SchoolUncheckedCreateWithoutSchedulesInput = {
-    id?: string
-    name: string
-    phoneNumber?: string | null
-    contactPerson?: string | null
-    email?: string | null
-    userId: string
-  }
-
-  export type SchoolCreateOrConnectWithoutSchedulesInput = {
-    where: SchoolWhereUniqueInput
-    create: XOR<SchoolCreateWithoutSchedulesInput, SchoolUncheckedCreateWithoutSchedulesInput>
+    travelTimes?: TravelTimeUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutSchedulesInput = {
@@ -9191,9 +10958,12 @@ export namespace Prisma {
     profilePhoto?: string | null
     role?: string
     isActive?: boolean
+    homeAddress?: string | null
+    officeAddress?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     schools?: SchoolCreateNestedManyWithoutUserInput
+    travelTimes?: TravelTimeCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSchedulesInput = {
@@ -9208,9 +10978,12 @@ export namespace Prisma {
     profilePhoto?: string | null
     role?: string
     isActive?: boolean
+    homeAddress?: string | null
+    officeAddress?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     schools?: SchoolUncheckedCreateNestedManyWithoutUserInput
+    travelTimes?: TravelTimeUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSchedulesInput = {
@@ -9218,33 +10991,60 @@ export namespace Prisma {
     create: XOR<UserCreateWithoutSchedulesInput, UserUncheckedCreateWithoutSchedulesInput>
   }
 
-  export type SchoolUpsertWithoutSchedulesInput = {
-    update: XOR<SchoolUpdateWithoutSchedulesInput, SchoolUncheckedUpdateWithoutSchedulesInput>
+  export type SchoolCreateWithoutSchedulesInput = {
+    id?: string
+    name: string
+    phoneNumber?: string | null
+    contactPerson?: string | null
+    email?: string | null
+    address?: string | null
+    user: UserCreateNestedOneWithoutSchoolsInput
+  }
+
+  export type SchoolUncheckedCreateWithoutSchedulesInput = {
+    id?: string
+    name: string
+    phoneNumber?: string | null
+    contactPerson?: string | null
+    email?: string | null
+    address?: string | null
+    userId: string
+  }
+
+  export type SchoolCreateOrConnectWithoutSchedulesInput = {
+    where: SchoolWhereUniqueInput
     create: XOR<SchoolCreateWithoutSchedulesInput, SchoolUncheckedCreateWithoutSchedulesInput>
-    where?: SchoolWhereInput
   }
 
-  export type SchoolUpdateToOneWithWhereWithoutSchedulesInput = {
-    where?: SchoolWhereInput
-    data: XOR<SchoolUpdateWithoutSchedulesInput, SchoolUncheckedUpdateWithoutSchedulesInput>
+  export type TravelTimeCreateWithoutScheduleInput = {
+    id?: string
+    fromOfficeTime?: string | null
+    fromHomeTime?: string | null
+    toPreviousTime?: string | null
+    duration?: string | null
+    distance?: string | null
+    origin?: string | null
+    calculatedAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutTravelTimesInput
   }
 
-  export type SchoolUpdateWithoutSchedulesInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    contactPerson?: NullableStringFieldUpdateOperationsInput | string | null
-    email?: NullableStringFieldUpdateOperationsInput | string | null
-    user?: UserUpdateOneRequiredWithoutSchoolsNestedInput
+  export type TravelTimeUncheckedCreateWithoutScheduleInput = {
+    id?: string
+    userId: string
+    fromOfficeTime?: string | null
+    fromHomeTime?: string | null
+    toPreviousTime?: string | null
+    duration?: string | null
+    distance?: string | null
+    origin?: string | null
+    calculatedAt?: Date | string
+    updatedAt?: Date | string
   }
 
-  export type SchoolUncheckedUpdateWithoutSchedulesInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    contactPerson?: NullableStringFieldUpdateOperationsInput | string | null
-    email?: NullableStringFieldUpdateOperationsInput | string | null
-    userId?: StringFieldUpdateOperationsInput | string
+  export type TravelTimeCreateOrConnectWithoutScheduleInput = {
+    where: TravelTimeWhereUniqueInput
+    create: XOR<TravelTimeCreateWithoutScheduleInput, TravelTimeUncheckedCreateWithoutScheduleInput>
   }
 
   export type UserUpsertWithoutSchedulesInput = {
@@ -9270,9 +11070,12 @@ export namespace Prisma {
     profilePhoto?: NullableStringFieldUpdateOperationsInput | string | null
     role?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    homeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    officeAddress?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     schools?: SchoolUpdateManyWithoutUserNestedInput
+    travelTimes?: TravelTimeUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSchedulesInput = {
@@ -9287,9 +11090,80 @@ export namespace Prisma {
     profilePhoto?: NullableStringFieldUpdateOperationsInput | string | null
     role?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    homeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    officeAddress?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     schools?: SchoolUncheckedUpdateManyWithoutUserNestedInput
+    travelTimes?: TravelTimeUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type SchoolUpsertWithoutSchedulesInput = {
+    update: XOR<SchoolUpdateWithoutSchedulesInput, SchoolUncheckedUpdateWithoutSchedulesInput>
+    create: XOR<SchoolCreateWithoutSchedulesInput, SchoolUncheckedCreateWithoutSchedulesInput>
+    where?: SchoolWhereInput
+  }
+
+  export type SchoolUpdateToOneWithWhereWithoutSchedulesInput = {
+    where?: SchoolWhereInput
+    data: XOR<SchoolUpdateWithoutSchedulesInput, SchoolUncheckedUpdateWithoutSchedulesInput>
+  }
+
+  export type SchoolUpdateWithoutSchedulesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    contactPerson?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    user?: UserUpdateOneRequiredWithoutSchoolsNestedInput
+  }
+
+  export type SchoolUncheckedUpdateWithoutSchedulesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    contactPerson?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type TravelTimeUpsertWithoutScheduleInput = {
+    update: XOR<TravelTimeUpdateWithoutScheduleInput, TravelTimeUncheckedUpdateWithoutScheduleInput>
+    create: XOR<TravelTimeCreateWithoutScheduleInput, TravelTimeUncheckedCreateWithoutScheduleInput>
+    where?: TravelTimeWhereInput
+  }
+
+  export type TravelTimeUpdateToOneWithWhereWithoutScheduleInput = {
+    where?: TravelTimeWhereInput
+    data: XOR<TravelTimeUpdateWithoutScheduleInput, TravelTimeUncheckedUpdateWithoutScheduleInput>
+  }
+
+  export type TravelTimeUpdateWithoutScheduleInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    fromOfficeTime?: NullableStringFieldUpdateOperationsInput | string | null
+    fromHomeTime?: NullableStringFieldUpdateOperationsInput | string | null
+    toPreviousTime?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableStringFieldUpdateOperationsInput | string | null
+    distance?: NullableStringFieldUpdateOperationsInput | string | null
+    origin?: NullableStringFieldUpdateOperationsInput | string | null
+    calculatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutTravelTimesNestedInput
+  }
+
+  export type TravelTimeUncheckedUpdateWithoutScheduleInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    fromOfficeTime?: NullableStringFieldUpdateOperationsInput | string | null
+    fromHomeTime?: NullableStringFieldUpdateOperationsInput | string | null
+    toPreviousTime?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableStringFieldUpdateOperationsInput | string | null
+    distance?: NullableStringFieldUpdateOperationsInput | string | null
+    origin?: NullableStringFieldUpdateOperationsInput | string | null
+    calculatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type MaterialAttachmentCreateWithoutMaterialInput = {
@@ -9321,7 +11195,6 @@ export namespace Prisma {
 
   export type MaterialAttachmentCreateManyMaterialInputEnvelope = {
     data: MaterialAttachmentCreateManyMaterialInput | MaterialAttachmentCreateManyMaterialInput[]
-    skipDuplicates?: boolean
   }
 
   export type MaterialAttachmentUpsertWithWhereUniqueWithoutMaterialInput = {
@@ -9415,12 +11288,180 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type SchoolCreateManyUserInput = {
+  export type UserCreateWithoutTravelTimesInput = {
     id?: string
+    username: string
+    password: string
     name: string
+    position?: string | null
     phoneNumber?: string | null
-    contactPerson?: string | null
     email?: string | null
+    department?: string
+    profilePhoto?: string | null
+    role?: string
+    isActive?: boolean
+    homeAddress?: string | null
+    officeAddress?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    schedules?: ScheduleCreateNestedManyWithoutUserInput
+    schools?: SchoolCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutTravelTimesInput = {
+    id?: string
+    username: string
+    password: string
+    name: string
+    position?: string | null
+    phoneNumber?: string | null
+    email?: string | null
+    department?: string
+    profilePhoto?: string | null
+    role?: string
+    isActive?: boolean
+    homeAddress?: string | null
+    officeAddress?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    schedules?: ScheduleUncheckedCreateNestedManyWithoutUserInput
+    schools?: SchoolUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutTravelTimesInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutTravelTimesInput, UserUncheckedCreateWithoutTravelTimesInput>
+  }
+
+  export type ScheduleCreateWithoutTravelTimeInput = {
+    id?: string
+    date: Date | string
+    ampm: string
+    startTime: string
+    endTime: string
+    purpose: string
+    otherReason?: string | null
+    isHoliday?: boolean
+    holidayReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutSchedulesInput
+    school: SchoolCreateNestedOneWithoutSchedulesInput
+  }
+
+  export type ScheduleUncheckedCreateWithoutTravelTimeInput = {
+    id?: string
+    date: Date | string
+    schoolId: string
+    userId: string
+    ampm: string
+    startTime: string
+    endTime: string
+    purpose: string
+    otherReason?: string | null
+    isHoliday?: boolean
+    holidayReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ScheduleCreateOrConnectWithoutTravelTimeInput = {
+    where: ScheduleWhereUniqueInput
+    create: XOR<ScheduleCreateWithoutTravelTimeInput, ScheduleUncheckedCreateWithoutTravelTimeInput>
+  }
+
+  export type UserUpsertWithoutTravelTimesInput = {
+    update: XOR<UserUpdateWithoutTravelTimesInput, UserUncheckedUpdateWithoutTravelTimesInput>
+    create: XOR<UserCreateWithoutTravelTimesInput, UserUncheckedCreateWithoutTravelTimesInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutTravelTimesInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutTravelTimesInput, UserUncheckedUpdateWithoutTravelTimesInput>
+  }
+
+  export type UserUpdateWithoutTravelTimesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    username?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    position?: NullableStringFieldUpdateOperationsInput | string | null
+    phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: StringFieldUpdateOperationsInput | string
+    profilePhoto?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    homeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    officeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    schedules?: ScheduleUpdateManyWithoutUserNestedInput
+    schools?: SchoolUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutTravelTimesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    username?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    position?: NullableStringFieldUpdateOperationsInput | string | null
+    phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: StringFieldUpdateOperationsInput | string
+    profilePhoto?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    homeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    officeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    schedules?: ScheduleUncheckedUpdateManyWithoutUserNestedInput
+    schools?: SchoolUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type ScheduleUpsertWithoutTravelTimeInput = {
+    update: XOR<ScheduleUpdateWithoutTravelTimeInput, ScheduleUncheckedUpdateWithoutTravelTimeInput>
+    create: XOR<ScheduleCreateWithoutTravelTimeInput, ScheduleUncheckedCreateWithoutTravelTimeInput>
+    where?: ScheduleWhereInput
+  }
+
+  export type ScheduleUpdateToOneWithWhereWithoutTravelTimeInput = {
+    where?: ScheduleWhereInput
+    data: XOR<ScheduleUpdateWithoutTravelTimeInput, ScheduleUncheckedUpdateWithoutTravelTimeInput>
+  }
+
+  export type ScheduleUpdateWithoutTravelTimeInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    ampm?: StringFieldUpdateOperationsInput | string
+    startTime?: StringFieldUpdateOperationsInput | string
+    endTime?: StringFieldUpdateOperationsInput | string
+    purpose?: StringFieldUpdateOperationsInput | string
+    otherReason?: NullableStringFieldUpdateOperationsInput | string | null
+    isHoliday?: BoolFieldUpdateOperationsInput | boolean
+    holidayReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutSchedulesNestedInput
+    school?: SchoolUpdateOneRequiredWithoutSchedulesNestedInput
+  }
+
+  export type ScheduleUncheckedUpdateWithoutTravelTimeInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    ampm?: StringFieldUpdateOperationsInput | string
+    startTime?: StringFieldUpdateOperationsInput | string
+    endTime?: StringFieldUpdateOperationsInput | string
+    purpose?: StringFieldUpdateOperationsInput | string
+    otherReason?: NullableStringFieldUpdateOperationsInput | string | null
+    isHoliday?: BoolFieldUpdateOperationsInput | boolean
+    holidayReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ScheduleCreateManyUserInput = {
@@ -9438,30 +11479,26 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
-  export type SchoolUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    contactPerson?: NullableStringFieldUpdateOperationsInput | string | null
-    email?: NullableStringFieldUpdateOperationsInput | string | null
-    schedules?: ScheduleUpdateManyWithoutSchoolNestedInput
+  export type SchoolCreateManyUserInput = {
+    id?: string
+    name: string
+    phoneNumber?: string | null
+    contactPerson?: string | null
+    email?: string | null
+    address?: string | null
   }
 
-  export type SchoolUncheckedUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    contactPerson?: NullableStringFieldUpdateOperationsInput | string | null
-    email?: NullableStringFieldUpdateOperationsInput | string | null
-    schedules?: ScheduleUncheckedUpdateManyWithoutSchoolNestedInput
-  }
-
-  export type SchoolUncheckedUpdateManyWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    contactPerson?: NullableStringFieldUpdateOperationsInput | string | null
-    email?: NullableStringFieldUpdateOperationsInput | string | null
+  export type TravelTimeCreateManyUserInput = {
+    id?: string
+    scheduleId: string
+    fromOfficeTime?: string | null
+    fromHomeTime?: string | null
+    toPreviousTime?: string | null
+    duration?: string | null
+    distance?: string | null
+    origin?: string | null
+    calculatedAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type ScheduleUpdateWithoutUserInput = {
@@ -9477,6 +11514,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     school?: SchoolUpdateOneRequiredWithoutSchedulesNestedInput
+    travelTime?: TravelTimeUpdateOneWithoutScheduleNestedInput
   }
 
   export type ScheduleUncheckedUpdateWithoutUserInput = {
@@ -9492,6 +11530,7 @@ export namespace Prisma {
     holidayReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    travelTime?: TravelTimeUncheckedUpdateOneWithoutScheduleNestedInput
   }
 
   export type ScheduleUncheckedUpdateManyWithoutUserInput = {
@@ -9506,6 +11545,74 @@ export namespace Prisma {
     isHoliday?: BoolFieldUpdateOperationsInput | boolean
     holidayReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SchoolUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    contactPerson?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    schedules?: ScheduleUpdateManyWithoutSchoolNestedInput
+  }
+
+  export type SchoolUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    contactPerson?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    schedules?: ScheduleUncheckedUpdateManyWithoutSchoolNestedInput
+  }
+
+  export type SchoolUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    contactPerson?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type TravelTimeUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    fromOfficeTime?: NullableStringFieldUpdateOperationsInput | string | null
+    fromHomeTime?: NullableStringFieldUpdateOperationsInput | string | null
+    toPreviousTime?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableStringFieldUpdateOperationsInput | string | null
+    distance?: NullableStringFieldUpdateOperationsInput | string | null
+    origin?: NullableStringFieldUpdateOperationsInput | string | null
+    calculatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    schedule?: ScheduleUpdateOneRequiredWithoutTravelTimeNestedInput
+  }
+
+  export type TravelTimeUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    scheduleId?: StringFieldUpdateOperationsInput | string
+    fromOfficeTime?: NullableStringFieldUpdateOperationsInput | string | null
+    fromHomeTime?: NullableStringFieldUpdateOperationsInput | string | null
+    toPreviousTime?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableStringFieldUpdateOperationsInput | string | null
+    distance?: NullableStringFieldUpdateOperationsInput | string | null
+    origin?: NullableStringFieldUpdateOperationsInput | string | null
+    calculatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TravelTimeUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    scheduleId?: StringFieldUpdateOperationsInput | string
+    fromOfficeTime?: NullableStringFieldUpdateOperationsInput | string | null
+    fromHomeTime?: NullableStringFieldUpdateOperationsInput | string | null
+    toPreviousTime?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableStringFieldUpdateOperationsInput | string | null
+    distance?: NullableStringFieldUpdateOperationsInput | string | null
+    origin?: NullableStringFieldUpdateOperationsInput | string | null
+    calculatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -9537,6 +11644,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutSchedulesNestedInput
+    travelTime?: TravelTimeUpdateOneWithoutScheduleNestedInput
   }
 
   export type ScheduleUncheckedUpdateWithoutSchoolInput = {
@@ -9552,6 +11660,7 @@ export namespace Prisma {
     holidayReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    travelTime?: TravelTimeUncheckedUpdateOneWithoutScheduleNestedInput
   }
 
   export type ScheduleUncheckedUpdateManyWithoutSchoolInput = {

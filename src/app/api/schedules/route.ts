@@ -20,6 +20,16 @@ export async function GET(request: Request) {
       where: whereCondition,
       include: {
         school: true, // Include school details
+        travelTime: {
+          select: {
+            id: true,
+            duration: true,
+            origin: true,
+            fromOfficeTime: true,
+            fromHomeTime: true,
+            toPreviousTime: true,
+          }
+        }
       },
       orderBy: {
         date: 'asc',

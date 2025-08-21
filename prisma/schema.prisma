@@ -1,89 +1,103 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma" // Output Prisma Client to src/generated/prisma
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id        String    @id @default(uuid())
-  username  String    @unique  // 로그인용 아이디 (중복 불가)
-  password  String               // 비밀번호 (나중에 암호화 예정)
-  name      String               // 사용자 실명 (한글명)
-  position  String?              // 직급
-  phoneNumber String?            // 전화번호
-  email     String?              // 이메일 주소
-  department String   @default("산업안전팀") // 부서 (자동선택)
-  profilePhoto String?           // 프로필 사진 URL (Google Cloud Storage)
-  role      String    @default("user") // "super_admin" 또는 "user"
-  isActive  Boolean   @default(false)   // 계정 활성화 여부 (승인 전까지 비활성화)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  
-  // 관계 설정 (나중에 연결할 예정)
-  schools   School[]
-  schedules Schedule[]
+  id            String     @id @default(uuid())
+  username      String     @unique
+  password      String
+  name          String
+  position      String?
+  phoneNumber   String?
+  email         String?
+  department    String     @default("산업안전팀")
+  profilePhoto  String?
+  role          String     @default("user")
+  isActive      Boolean    @default(false)
+  homeAddress   String?
+  officeAddress String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  schedules     Schedule[]
+  schools       School[]
+  travelTimes   TravelTime[]
 }
 
 model School {
-  id            String    @id @default(uuid())
-  name          String    @unique
+  id            String     @id @default(uuid())
+  name          String     @unique
   phoneNumber   String?
   contactPerson String?
-  email         String?              // 학교 이메일
-  userId        String               // 어느 사용자가 등록했는지
-  user          User      @relation(fields: [userId], references: [id])
+  email         String?
+  address       String?
+  userId        String
   schedules     Schedule[]
+  user          User       @relation(fields: [userId], references: [id])
 }
 
 model Schedule {
-  id          String    @id @default(uuid())
-  date        DateTime
-  schoolId    String
-  school      School    @relation(fields: [schoolId], references: [id])
-  userId      String               // 어느 사용자가 등록했는지
-  user        User      @relation(fields: [userId], references: [id])
-  ampm        String    // "AM" or "PM"
-  startTime   String    // e.g., "08:00"
-  endTime     String    // e.g., "09:00"
-  purpose     String    // Store as JSON string, e.g., "["월점검", "교육"]"
-  otherReason String?   // Only if "기타" or "교육" is selected
-  isHoliday   Boolean   @default(false) // 휴무일정 여부
-  holidayReason String? // 휴무 사유
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id            String   @id @default(uuid())
+  date          DateTime
+  schoolId      String
+  userId        String
+  ampm          String
+  startTime     String
+  endTime       String
+  purpose       String
+  otherReason   String?
+  isHoliday     Boolean  @default(false)
+  holidayReason String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  user          User        @relation(fields: [userId], references: [id])
+  school        School      @relation(fields: [schoolId], references: [id])
+  travelTime    TravelTime?
 }
 
 model Material {
-  id            String    @id @default(uuid())
-  title         String    // 게시글 제목
-  content       String?   // 게시글 내용
-  attachments   MaterialAttachment[] // 첨부파일들 (최대 5개)
-  uploadedAt    DateTime  @default(now())
-  uploader      String
-  category      String    // "교육자료" or "산업재해"
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id          String               @id @default(uuid())
+  title       String
+  content     String?
+  uploadedAt  DateTime             @default(now())
+  uploader    String
+  category    String
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+  attachments MaterialAttachment[]
 }
 
 model MaterialAttachment {
-  id            String    @id @default(uuid())
+  id            String   @id @default(uuid())
   materialId    String
-  material      Material  @relation(fields: [materialId], references: [id], onDelete: Cascade)
-  filename      String    // 원본 파일명
-  filePath      String    // GCS 저장 경로
-  fileSize      Int       // 파일 크기 (bytes)
-  mimeType      String    // MIME 타입
-  thumbnailPath String?   // 썸네일 경로 (이미지인 경우)
-  uploadOrder   Int       // 업로드 순서 (1-5)
-  createdAt     DateTime  @default(now())
+  filename      String
+  filePath      String
+  fileSize      Int
+  mimeType      String
+  thumbnailPath String?
+  uploadOrder   Int
+  createdAt     DateTime @default(now())
+  material      Material @relation(fields: [materialId], references: [id], onDelete: Cascade)
+}
+
+model TravelTime {
+  id                String   @id @default(uuid())
+  userId            String
+  scheduleId        String   @unique
+  fromOfficeTime    String?  // 회사에서 출발하는 시간
+  fromHomeTime      String?  // 집에서 출발하는 시간  
+  toPreviousTime    String?  // 이전 학교에서 이동하는 시간
+  duration          String?  // 이동 소요 시간 (예: "32분")
+  distance          String?  // 이동 거리 (예: "15.2km")
+  origin            String?  // 출발지 (집/회사/이전학교명)
+  calculatedAt      DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  user              User     @relation(fields: [userId], references: [id])
+  schedule          Schedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
 }

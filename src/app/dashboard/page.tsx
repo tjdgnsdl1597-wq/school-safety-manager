@@ -46,6 +46,14 @@ interface Schedule {
   otherReason?: string | null;
   isHoliday?: boolean;
   holidayReason?: string | null;
+  travelTime?: {
+    id: string;
+    duration: string | null;
+    origin: string | null;
+    fromOfficeTime: string | null;
+    fromHomeTime: string | null;
+    toPreviousTime: string | null;
+  } | null;
 }
 
 export default function DashboardPage() {
@@ -264,6 +272,48 @@ export default function DashboardPage() {
     
     return () => clearInterval(interval);
   }, []);
+
+  // 10분마다 자동 이동시간 업데이트
+  useEffect(() => {
+    const autoUpdateTravelTime = async () => {
+      if (!user?.id || !user?.homeAddress || !user?.officeAddress) {
+        return;
+      }
+
+      try {
+        console.log('자동 이동시간 업데이트 시작...');
+        const response = await fetch('/api/travel-time/auto-update', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ userId: user.id })
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          console.log('이동시간 자동 업데이트 완료:', result);
+          
+          // 스케줄 데이터 다시 로드해서 최신 이동시간 반영
+          if (result.updated > 0) {
+            fetchSchedules();
+          }
+        }
+      } catch (error) {
+        console.error('자동 이동시간 업데이트 실패:', error);
+      }
+    };
+
+    // 초기 실행
+    if (isAuthenticated && user?.homeAddress && user?.officeAddress) {
+      autoUpdateTravelTime();
+    }
+
+    // 10분(600,000ms)마다 실행
+    const interval = setInterval(autoUpdateTravelTime, 10 * 60 * 1000);
+    
+    return () => clearInterval(interval);
+  }, [isAuthenticated, user?.id, user?.homeAddress, user?.officeAddress]);
 
   // --- Event Handlers ---
   const handleDateClick = (arg: DateClickArg) => {
@@ -492,67 +542,67 @@ export default function DashboardPage() {
               </div>
               {todaySchedules.length > 0 ? (
                 (() => {
-                  // 시간별로 정렬하여 빠른 방문과 늦은 방문으로 분류
+                  // 시간별로 정렬
                   const sortedSchedules = [...todaySchedules].sort((a, b) => 
                     a.startTime.localeCompare(b.startTime)
                   );
-                  const midPoint = Math.ceil(sortedSchedules.length / 2);
-                  const earlySchedules = sortedSchedules.slice(0, midPoint);
-                  const lateSchedules = sortedSchedules.slice(midPoint);
                   
                   return (
-                    <div className="grid grid-cols-2 gap-4">
-                      {/* 빠른 방문 (왼쪽) */}
-                      <div>
-                        <h4 className="text-sm font-semibold text-gray-700 mb-2">빠른 방문</h4>
-                        <div className="space-y-2">
-                          {earlySchedules.map((schedule) => (
-                            <div key={schedule.id} className="p-2 bg-blue-50 rounded-lg border border-blue-200">
-                              <div className="text-xs font-medium text-blue-900">
-                                {schedule.startTime} - {schedule.endTime}
-                              </div>
-                              <div className="text-xs text-blue-700 mt-1">
-                                {schedule.isHoliday ? (
-                                  <span>🏖️ {schedule.holidayReason}</span>
-                                ) : (
-                                  <span>{schedule.school.name}</span>
-                                )}
-                              </div>
-                              {!schedule.isHoliday && (
-                                <div className="text-xs text-blue-600 mt-1">
-                                  {JSON.parse(schedule.purpose || '[]').join(', ')}
+                    <div className="space-y-2 max-h-80 overflow-y-auto">
+                      {sortedSchedules.map((schedule, index) => (
+                        <div key={schedule.id} className="p-3 bg-blue-50 rounded-lg border border-blue-200">
+                          <div className="flex justify-between items-start mb-2">
+                            <div className="text-xs font-medium text-blue-900">
+                              {schedule.startTime} - {schedule.endTime}
+                            </div>
+                            <div className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                              #{index + 1}
+                            </div>
+                          </div>
+                          <div className="text-xs text-blue-700 mb-1">
+                            {schedule.isHoliday ? (
+                              <span>🏖️ {schedule.holidayReason}</span>
+                            ) : (
+                              <span className="font-medium">{schedule.school.name}</span>
+                            )}
+                          </div>
+                          {!schedule.isHoliday && (
+                            <div className="text-xs text-blue-600 mb-2">
+                              {JSON.parse(schedule.purpose || '[]').join(', ')}
+                            </div>
+                          )}
+                          {!schedule.isHoliday && schedule.travelTime && (
+                            <div className="text-xs bg-green-50 border border-green-200 rounded p-2">
+                              {/* 첫 번째 학교인 경우 회사/집 두 옵션 표시 */}
+                              {index === 0 ? (
+                                <div className="space-y-1">
+                                  <div className="text-xs font-medium text-green-700 mb-1">🚗 이동시간:</div>
+                                  {schedule.travelTime.fromOfficeTime && (
+                                    <div className="flex items-center justify-between text-xs">
+                                      <span className="text-purple-600">🏢 회사에서</span>
+                                      <span className="font-medium">{schedule.travelTime.fromOfficeTime}</span>
+                                    </div>
+                                  )}
+                                  {schedule.travelTime.fromHomeTime && (
+                                    <div className="flex items-center justify-between text-xs">
+                                      <span className="text-blue-600">🏠 집에서</span>
+                                      <span className="font-medium">{schedule.travelTime.fromHomeTime}</span>
+                                    </div>
+                                  )}
                                 </div>
+                              ) : (
+                                /* 두 번째 이후 학교는 이전 학교에서의 이동시간 */
+                                schedule.travelTime.toPreviousTime && (
+                                  <div className="flex items-center justify-between text-xs">
+                                    <span className="text-orange-600">🚗 이전 학교에서</span>
+                                    <span className="font-medium">{schedule.travelTime.toPreviousTime}</span>
+                                  </div>
+                                )
                               )}
                             </div>
-                          ))}
+                          )}
                         </div>
-                      </div>
-                      
-                      {/* 늦은 방문 (오른쪽) */}
-                      <div>
-                        <h4 className="text-sm font-semibold text-gray-700 mb-2">늦은 방문</h4>
-                        <div className="space-y-2">
-                          {lateSchedules.map((schedule) => (
-                            <div key={schedule.id} className="p-2 bg-blue-50 rounded-lg border border-blue-200">
-                              <div className="text-xs font-medium text-blue-900">
-                                {schedule.startTime} - {schedule.endTime}
-                              </div>
-                              <div className="text-xs text-blue-700 mt-1">
-                                {schedule.isHoliday ? (
-                                  <span>🏖️ {schedule.holidayReason}</span>
-                                ) : (
-                                  <span>{schedule.school.name}</span>
-                                )}
-                              </div>
-                              {!schedule.isHoliday && (
-                                <div className="text-xs text-blue-600 mt-1">
-                                  {JSON.parse(schedule.purpose || '[]').join(', ')}
-                                </div>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
+                      ))}
                     </div>
                   );
                 })()

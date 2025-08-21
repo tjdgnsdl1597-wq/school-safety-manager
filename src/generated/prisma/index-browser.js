@@ -114,9 +114,6 @@ Prisma.NullTypes = {
  */
 
 exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
-  ReadUncommitted: 'ReadUncommitted',
-  ReadCommitted: 'ReadCommitted',
-  RepeatableRead: 'RepeatableRead',
   Serializable: 'Serializable'
 });
 
@@ -132,6 +129,8 @@ exports.Prisma.UserScalarFieldEnum = {
   profilePhoto: 'profilePhoto',
   role: 'role',
   isActive: 'isActive',
+  homeAddress: 'homeAddress',
+  officeAddress: 'officeAddress',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -142,6 +141,7 @@ exports.Prisma.SchoolScalarFieldEnum = {
   phoneNumber: 'phoneNumber',
   contactPerson: 'contactPerson',
   email: 'email',
+  address: 'address',
   userId: 'userId'
 };
 
@@ -184,14 +184,23 @@ exports.Prisma.MaterialAttachmentScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.TravelTimeScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  scheduleId: 'scheduleId',
+  fromOfficeTime: 'fromOfficeTime',
+  fromHomeTime: 'fromHomeTime',
+  toPreviousTime: 'toPreviousTime',
+  duration: 'duration',
+  distance: 'distance',
+  origin: 'origin',
+  calculatedAt: 'calculatedAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
-};
-
-exports.Prisma.QueryMode = {
-  default: 'default',
-  insensitive: 'insensitive'
 };
 
 exports.Prisma.NullsOrder = {
@@ -205,7 +214,8 @@ exports.Prisma.ModelName = {
   School: 'School',
   Schedule: 'Schedule',
   Material: 'Material',
-  MaterialAttachment: 'MaterialAttachment'
+  MaterialAttachment: 'MaterialAttachment',
+  TravelTime: 'TravelTime'
 };
 
 /**
