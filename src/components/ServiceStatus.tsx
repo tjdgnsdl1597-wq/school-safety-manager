@@ -151,9 +151,8 @@ export default function ServiceStatus({ show = true, className = '' }: ServiceSt
               </div>
               <div className="bg-white p-3 rounded border">
                 <p className="font-medium text-gray-700 mb-1">🔗 관련 정보</p>
-                <div className="space-x-2">
-                  <a href="/terms" className="text-blue-600 hover:underline">이용약관</a>
-                  <a href="/privacy" className="text-blue-600 hover:underline">개인정보처리방침</a>
+                <div>
+                  <a href="/terms" className="text-blue-600 hover:underline">이용약관·개인정보처리방침</a>
                 </div>
               </div>
             </div>

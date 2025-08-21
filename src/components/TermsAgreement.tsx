@@ -21,8 +21,7 @@ interface TermsAgreementProps {
 }
 
 interface AgreementState {
-  terms: boolean;
-  privacy: boolean;
+  termsAndPrivacy: boolean;
   serviceNotice: boolean;
 }
 
@@ -32,15 +31,14 @@ export default function TermsAgreement({
   className = '' 
 }: TermsAgreementProps) {
   const [agreements, setAgreements] = useState<AgreementState>({
-    terms: false,
-    privacy: false,
+    termsAndPrivacy: false,
     serviceNotice: false
   });
 
   const [showDetails, setShowDetails] = useState(false);
 
   // 전체 동의 체크박스 상태
-  const isAllAgreed = agreements.terms && agreements.privacy && agreements.serviceNotice;
+  const isAllAgreed = agreements.termsAndPrivacy && agreements.serviceNotice;
   const isValid = mode === 'login' || isAllAgreed;
 
   // 약관 동의 상태 변경 시 부모 컴포넌트에 알림
@@ -59,8 +57,7 @@ export default function TermsAgreement({
   // 전체 동의 토글
   const handleAllAgreement = (checked: boolean) => {
     setAgreements({
-      terms: checked,
-      privacy: checked,
+      termsAndPrivacy: checked,
       serviceNotice: checked
     });
   };
@@ -109,44 +106,21 @@ export default function TermsAgreement({
 
         {/* 개별 약관 동의 */}
         <div className="space-y-3">
-          {/* 이용약관 동의 */}
+          {/* 이용약관 및 개인정보처리방침 동의 */}
           <div className="flex items-center justify-between p-3 border rounded-lg">
             <label className="flex items-center cursor-pointer flex-1">
               <input
                 type="checkbox"
-                checked={agreements.terms}
-                onChange={(e) => handleAgreementChange('terms', e.target.checked)}
+                checked={agreements.termsAndPrivacy}
+                onChange={(e) => handleAgreementChange('termsAndPrivacy', e.target.checked)}
                 className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
               />
               <span className="ml-3 text-gray-700">
-                <span className="text-red-500 font-bold">[필수]</span> 이용약관에 동의합니다
+                <span className="text-red-500 font-bold">[필수]</span> 이용약관 및 개인정보처리방침에 동의합니다
               </span>
             </label>
             <Link
               href="/terms"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600 hover:text-blue-800 text-sm underline ml-2 flex-shrink-0"
-            >
-              내용보기
-            </Link>
-          </div>
-
-          {/* 개인정보처리방침 동의 */}
-          <div className="flex items-center justify-between p-3 border rounded-lg">
-            <label className="flex items-center cursor-pointer flex-1">
-              <input
-                type="checkbox"
-                checked={agreements.privacy}
-                onChange={(e) => handleAgreementChange('privacy', e.target.checked)}
-                className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
-              />
-              <span className="ml-3 text-gray-700">
-                <span className="text-red-500 font-bold">[필수]</span> 개인정보처리방침에 동의합니다
-              </span>
-            </label>
-            <Link
-              href="/privacy"
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-600 hover:text-blue-800 text-sm underline ml-2 flex-shrink-0"
@@ -218,8 +192,7 @@ export default function TermsAgreement({
     <div className={`${className}`}>
       <div className="text-center p-4 bg-gray-50 rounded-lg border">
         <p className="text-sm text-gray-600">
-          회원가입 시 <Link href="/terms" className="text-blue-600 hover:underline">이용약관</Link> 및{' '}
-          <Link href="/privacy" className="text-blue-600 hover:underline">개인정보처리방침</Link>에 
+          회원가입 시 <Link href="/terms" className="text-blue-600 hover:underline">이용약관 및 개인정보처리방침</Link>에 
           동의한 것으로 간주됩니다.
         </p>
         <p className="text-xs text-orange-600 mt-2">

@@ -1,5 +1,5 @@
 /*
- * KSH58 학교 안전관리시스템 - 이용약관 페이지
+ * KSH58 학교 안전관리시스템 - 이용약관 및 개인정보처리방침 페이지
  * Copyright (c) 2025 KSH58. All rights reserved.
  * 
  * 이 소스코드와 관련된 모든 지적재산권은 KSH58에게 있습니다.
@@ -37,9 +37,9 @@ export default function TermsPage() {
           
           {/* 페이지 제목 */}
           <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-gray-800 mb-4">이용약관</h1>
+            <h1 className="text-4xl font-bold text-gray-800 mb-4">이용약관 및 개인정보처리방침</h1>
             <div className="w-24 h-1 bg-blue-600 mx-auto rounded-full mb-6"></div>
-            <p className="text-gray-600 text-lg">KSH58 학교 안전관리시스템 서비스 이용약관</p>
+            <p className="text-gray-600 text-lg">KSH58 학교 안전관리시스템 서비스 이용약관 및 개인정보처리방침</p>
             <div className="mt-4 p-4 bg-orange-50 border-l-4 border-orange-400 rounded-r-lg">
               <p className="text-orange-800 font-medium">
                 ⚠️ 본 서비스는 개인이 무료로 제공하는 서비스로, 언제든지 종료될 수 있습니다.
@@ -299,6 +299,135 @@ export default function TermsPage() {
               </div>
             </section>
 
+            {/* 제8조 개인정보 수집 및 처리 */}
+            <section>
+              <h2 className="text-2xl font-bold text-gray-800 mb-4 border-b-2 border-purple-200 pb-2">
+                제8조 (개인정볰 수집 및 처리)
+              </h2>
+              <div className="space-y-4 text-gray-700 leading-relaxed">
+                <div className="bg-purple-50 p-4 rounded-lg border-l-4 border-purple-400">
+                  <h3 className="text-lg font-semibold text-purple-800 mb-3">📝 개인정보처리방침</h3>
+                  <p className="text-purple-700 mb-2">
+                    KSH58 학교 안전관리시스템은 「개인정보보호법」 등 관련 법령에 따라 
+                    이용자의 개인정보를 보호하는 데 최선을 다하고 있습니다.
+                  </p>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-3">
+                    <h4 className="text-lg font-semibold text-gray-800">📄 수집하는 개인정볰</h4>
+                    <ul className="space-y-2">
+                      <li className="flex items-center space-x-2">
+                        <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                        <span><strong>이름:</strong> 서비스 이용자 식별</span>
+                      </li>
+                      <li className="flex items-center space-x-2">
+                        <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                        <span><strong>이메일:</strong> 연락 및 인증</span>
+                      </li>
+                      <li className="flex items-center space-x-2">
+                        <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                        <span><strong>직책/부서:</strong> 서비스 제공 개인화</span>
+                      </li>
+                      <li className="flex items-center space-x-2">
+                        <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                        <span><strong>전화번호:</strong> 응급 연락</span>
+                      </li>
+                      <li className="flex items-center space-x-2">
+                        <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                        <span><strong>소속 학교 정보:</strong> 서비스 제공</span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div className="space-y-3">
+                    <h4 className="text-lg font-semibold text-gray-800">🎯 수집 및 이용 목적</h4>
+                    <ul className="space-y-2">
+                      <li className="flex items-center space-x-2">
+                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                        <span>시스템 이용 및 서비스 제공</span>
+                      </li>
+                      <li className="flex items-center space-x-2">
+                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                        <span>안전관리 서비스 제공</span>
+                      </li>
+                      <li className="flex items-center space-x-2">
+                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                        <span>사용자 인증 및 보안</span>
+                      </li>
+                      <li className="flex items-center space-x-2">
+                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                        <span>서비스 개선 및 최적화</span>
+                      </li>
+                      <li className="flex items-center space-x-2">
+                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                        <span>다중 사용자 데이터 분리 관리</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-6 mt-6">
+                  <div className="bg-yellow-50 p-4 rounded-lg">
+                    <h4 className="text-lg font-semibold text-yellow-800 mb-2">📅 보관 기간</h4>
+                    <ul className="space-y-1 text-yellow-700">
+                      <li>• 회원 탈퇴 시까지 보관</li>
+                      <li>• 법적 보존 의무 기간은 예외</li>
+                      <li>• 서비스 종료 시 즉시 삭제</li>
+                    </ul>
+                  </div>
+
+                  <div className="bg-red-50 p-4 rounded-lg">
+                    <h4 className="text-lg font-semibold text-red-800 mb-2">🗑️ 삭제 방법</h4>
+                    <ul className="space-y-1 text-red-700">
+                      <li>• 계정 삭제 시 즉시 삭제</li>
+                      <li>• 서비스 종료 시 전체 삭제</li>
+                      <li>• 복구 불가능하므로 사전 백업 권장</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 p-6 rounded-lg mt-6">
+                  <h4 className="text-lg font-semibold text-gray-800 mb-3">🔒 보안 조치</h4>
+                  <div className="grid md:grid-cols-2 gap-4 text-gray-700">
+                    <div>
+                      <h5 className="font-medium mb-2">기술적 보안조치</h5>
+                      <ul className="text-sm space-y-1">
+                        <li>• 비밀번호 암호화 저장</li>
+                        <li>• 데이터베이스 암호화</li>
+                        <li>• HTTPS 통신 암호화</li>
+                        <li>• 접근 권한 관리</li>
+                      </ul>
+                    </div>
+                    <div>
+                      <h5 className="font-medium mb-2">관리적 보안조치</h5>
+                      <ul className="text-sm space-y-1">
+                        <li>• 정기적 보안 점검</li>
+                        <li>• 개인정보 접근 기록 관리</li>
+                        <li>• 정기적 데이터 백업</li>
+                        <li>• 개인 운영 보안 한계 인지</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-blue-50 p-6 rounded-lg mt-6">
+                  <h4 className="text-lg font-semibold text-blue-800 mb-3">📞 이용자 권리</h4>
+                  <div className="text-blue-700 space-y-2">
+                    <p><strong>개인정보 열람·수정·삭제 요구 권리:</strong></p>
+                    <ul className="ml-4 space-y-1">
+                      <li>• 언제든지 개인정보 처리 중단 요구 가능</li>
+                      <li>• 이메일로 요구 시 신속한 처리</li>
+                      <li>• 단, 개인 운영 서비스의 한계로 즉시 대응 어려울 수 있음</li>
+                    </ul>
+                    <div className="mt-4 p-3 bg-blue-100 rounded">
+                      <p className="text-sm"><strong>연락처:</strong> tjdgnsdl1597@naver.com</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
           </div>
 
           {/* 약관 정보 */}
@@ -324,20 +453,14 @@ export default function TermsPage() {
             <div className="space-y-2 text-gray-700">
               <p><strong>서비스명:</strong> KSH58 학교 안전관리시스템</p>
               <p><strong>운영자:</strong> KSH58</p>
-              <p><strong>이메일:</strong> [이메일주소]</p>
+              <p><strong>이메일:</strong> tjdgnsdl1597@naver.com</p>
               <p><strong>운영 형태:</strong> 개인 운영 무료 서비스</p>
             </div>
           </div>
 
           {/* 하단 버튼 */}
           <div className="mt-12 text-center space-y-4">
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link 
-                href="/privacy" 
-                className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-lg transition-colors font-medium"
-              >
-                개인정보처리방침 보기
-              </Link>
+            <div className="flex justify-center">
               <Link 
                 href="/" 
                 className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg transition-colors font-medium"
@@ -346,7 +469,7 @@ export default function TermsPage() {
               </Link>
             </div>
             <p className="text-sm text-gray-500">
-              서비스를 이용하시면 본 약관에 동의하는 것으로 간주됩니다.
+              서비스를 이용하시면 본 이용약관 및 개인정보처리방침에 동의하는 것으로 간주됩니다.
             </p>
           </div>
         </div>

@@ -49,19 +49,12 @@ export default function CopyrightFooter({
           </div>
 
           {/* 약관 링크 */}
-          <div className="flex items-center justify-center gap-4 text-xs">
+          <div className="flex items-center justify-center text-xs">
             <Link 
               href="/terms" 
               className="hover:text-blue-600 transition-colors underline underline-offset-2"
             >
-              이용약관
-            </Link>
-            <span>•</span>
-            <Link 
-              href="/privacy" 
-              className="hover:text-blue-600 transition-colors underline underline-offset-2"
-            >
-              개인정보처리방침
+              이용약관·개인정보처리방침
             </Link>
           </div>
 
