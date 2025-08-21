@@ -156,6 +156,15 @@ body {
   font-weight: 500 !important;
 }
 
+.fc-daygrid-day-top {
+  text-align: left !important;
+  justify-content: flex-start !important;
+}
+
+.fc-daygrid-day-frame {
+  text-align: left !important;
+}
+
 .fc-day-today {
   background-color: #dbeafe !important;
 }

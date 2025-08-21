@@ -48,6 +48,7 @@ interface Schedule {
   otherReason?: string | null;
   isHoliday?: boolean;
   holidayReason?: string | null;
+  isNationalHoliday?: boolean;
   travelTime?: {
     id: string;
     duration: string | null;
@@ -334,6 +335,7 @@ export default function DashboardPage() {
       const holidaySchedule = {
         id: eventId,
         date: eventId.replace('holiday-', ''),
+        schoolId: 'national-holiday', // 누락된 schoolId 추가
         school: { name: '국가공휴일', abbreviation: null },
         ampm: 'ALL',
         startTime: '00:00',

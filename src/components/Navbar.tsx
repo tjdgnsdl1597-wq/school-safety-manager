@@ -101,6 +101,9 @@ export default function Navbar() {
     if (menuName === '중대재해 알리미') {
       return <span className="text-center leading-tight">중대재해<br />알리미</span>;
     }
+    if (menuName === '이동시간') {
+      return <span className="text-center leading-tight">이동시간<br />(개발중)</span>;
+    }
     return menuName;
   };
 
