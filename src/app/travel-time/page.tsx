@@ -269,13 +269,25 @@ export default function TravelTimePage() {
 
       if (response.ok) {
         const travelTimeData = await response.json();
+        console.log('이동시간 계산 결과:', travelTimeData);
+        
+        // 오류가 있는 경우 알림 표시
+        if (travelTimeData.hasErrors && travelTimeData.errors) {
+          const errorMessage = `일부 이동시간 계산에 실패했습니다:\n${travelTimeData.errors.join('\n')}`;
+          alert(errorMessage);
+        }
+        
         setTravelData(travelTimeData);
       } else {
-        alert('이동시간 계산에 실패했습니다.');
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage = errorData.details 
+          ? `이동시간 계산에 실패했습니다:\n${errorData.details}`
+          : '이동시간 계산에 실패했습니다.';
+        alert(errorMessage);
       }
     } catch (error) {
       console.error('이동시간 계산 실패:', error);
-      alert('이동시간 계산 중 오류가 발생했습니다.');
+      alert('네트워크 오류로 이동시간 계산에 실패했습니다.');
     } finally {
       setLoading(false);
     }
