@@ -7,6 +7,7 @@ import { isSuperAdmin } from '@/lib/authUtils';
 import dynamic from 'next/dynamic';
 import CopyrightFooter from '@/components/CopyrightFooter';
 import type { DateClickArg } from '@fullcalendar/interaction';
+import { getHoliday, getAllHolidays } from '@/lib/holidays';
 
 // 동적으로 import된 캘린더 컴포넌트
 const DynamicScheduleCalendar = dynamic(() => import('../../components/ScheduleCalendarComponent'), {
@@ -334,7 +335,8 @@ export default function DashboardPage() {
 
   // --- Calendar Events ---
   const calendarEvents = useMemo(() => {
-    return schedules.map((schedule) => {
+    // 일정 이벤트들
+    const scheduleEvents = schedules.map((schedule) => {
       const eventDate = new Date(schedule.date);
       const [startHour, startMinute] = schedule.startTime.split(':').map(Number);
       const [endHour, endMinute] = schedule.endTime.split(':').map(Number);
@@ -389,6 +391,27 @@ export default function DashboardPage() {
         }
       };
     });
+
+    // 국가공휴일 이벤트들 (2025년)
+    const holidayEvents = getAllHolidays().map((holiday) => {
+      return {
+        id: `holiday-${holiday.date}`,
+        title: `🎉 ${holiday.name}`,
+        start: holiday.date,
+        allDay: true,
+        backgroundColor: '#ec4899', // 분홍색
+        textColor: '#ffffff',
+        className: 'fc-national-holiday',
+        extendedProps: {
+          isNationalHoliday: true,
+          holidayType: holiday.type,
+          holidayName: holiday.name
+        }
+      };
+    });
+
+    // 일정 이벤트와 공휴일 이벤트를 합침
+    return [...scheduleEvents, ...holidayEvents];
   }, [schedules]);
 
   // 오늘의 일정 계산

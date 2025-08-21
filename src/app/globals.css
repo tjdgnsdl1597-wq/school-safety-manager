@@ -193,6 +193,21 @@ body {
   color: #000000 !important; /* 검은색 글씨 */
 }
 
+/* National holiday event */
+.fc-event.fc-national-holiday {
+  background: linear-gradient(135deg, #ec4899, #f97316) !important; /* 분홍-주황 그라데이션 */
+  border-color: #ec4899 !important;
+  color: #ffffff !important; /* 흰색 글씨 */
+  font-weight: 600 !important;
+  box-shadow: 0 2px 4px rgba(236, 72, 153, 0.3) !important;
+}
+
+.fc-event.fc-national-holiday:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(236, 72, 153, 0.4) !important;
+  transition: all 0.2s ease;
+}
+
 /* Custom Event Content */
 .fc-event-custom-view {
   display: flex;
