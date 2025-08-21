@@ -104,11 +104,12 @@ export default function Navbar() {
     return menuName;
   };
 
-  // 일반 사용자용 네비게이션 메뉴 (대시보드, 학교정보, 일정관리, 자료마당, 중대재해)
+  // 일반 사용자용 네비게이션 메뉴 (대시보드, 학교정보, 일정관리, 이동시간, 자료마당, 중대재해)
   const userNavItems = [
     { name: '대시보드', href: '/dashboard' },
     { name: '학교 정보', href: '/schools' },
     { name: '일정 관리', href: '/schedules' },
+    { name: '이동시간', href: '/travel-time' },
     { name: '자료마당', href: '/data-center/education', isDropdown: true },
     { name: '중대재해 알리미', href: '/industrial-accidents' },
   ];
