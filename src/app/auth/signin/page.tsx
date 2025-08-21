@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useAuth } from '@/lib/simpleAuth';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import TermsAgreement from '@/components/TermsAgreement';
 
 export default function SignIn() {
   const [username, setUsername] = useState('');
@@ -166,6 +167,15 @@ export default function SignIn() {
             >
               비밀번호 변경
             </button>
+          </div>
+
+          {/* 약관 동의 안내 */}
+          <div className="mt-6">
+            <TermsAgreement
+              mode="login"
+              onAgreementChange={() => {}}
+              className=""
+            />
           </div>
         </div>
         
