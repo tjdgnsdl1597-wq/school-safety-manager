@@ -336,7 +336,7 @@ export default function DashboardPage() {
         id: eventId,
         date: eventId.replace('holiday-', ''),
         schoolId: 'national-holiday', // 누락된 schoolId 추가
-        school: { name: '국가공휴일', abbreviation: null },
+        school: { id: 'national-holiday', name: '국가공휴일', abbreviation: null },
         ampm: 'ALL',
         startTime: '00:00',
         endTime: '23:59',
@@ -597,29 +597,27 @@ export default function DashboardPage() {
                   );
                   
                   return (
-                    <div className="space-y-2 max-h-80 overflow-y-auto">
+                    <div className="space-y-1.5 max-h-64 overflow-y-auto">
                       {sortedSchedules.map((schedule, index) => (
-                        <div key={schedule.id} className="p-3 bg-blue-50 rounded-lg border border-blue-200">
-                          <div className="flex justify-between items-start mb-2">
+                        <div key={schedule.id} className="p-2.5 bg-blue-50 rounded-lg border border-blue-200">
+                          <div className="flex justify-between items-center mb-1">
                             <div className="text-xs font-medium text-blue-900">
                               {schedule.startTime} - {schedule.endTime}
                             </div>
-                            <div className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                              #{index + 1}
+                            <div className="text-xs bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded text-center min-w-[24px]">
+                              {index + 1}
                             </div>
                           </div>
-                          <div className="text-xs text-blue-700 mb-1">
+                          <div className="text-xs text-blue-700">
                             {schedule.isHoliday ? (
                               <span>🏖️ {schedule.holidayReason}</span>
                             ) : (
-                              <span className="font-medium">{schedule.school.name}</span>
+                              <span>
+                                <span className="font-bold">{schedule.school.abbreviation || schedule.school.name}</span>
+                                <span className="font-medium">({JSON.parse(schedule.purpose || '[]').join(', ')})</span>
+                              </span>
                             )}
                           </div>
-                          {!schedule.isHoliday && (
-                            <div className="text-xs text-blue-600 mb-2">
-                              {JSON.parse(schedule.purpose || '[]').join(', ')}
-                            </div>
-                          )}
                           {!schedule.isHoliday && schedule.travelTime && (
                             <div className="text-xs bg-green-50 border border-green-200 rounded p-2">
                               {/* 첫 번째 학교인 경우 회사/집 두 옵션 표시 */}
