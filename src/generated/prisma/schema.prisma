@@ -9,25 +9,24 @@ datasource db {
 }
 
 model User {
-  id            String   @id @default(uuid())
-  username      String   @unique // 로그인용 아이디 (중복 불가)
-  password      String // 비밀번호 (나중에 암호화 예정)
-  name          String // 사용자 실명 (한글명)
-  position      String? // 직급
-  phoneNumber   String? // 전화번호
-  email         String? // 이메일 주소
-  department    String   @default("산업안전팀") // 부서 (자동선택)
-  profilePhoto  String? // 프로필 사진 URL (Google Cloud Storage)
-  role          String   @default("user") // "super_admin" 또는 "user"
-  isActive      Boolean  @default(false) // 계정 활성화 여부 (승인 전까지 비활성화)
-  homeAddress   String? // 집 주소 (이동시간 계산용)
-  officeAddress String? // 회사 주소 (이동시간 계산용)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  // 관계 설정
-  schools   School[]
-  schedules Schedule[]
+  id            String       @id @default(uuid())
+  username      String       @unique
+  password      String
+  name          String
+  position      String?
+  phoneNumber   String?
+  email         String?
+  department    String       @default("산업안전팀")
+  profilePhoto  String?
+  role          String       @default("user")
+  isActive      Boolean      @default(false)
+  homeAddress   String?
+  officeAddress String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  schedules     Schedule[]
+  schools       School[]
+  travelTimes   TravelTime[]
 }
 
 model School {
@@ -35,29 +34,30 @@ model School {
   name          String     @unique
   phoneNumber   String?
   contactPerson String?
-  email         String? // 학교 이메일
-  address       String? // 학교 주소 (이동시간 계산용)
-  userId        String // 어느 사용자가 등록했는지
-  user          User       @relation(fields: [userId], references: [id])
+  email         String?
+  address       String?
+  userId        String
   schedules     Schedule[]
+  user          User       @relation(fields: [userId], references: [id])
 }
 
 model Schedule {
-  id            String   @id @default(uuid())
+  id            String      @id @default(uuid())
   date          DateTime
   schoolId      String
-  userId        String // 어느 사용자가 등록했는지
+  userId        String
   ampm          String
   startTime     String
   endTime       String
   purpose       String
   otherReason   String?
-  isHoliday     Boolean  @default(false)
+  isHoliday     Boolean     @default(false)
   holidayReason String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  school        School   @relation(fields: [schoolId], references: [id])
-  user          User     @relation(fields: [userId], references: [id])
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  user          User        @relation(fields: [userId], references: [id])
+  school        School      @relation(fields: [schoolId], references: [id])
+  travelTime    TravelTime?
 }
 
 model Material {
@@ -83,4 +83,21 @@ model MaterialAttachment {
   uploadOrder   Int
   createdAt     DateTime @default(now())
   material      Material @relation(fields: [materialId], references: [id], onDelete: Cascade)
+}
+
+model TravelTime {
+  id             String   @id @default(uuid())
+  userId         String
+  scheduleId     String   @unique
+  fromOfficeTime String? // 회사에서 출발하는 시간
+  fromHomeTime   String? // 집에서 출발하는 시간  
+  toPreviousTime String? // 이전 학교에서 이동하는 시간
+  duration       String? // 이동 소요 시간 (예: "32분")
+  distance       String? // 이동 거리 (예: "15.2km")
+  origin         String? // 출발지 (집/회사/이전학교명)
+  calculatedAt   DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user     User     @relation(fields: [userId], references: [id])
+  schedule Schedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
 }

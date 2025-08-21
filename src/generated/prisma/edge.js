@@ -200,7 +200,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "C:\\Users\\gram\\school-safety-manager\\src\\generated\\prisma",
+      "value": "C:\\Users\\PC\\school-safety-manager\\src\\generated\\prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -214,11 +214,11 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "C:\\Users\\gram\\school-safety-manager\\prisma\\schema.prisma",
+    "sourceFilePath": "C:\\Users\\PC\\school-safety-manager\\prisma\\schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
-    "rootEnvPath": null,
+    "rootEnvPath": "../../../.env",
     "schemaEnvPath": "../../../.env"
   },
   "relativePath": "../../../prisma",
@@ -228,6 +228,7 @@ const config = {
     "db"
   ],
   "activeProvider": "sqlite",
+  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {

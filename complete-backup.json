@@ -1,0 +1,101 @@
+{
+  "timestamp": "2025-08-21T11:28:15.791Z",
+  "users": [
+    {
+      "id": "de1e05a7-dabb-4429-b98b-63038d9d926f",
+      "username": "tjdgnsdl1597",
+      "password": "dlwjdrma12.",
+      "name": "강성훈",
+      "position": "대리",
+      "phoneNumber": "010-8764-2428",
+      "email": "safe08@ssif.or.kr",
+      "department": "산업안전팀",
+      "profilePhoto": null,
+      "role": "user",
+      "isActive": true,
+      "homeAddress": "서울시구로구 고척로52길 21",
+      "officeAddress": "인천광역시 남동구 구월남로 232번길 31",
+      "createdAt": "2025-08-21T11:22:28.547Z",
+      "updatedAt": "2025-08-21T11:24:37.054Z"
+    },
+    {
+      "id": "49e35753-afbf-467d-a636-a090cfd8ae77",
+      "username": "tjdgns1597",
+      "password": "dlwjdrma12.",
+      "name": "홍길동",
+      "position": "주임",
+      "phoneNumber": "010-1234-5678",
+      "email": "test@ssif.or.kr",
+      "department": "산업안전팀",
+      "profilePhoto": null,
+      "role": "user",
+      "isActive": true,
+      "homeAddress": "인천광역시 서구 가정동",
+      "officeAddress": "인천광역시 연수구 컨벤시아대로 69",
+      "createdAt": "2025-08-21T11:26:36.375Z",
+      "updatedAt": "2025-08-21T11:26:36.375Z"
+    }
+  ],
+  "schools": [
+    {
+      "id": "1a585e01-d151-4dd6-8978-4c4ac20b86c3",
+      "name": "가좌중학교",
+      "phoneNumber": "032-123-4567",
+      "contactPerson": "담당자",
+      "email": "school@example.com",
+      "address": "인천광역시 서구 가좌3동 428-1",
+      "userId": "de1e05a7-dabb-4429-b98b-63038d9d926f"
+    },
+    {
+      "id": "c656608d-4477-4539-957a-224d2cd1b296",
+      "name": "인주중학교",
+      "phoneNumber": "032-123-4567",
+      "contactPerson": "담당자",
+      "email": "school@example.com",
+      "address": "인천광역시 남동구 논현동 637",
+      "userId": "de1e05a7-dabb-4429-b98b-63038d9d926f"
+    },
+    {
+      "id": "8d520b60-d6d4-4913-94b9-2c5d4d441493",
+      "name": "마니산유치원",
+      "phoneNumber": "032-123-4567",
+      "contactPerson": "담당자",
+      "email": "school@example.com",
+      "address": "인천광역시 강화군 화도면 마니산로 675",
+      "userId": "de1e05a7-dabb-4429-b98b-63038d9d926f"
+    }
+  ],
+  "schedules": [
+    {
+      "id": "9e8025f6-1062-4482-8d81-b4ef194118c6",
+      "date": "2025-08-21T00:00:00.000Z",
+      "schoolId": "1a585e01-d151-4dd6-8978-4c4ac20b86c3",
+      "userId": "de1e05a7-dabb-4429-b98b-63038d9d926f",
+      "ampm": "PM",
+      "startTime": "13:00",
+      "endTime": "14:00",
+      "purpose": "[\"월점검\"]",
+      "otherReason": null,
+      "isHoliday": false,
+      "holidayReason": null,
+      "createdAt": "2025-08-21T11:24:37.077Z",
+      "updatedAt": "2025-08-21T11:24:37.077Z"
+    },
+    {
+      "id": "db95c26a-a680-4496-981c-9a1226e24d4c",
+      "date": "2025-08-21T00:00:00.000Z",
+      "schoolId": "8d520b60-d6d4-4913-94b9-2c5d4d441493",
+      "userId": "de1e05a7-dabb-4429-b98b-63038d9d926f",
+      "ampm": "AM",
+      "startTime": "08:00",
+      "endTime": "09:00",
+      "purpose": "[\"월점검\"]",
+      "otherReason": null,
+      "isHoliday": false,
+      "holidayReason": null,
+      "createdAt": "2025-08-21T11:24:37.082Z",
+      "updatedAt": "2025-08-21T11:24:37.082Z"
+    }
+  ],
+  "materials": []
+}
