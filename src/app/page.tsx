@@ -992,12 +992,12 @@ export default function HomePage() {
     }
   }, [searchParams]);
 
-  // 로그인된 사용자는 메인 페이지 콘텐츠를 볼 수 있도록 리다이렉트 제거
-  // useEffect(() => {
-  //   if (isAuthenticated && !loading) {
-  //     router.push('/schedules');
-  //   }
-  // }, [isAuthenticated, loading, router]);
+  // 로그인된 사용자는 대시보드로 리다이렉트
+  useEffect(() => {
+    if (isAuthenticated && !loading) {
+      router.push('/dashboard');
+    }
+  }, [isAuthenticated, loading, router]);
 
   // 로딩 중이면 로딩 표시
   if (loading) {
