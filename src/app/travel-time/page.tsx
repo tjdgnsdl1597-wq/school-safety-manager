@@ -109,71 +109,6 @@ export default function TravelTimePage() {
     }
   };
 
-  // 자동 주소 검색
-  const autoSearchAddresses = async () => {
-    if (!user) return;
-    
-    setLoading(true);
-    try {
-      const response = await fetch('/api/schools/auto-address', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: user.id })
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        alert(`${data.message}\n성공: ${data.results.filter((r: any) => r.success).length}개`);
-        
-        // 학교 목록 새로고침
-        const schoolsResponse = await fetch('/api/schools', {
-          headers: {
-            'Content-Type': 'application/json',
-            'x-user-id': user.id,
-            'x-user-role': user.role
-          }
-        });
-        if (schoolsResponse.ok) {
-          const updatedSchools = await schoolsResponse.json();
-          setSchools(updatedSchools);
-        }
-      } else {
-        alert('자동 주소 검색에 실패했습니다.');
-      }
-    } catch (error) {
-      console.error('자동 주소 검색 실패:', error);
-      alert('자동 주소 검색 중 오류가 발생했습니다.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // 단일 학교 주소 검색
-  const searchSingleAddress = async (schoolId: string, schoolName: string) => {
-    setLoading(true);
-    try {
-      const response = await fetch('/api/schools/auto-address', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ schoolId, schoolName })
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setSchools(prev => prev.map(school => 
-          school.id === schoolId ? { ...school, address: data.school.address } : school
-        ));
-        alert('주소가 자동으로 설정되었습니다.');
-      } else {
-        alert('해당 학교의 주소를 찾을 수 없습니다.');
-      }
-    } catch (error) {
-      console.error('단일 주소 검색 실패:', error);
-      alert('주소 검색 중 오류가 발생했습니다.');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // 선택된 날짜의 일정 로드
   useEffect(() => {
@@ -383,15 +318,8 @@ export default function TravelTimePage() {
 
           {/* 등록된 학교 목록 및 주소 설정 섹션 */}
           <div className="mb-8">
-            <div className="flex justify-between items-center mb-4">
+            <div className="mb-4">
               <h2 className="text-xl font-semibold text-gray-700">🏫 등록된 학교 목록 및 주소 설정</h2>
-              <button
-                onClick={autoSearchAddresses}
-                disabled={loading || schools.length === 0}
-                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {loading ? '검색 중...' : '🔍 모든 학교 주소 자동 검색'}
-              </button>
             </div>
             
             {schools.length > 0 ? (
@@ -419,27 +347,20 @@ export default function TravelTimePage() {
                                 s.id === school.id ? { ...s, address: e.target.value } : s
                               ));
                             }}
-                            placeholder="학교명으로 찾기가 어려우면 그냥 직접 채워주세요"
+                            placeholder="학교 주소를 직접 입력해주세요"
                             className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                           />
                           <button
-                            onClick={() => searchSingleAddress(school.id, school.name)}
-                            disabled={loading}
-                            className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-2 rounded-lg transition-colors disabled:opacity-50"
-                            title="이 학교 주소만 자동 검색"
-                          >
-                            🔍
-                          </button>
-                          <button
                             onClick={() => updateSchoolAddress(school.id, school.address || '')}
-                            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors"
+                            disabled={loading || !school.address?.trim()}
+                            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                           >
-                            저장
+                            {loading ? '저장 중...' : '저장'}
                           </button>
                         </div>
                         {!school.address && (
                           <p className="text-xs text-gray-500 mt-1">
-                            💡 자동 검색이 안 되면 직접 입력해주세요
+                            💡 수동입력 부탁드립니다
                           </p>
                         )}
                       </div>
