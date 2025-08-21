@@ -485,13 +485,11 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-gray-50 overflow-x-hidden">
       <div className="max-w-full mx-auto px-2 sm:px-4 lg:px-8 py-2 sm:py-4">
+        {/* 단일 플렉스 컨테이너 - 모바일에서 order로 정렬, 데스크톱에서 그리드 */}
         <div className="flex flex-col lg:grid lg:grid-cols-7 gap-4 lg:gap-8">
-          
-          {/* 좌측: 정보 패널 (2/7로 적당한 크기) */}
-          <div className="lg:col-span-2 space-y-3 lg:space-y-4">
             
             {/* 담당자 정보 - 모바일에서 첫번째 */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-3 sm:p-4 order-1">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-3 sm:p-4 order-1 lg:order-none lg:col-span-2">
               <h3 className="text-lg font-semibold text-gray-900 mb-3">담당자 정보</h3>
               <div className="flex items-start space-x-4">
                 {/* 프로필 사진 */}
@@ -534,7 +532,7 @@ export default function DashboardPage() {
             </div>
             
             {/* 오늘의 일정 - 현재시간 포함 - 모바일에서 두번째 */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6 order-2">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6 order-2 lg:order-none lg:col-span-2">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold text-gray-900">오늘의 일정</h3>
                 <div className="text-sm font-bold text-gray-700">
@@ -613,7 +611,7 @@ export default function DashboardPage() {
             </div>
 
             {/* 이번 달 통계 - 3열, 완료된 학교 녹색으로 위에 - 모바일에서 네번째 */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 order-4">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 order-4 lg:order-none lg:col-span-2">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">이번 달 통계</h3>
               {Object.keys(monthlyStats).length > 0 ? (
                 <div className="space-y-4">
@@ -729,7 +727,7 @@ export default function DashboardPage() {
             </div>
 
             {/* 최근 산업재해 발생 학교 - 2열, 날짜-학교명 - 모바일에서 다섯번째 */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 order-5">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 order-5 lg:order-none lg:col-span-2">
               <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
                 <span className="text-red-500">⚠️</span>
                 <span>산업재해 발생학교</span>
@@ -751,13 +749,9 @@ export default function DashboardPage() {
                 <p className="text-gray-500 text-center py-4 text-sm">최근 산업재해 방문 기록이 없습니다</p>
               )}
             </div>
-          </div>
-
-          {/* 우측: 캘린더 + 메모장 (5/7) */}
-          <div className="lg:col-span-5 space-y-4">
             
             {/* 캘린더 - 세로 높이 증가 - 모바일에서 세번째 */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 order-3">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 order-3 lg:order-none lg:col-span-5">
               <div className="p-4 border-b border-gray-200">
                 <h2 className="text-xl font-semibold text-gray-900">일정 캘린더</h2>
                 {selectedDate && (
@@ -775,7 +769,7 @@ export default function DashboardPage() {
             </div>
 
             {/* 메모장 - 한 줄 입력 + 목록 - 모바일에서 여섯번째 */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 order-6">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 order-6 lg:order-none lg:col-span-5">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">메모장</h3>
               
               {/* 메모 입력 */}
@@ -855,7 +849,6 @@ export default function DashboardPage() {
                 )}
               </div>
             </div>
-          </div>
         </div>
       </div>
       
