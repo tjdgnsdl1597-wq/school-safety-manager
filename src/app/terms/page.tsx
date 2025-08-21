@@ -420,8 +420,14 @@ export default function TermsPage() {
                       <li>• 이메일로 요구 시 신속한 처리</li>
                       <li>• 단, 개인 운영 서비스의 한계로 즉시 대응 어려울 수 있음</li>
                     </ul>
-                    <div className="mt-4 p-3 bg-blue-100 rounded">
-                      <p className="text-sm"><strong>연락처:</strong> tjdgnsdl1597@naver.com</p>
+                    <div className="mt-4 p-4 bg-blue-100 rounded-lg">
+                      <h5 className="font-medium text-blue-800 mb-2">📞 개인정보보호 담당자 연락처</h5>
+                      <div className="text-sm text-blue-700 space-y-1">
+                        <p><strong>서비스명:</strong> KSH58 학교 안전관리시스템</p>
+                        <p><strong>개인정보보호 담당자:</strong> KSH58</p>
+                        <p><strong>이메일:</strong> tjdgnsdl1597@naver.com</p>
+                        <p><strong>처리 시간:</strong> 평일 09:00-18:00 (개인 운영으로 지연 가능)</p>
+                      </div>
                     </div>
                   </div>
                 </div>
