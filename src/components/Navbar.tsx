@@ -69,14 +69,14 @@ export default function Navbar() {
     { name: '중대재해 알리미', href: '/industrial-accidents' },
   ];
 
-  // 메뉴 텍스트를 표시하는 함수 (관리자만 2줄, 나머지는 1줄)
+  // 메뉴 텍스트를 표시하는 함수 (로그인한 사용자는 2줄 표시)
   const renderMenuText = (menuName: string) => {
-    // 관리자가 아닌 경우 항상 1줄로 표시
-    if (!isAdmin) {
+    // 로그인하지 않은 경우 항상 1줄로 표시
+    if (!isLoggedIn) {
       return menuName;
     }
     
-    // 관리자인 경우만 2줄로 표시
+    // 로그인한 사용자인 경우 2줄로 표시
     if (menuName === '대시보드') {
       return <span className="text-center leading-tight">대시<br />보드</span>;
     }

@@ -154,15 +154,28 @@ body {
   font-size: 0.875rem !important;
   padding: 0.25rem !important;
   font-weight: 500 !important;
+  text-align: left !important;
+  display: block !important;
+  width: 100% !important;
 }
 
 .fc-daygrid-day-top {
   text-align: left !important;
   justify-content: flex-start !important;
+  display: flex !important;
+  align-items: flex-start !important;
 }
 
 .fc-daygrid-day-frame {
   text-align: left !important;
+}
+
+/* Force left alignment for day numbers */
+.fc-daygrid-day .fc-daygrid-day-top .fc-daygrid-day-number {
+  text-align: left !important;
+  margin-left: 0 !important;
+  margin-right: auto !important;
+  justify-self: flex-start !important;
 }
 
 .fc-day-today {
