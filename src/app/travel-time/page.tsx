@@ -61,8 +61,16 @@ export default function TravelTimePage() {
   // 로그인한 사용자의 학교 목록 로드
   useEffect(() => {
     const fetchSchools = async () => {
+      if (!user) return;
+      
       try {
-        const response = await fetch('/api/schools');
+        const response = await fetch('/api/schools', {
+          headers: {
+            'Content-Type': 'application/json',
+            'x-user-id': user.id,
+            'x-user-role': user.role
+          }
+        });
         if (response.ok) {
           const schoolsData = await response.json();
           setSchools(schoolsData);
@@ -72,10 +80,10 @@ export default function TravelTimePage() {
       }
     };
 
-    if (isAuthenticated) {
+    if (isAuthenticated && user) {
       fetchSchools();
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, user]);
 
   // 학교 주소 업데이트
   const updateSchoolAddress = async (schoolId: string, address: string) => {
@@ -117,7 +125,13 @@ export default function TravelTimePage() {
         alert(`${data.message}\n성공: ${data.results.filter((r: any) => r.success).length}개`);
         
         // 학교 목록 새로고침
-        const schoolsResponse = await fetch('/api/schools');
+        const schoolsResponse = await fetch('/api/schools', {
+          headers: {
+            'Content-Type': 'application/json',
+            'x-user-id': user.id,
+            'x-user-role': user.role
+          }
+        });
         if (schoolsResponse.ok) {
           const updatedSchools = await schoolsResponse.json();
           setSchools(updatedSchools);
@@ -163,10 +177,16 @@ export default function TravelTimePage() {
   // 선택된 날짜의 일정 로드
   useEffect(() => {
     const fetchSchedules = async () => {
-      if (!selectedDate) return;
+      if (!selectedDate || !user) return;
       
       try {
-        const response = await fetch(`/api/schedules?date=${selectedDate}`);
+        const response = await fetch(`/api/schedules?date=${selectedDate}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'x-user-id': user.id,
+            'x-user-role': user.role
+          }
+        });
         if (response.ok) {
           const schedulesData = await response.json();
           // 시간순으로 정렬
@@ -182,10 +202,10 @@ export default function TravelTimePage() {
       }
     };
 
-    if (isAuthenticated && selectedDate) {
+    if (isAuthenticated && selectedDate && user) {
       fetchSchedules();
     }
-  }, [isAuthenticated, selectedDate]);
+  }, [isAuthenticated, selectedDate, user]);
 
   // 주소 업데이트
   const updateAddresses = async () => {
