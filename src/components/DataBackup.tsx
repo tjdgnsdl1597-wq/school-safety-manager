@@ -40,6 +40,14 @@ export default function DataBackup({
   const [isExporting, setIsExporting] = useState(false);
   const [lastBackupDate, setLastBackupDate] = useState<string | null>(null);
 
+  // 마지막 백업 시간 불러오기 (조건부 렌더링 이전에 실행)
+  React.useEffect(() => {
+    if (userId) {
+      const lastBackup = localStorage.getItem(`lastBackup-${userId}`);
+      setLastBackupDate(lastBackup);
+    }
+  }, [userId]);
+
   if (!show) return null;
 
   // 데이터 백업 실행
@@ -147,14 +155,6 @@ export default function DataBackup({
   const handleAutoBackupInfo = () => {
     alert(`🔄 자동 백업 시스템\n\n• 1시간마다 서버에서 자동 백업 실행\n• 모든 사용자 데이터 안전하게 보관\n• 서비스 종료 시 30일 전 공지\n• 긴급 상황 시에도 최신 데이터 복구 가능\n\n💡 추가 안전을 위해 개인 백업도 권장합니다.`);
   };
-
-  // 마지막 백업 시간 불러오기
-  React.useEffect(() => {
-    if (userId) {
-      const lastBackup = localStorage.getItem(`lastBackup-${userId}`);
-      setLastBackupDate(lastBackup);
-    }
-  }, [userId]);
 
   return (
     <div className={`space-y-4 ${className}`}>

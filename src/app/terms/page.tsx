@@ -58,7 +58,7 @@ export default function TermsPage() {
               <div className="space-y-3 text-gray-700 leading-relaxed">
                 <p>
                   이 약관은 <strong className="text-blue-600">KSH58</strong>이 개인적으로 개발·운영하는 
-                  <strong> 학교 안전관리시스템</strong>(이하 "서비스")의 이용과 관련하여 
+                  <strong> 학교 안전관리시스템</strong>(이하 &ldquo;서비스&rdquo;)의 이용과 관련하여 
                   서비스 제공자와 사용자 간의 권리와 의무, 책임사항을 규정함을 목적으로 합니다.
                 </p>
                 <div className="bg-blue-50 p-4 rounded-lg">
@@ -79,19 +79,19 @@ export default function TermsPage() {
                 <div className="grid gap-3">
                   <div className="flex">
                     <span className="font-medium w-20 flex-shrink-0">1.</span>
-                    <span><strong>"서비스"</strong>란 KSH58 학교 안전관리시스템을 의미합니다.</span>
+                    <span><strong>&ldquo;서비스&rdquo;</strong>란 KSH58 학교 안전관리시스템을 의미합니다.</span>
                   </div>
                   <div className="flex">
                     <span className="font-medium w-20 flex-shrink-0">2.</span>
-                    <span><strong>"운영자"</strong>란 서비스를 개발·운영하는 개인 KSH58을 의미합니다.</span>
+                    <span><strong>&ldquo;운영자&rdquo;</strong>란 서비스를 개발·운영하는 개인 KSH58을 의미합니다.</span>
                   </div>
                   <div className="flex">
                     <span className="font-medium w-20 flex-shrink-0">3.</span>
-                    <span><strong>"이용자"</strong>란 본 약관에 따라 서비스를 이용하는 자를 의미합니다.</span>
+                    <span><strong>&ldquo;이용자&rdquo;</strong>란 본 약관에 따라 서비스를 이용하는 자를 의미합니다.</span>
                   </div>
                   <div className="flex">
                     <span className="font-medium w-20 flex-shrink-0">4.</span>
-                    <span><strong>"계정"</strong>이란 이용자의 식별과 서비스 이용을 위해 생성된 ID와 비밀번호를 의미합니다.</span>
+                    <span><strong>&ldquo;계정&rdquo;</strong>이란 이용자의 식별과 서비스 이용을 위해 생성된 ID와 비밀번호를 의미합니다.</span>
                   </div>
                 </div>
               </div>
