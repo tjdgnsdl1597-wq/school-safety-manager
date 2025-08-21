@@ -68,19 +68,65 @@ export default function CopyrightFooter({
             ⚠️ 개인 운영 무료 서비스로 언제든 종료될 수 있습니다
           </div>
 
-          {/* 추가 법적 고지 */}
-          <div className="text-xs opacity-75 max-w-2xl mx-auto leading-relaxed">
-            <p className="mb-1">
-              본 서비스의 소스코드, 디자인, 기능 등 모든 지적재산권은 KSH58에게 있습니다.
-            </p>
-            <p>
-              무단 복제, 배포, 수정 시 저작권법에 의해 처벌받을 수 있습니다.
-            </p>
+          {/* 상세 저작권 명시 */}
+          <div className={`
+            mt-6 p-6 rounded-xl border-2
+            ${isDark 
+              ? 'bg-gray-800/50 border-gray-600' 
+              : 'bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200'
+            }
+          `}>
+            <h3 className={`text-lg font-bold mb-4 text-center ${
+              isDark ? 'text-yellow-300' : 'text-blue-800'
+            }`}>
+              🏢 지적재산권 및 저작권 보호
+            </h3>
+            
+            <div className={`grid md:grid-cols-2 gap-4 text-sm ${
+              isDark ? 'text-gray-300' : 'text-gray-700'
+            }`}>
+              <div className="space-y-2">
+                <h4 className={`font-semibold ${
+                  isDark ? 'text-yellow-200' : 'text-blue-700'
+                }`}>💼 보호 범위</h4>
+                <ul className="space-y-1 text-xs">
+                  <li>• 소스코드 및 알고리즘</li>
+                  <li>• 디자인 및 UI/UX</li>
+                  <li>• 데이터베이스 구조</li>
+                  <li>• 비즈니스 로직</li>
+                  <li>• 시스템 아키텍처</li>
+                </ul>
+              </div>
+              
+              <div className="space-y-2">
+                <h4 className={`font-semibold ${
+                  isDark ? 'text-red-300' : 'text-red-700'
+                }`}>⚠️ 금지 행위</h4>
+                <ul className="space-y-1 text-xs">
+                  <li>• 전부 또는 일부 복제</li>
+                  <li>• 무단 배포 및 수정</li>
+                  <li>• 상업적 목적 사용</li>
+                  <li>• 리버스 엔지니어링</li>
+                  <li>• 디컴파일/디스어셈블리</li>
+                </ul>
+              </div>
+            </div>
+            
+            <div className={`mt-4 pt-4 border-t text-center ${
+              isDark ? 'border-gray-600 text-gray-400' : 'border-blue-200 text-gray-600'
+            }`}>
+              <p className="text-xs font-medium">
+                ⚠️ 위반 시 저작권법에 따른 민·형사상 책임을 질 수 있습니다.
+              </p>
+              <p className="text-xs mt-1 opacity-75">
+                저작권 문의: tjdgnsdl1597@naver.com
+              </p>
+            </div>
           </div>
         </div>
 
         {/* 모바일 최적화를 위한 추가 여백 */}
-        <div className="h-4 sm:h-2"></div>
+        <div className="h-6 sm:h-4"></div>
       </div>
     </footer>
   );

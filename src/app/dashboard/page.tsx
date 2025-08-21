@@ -5,6 +5,7 @@ import { useAuth } from '@/lib/simpleAuth';
 import { useRouter } from 'next/navigation';
 import { isSuperAdmin } from '@/lib/authUtils';
 import dynamic from 'next/dynamic';
+import CopyrightFooter from '@/components/CopyrightFooter';
 import type { DateClickArg } from '@fullcalendar/interaction';
 
 // 동적으로 import된 캘린더 컴포넌트
@@ -918,6 +919,9 @@ export default function DashboardPage() {
           </div>
         </div>
       )}
+      
+      {/* 저작권 푸터 */}
+      <CopyrightFooter className="mt-8" />
     </div>
   );
 }

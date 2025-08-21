@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import HeroSplit from '@/components/HeroSplit';
+import CopyrightFooter from '@/components/CopyrightFooter';
 import { motion } from 'framer-motion';
 
 
@@ -1044,6 +1045,7 @@ export default function HomePage() {
       <TrustComplianceSection />
       <QuickMenuSection />
       <LegalNoticeSection />
+      <CopyrightFooter />
     </div>
   );
 }

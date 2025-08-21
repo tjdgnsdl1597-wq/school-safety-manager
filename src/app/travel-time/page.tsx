@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/simpleAuth';
 import { useRouter } from 'next/navigation';
+import CopyrightFooter from '@/components/CopyrightFooter';
 
 interface TravelTimeData {
   fromOfficeToFirst?: string;
@@ -539,6 +540,9 @@ export default function TravelTimePage() {
           )}
         </div>
       </div>
+      
+      {/* 저작권 푸터 */}
+      <CopyrightFooter className="mt-8" />
     </div>
   );
 }
