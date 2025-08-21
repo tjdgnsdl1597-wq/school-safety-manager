@@ -324,12 +324,35 @@ export default function DashboardPage() {
     console.log('선택된 날짜:', arg.dateStr);
   };
 
-  const handleEventClick = (clickInfo: { event: { id: string } }) => {
-    const scheduleId = clickInfo.event.id;
-    const schedule = schedules.find(s => s.id === scheduleId);
-    if (schedule) {
-      setSelectedSchedule(schedule);
+  const handleEventClick = (clickInfo: { event: { id: string, extendedProps: any, title: string } }) => {
+    const eventId = clickInfo.event.id;
+    
+    // 국가공휴일인지 확인
+    if (eventId.startsWith('holiday-')) {
+      const holidayInfo = clickInfo.event.extendedProps;
+      // 공휴일용 가짜 schedule 객체 생성
+      const holidaySchedule = {
+        id: eventId,
+        date: eventId.replace('holiday-', ''),
+        school: { name: '국가공휴일', abbreviation: null },
+        ampm: 'ALL',
+        startTime: '00:00',
+        endTime: '23:59',
+        purpose: '[]',
+        otherReason: null,
+        isHoliday: true,
+        holidayReason: holidayInfo.holidayName,
+        isNationalHoliday: true
+      };
+      setSelectedSchedule(holidaySchedule);
       setShowScheduleModal(true);
+    } else {
+      // 일반 일정 처리
+      const schedule = schedules.find(s => s.id === eventId);
+      if (schedule) {
+        setSelectedSchedule(schedule);
+        setShowScheduleModal(true);
+      }
     }
   };
 
@@ -396,7 +419,7 @@ export default function DashboardPage() {
     const holidayEvents = getAllHolidays().map((holiday) => {
       return {
         id: `holiday-${holiday.date}`,
-        title: `🎉 ${holiday.name}`,
+        title: holiday.name, // 공휴일 이름만 깔끔하게 표시
         start: holiday.date,
         allDay: true,
         backgroundColor: '#ec4899', // 분홍색
@@ -887,7 +910,9 @@ export default function DashboardPage() {
         <div className="fixed inset-0 flex items-center justify-center z-50 px-4">
           <div className="bg-white rounded-lg p-4 w-full max-w-sm mx-auto shadow-2xl border-2 border-blue-200">
             <div className="flex justify-between items-center mb-3">
-              <h3 className="text-base font-semibold text-gray-900">일정 상세</h3>
+              <h3 className="text-base font-semibold text-gray-900">
+                {selectedSchedule.isNationalHoliday ? '🎉 국가공휴일' : '일정 상세'}
+              </h3>
               <button
                 onClick={() => setShowScheduleModal(false)}
                 className="text-gray-500 hover:text-gray-700 text-lg"
@@ -900,14 +925,22 @@ export default function DashboardPage() {
               {/* 1행: 날짜와 시간 */}
               <div>
                 <p className="text-base font-medium text-gray-900">
-                  {new Date(selectedSchedule.date).toLocaleDateString('ko-KR')} {selectedSchedule.startTime} - {selectedSchedule.endTime}
+                  {selectedSchedule.isNationalHoliday ? (
+                    new Date(selectedSchedule.date).toLocaleDateString('ko-KR')
+                  ) : (
+                    `${new Date(selectedSchedule.date).toLocaleDateString('ko-KR')} ${selectedSchedule.startTime} - ${selectedSchedule.endTime}`
+                  )}
                 </p>
               </div>
               
               {/* 2행: 학교명과 목적 */}
               <div>
                 <p className="text-base font-medium text-gray-900">
-                  {selectedSchedule.isHoliday ? (
+                  {selectedSchedule.isNationalHoliday ? (
+                    <span className="text-pink-600 font-bold text-lg">
+                      🇰🇷 {selectedSchedule.holidayReason}
+                    </span>
+                  ) : selectedSchedule.isHoliday ? (
                     `🏖️ ${selectedSchedule.holidayReason || '휴무'}`
                   ) : (
                     `${selectedSchedule.school.name} - ${JSON.parse(selectedSchedule.purpose || '[]').join(', ')}`

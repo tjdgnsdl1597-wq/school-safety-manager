@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import CopyrightFooter from '@/components/CopyrightFooter';
 import type { DateClickArg } from '@fullcalendar/interaction';
+import { getAllHolidays } from '@/lib/holidays';
 
 // 동적으로 import된 캘린더 컴포넌트
 const DynamicScheduleCalendar = dynamic(() => import('../../components/ScheduleCalendarComponent'), {
@@ -308,7 +309,15 @@ export default function SchedulesPage() {
   };
 
   const handleEventClick = (clickInfo: { event: { id: string } }) => {
-    const schedule = schedules.find(s => s.id === clickInfo.event.id);
+    const eventId = clickInfo.event.id;
+    
+    // 국가공휴일은 편집하지 않음
+    if (eventId.startsWith('holiday-')) {
+      alert('국가공휴일은 편집할 수 없습니다.');
+      return;
+    }
+    
+    const schedule = schedules.find(s => s.id === eventId);
     if (schedule) {
       setEditingSchedule(schedule);
       setSelectedDate(new Date(schedule.date).toISOString().split('T')[0]);
@@ -353,7 +362,8 @@ export default function SchedulesPage() {
     setSelectedPurposes(prev => checked ? [...prev, value] : prev.filter(p => p !== value));
   };
 
-  const calendarEvents = schedules.map(schedule => {
+  // 일정 이벤트들
+  const scheduleEvents = schedules.map(schedule => {
     let title;
     if (schedule.isHoliday) {
       // 휴무일정인 경우: 휴무 사유만 표시
@@ -380,6 +390,27 @@ export default function SchedulesPage() {
       }
     };
   });
+
+  // 국가공휴일 이벤트들 (2025년)
+  const holidayEvents = getAllHolidays().map((holiday) => {
+    return {
+      id: `holiday-${holiday.date}`,
+      title: holiday.name, // 공휴일 이름만 표시 (이모지 제거)
+      start: holiday.date,
+      allDay: true,
+      backgroundColor: '#ec4899', // 분홍색
+      textColor: '#ffffff',
+      className: 'fc-national-holiday',
+      extendedProps: {
+        isNationalHoliday: true,
+        holidayType: holiday.type,
+        holidayName: holiday.name
+      }
+    };
+  });
+
+  // 일정 이벤트와 공휴일 이벤트를 합침
+  const calendarEvents = [...scheduleEvents, ...holidayEvents];
 
   // --- Render ---
   if (isLoading) return <div className="text-center p-8">로딩 중...</div>;
