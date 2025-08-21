@@ -83,12 +83,15 @@ export default function DashboardPage() {
   const [selectedSchedule, setSelectedSchedule] = useState<Schedule | null>(null);
   const [showScheduleModal, setShowScheduleModal] = useState(false);
 
-  // 인증되지 않은 사용자 리다이렉트
+  // 인증되지 않은 사용자 및 어드민 사용자 리다이렉트
   useEffect(() => {
     if (!isAuthenticated) {
       router.push('/');
+    } else if (isAdmin) {
+      // 어드민은 대시보드 접근 차단 - 사용자 관리 페이지로 리다이렉트
+      router.push('/admin/users');
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, isAdmin, router]);
 
   // --- Data Fetching ---
   const fetchSchedules = async () => {
@@ -390,9 +393,9 @@ export default function DashboardPage() {
     });
   }, [schedules]);
 
-  // 오늘의 일정 계산
+  // 오늘의 일정 계산 (한국 시간대 기준)
   const todaySchedules = useMemo(() => {
-    const today = new Date().toISOString().split('T')[0];
+    const today = new Date().toLocaleDateString('sv-SE'); // YYYY-MM-DD 형식, 현지 시간대
     return schedules.filter(schedule => schedule.date.startsWith(today));
   }, [schedules]);
 
@@ -470,12 +473,14 @@ export default function DashboardPage() {
     }).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 10);
   }, [schedules]);
 
-  if (!isAuthenticated || loading) {
+  if (!isAuthenticated || isAdmin || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500 mx-auto"></div>
-          <p className="mt-4 text-gray-600">대시보드 로딩 중...</p>
+          <p className="mt-4 text-gray-600">
+            {isAdmin ? '관리자는 사용자 관리 페이지로 이동합니다...' : '대시보드 로딩 중...'}
+          </p>
         </div>
       </div>
     );

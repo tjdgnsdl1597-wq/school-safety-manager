@@ -61,7 +61,7 @@ export default function Navbar() {
     { name: '📢 교육청 배포물', href: '/data-center/notices', icon: '📢' },
   ];
 
-  // 슈퍼관리자용 네비게이션 메뉴 (사용자 관리 + 이동시간 + 자료마당 + 중대재해 알리미)
+  // 슈퍼관리자용 네비게이션 메뉴 (사용자 관리 + 이동시간 + 자료마당 + 중대재해 알리미) - 대시보드 제거
   const adminNavItems = [
     { name: '사용자 관리', href: '/admin/users' },
     { name: '이동시간', href: '/travel-time' },

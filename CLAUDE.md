@@ -58,18 +58,23 @@ This is a **School Safety Management System** (학교 안전보건 관리 시스
 - **Build**: `npm run build` 
 - **Production server**: `npm start`
 - **Linting**: `npm run lint`
-- **Vercel build**: `npm run vercel-build` (custom build script that handles Prisma generation and database setup with `--force-reset` flag)
+- **Vercel build**: `npm run vercel-build` (custom build script that handles Prisma generation and database setup)
 - **Database operations**: 
   - `npx prisma migrate dev --name descriptive_name` (create and apply migrations)
   - `npx prisma generate` (regenerate Prisma client)
   - `npx prisma studio` (open database browser)
   - `npx prisma db push --force-reset` (sync schema to database, used in deployment with data loss acceptance)
+- **Data backup/restore**: 
+  - `node scripts/backup-data.js` (backup current database to data-backup.json)
+  - Use `/api/restore-data` endpoint to restore from backup file
 
 ## Architecture Overview
 
 ### Database Schema (Prisma)
-- **School**: Core entity with name, phoneNumber, contactPerson, linked to schedules. Special "휴무일정" dummy school exists for holiday schedules
-- **Schedule**: Visit schedules with date/time, purpose (JSON array), AM/PM slots, and holiday support (isHoliday, holidayReason)
+- **User**: User accounts with authentication, addresses (home/office), and profile information. One-to-many with schools, schedules, and travel times
+- **School**: Core entity with name, phoneNumber, contactPerson, address, linked to schedules. Special "휴무일정" dummy school exists for holiday schedules
+- **Schedule**: Visit schedules with date/time, purpose (JSON array), AM/PM slots, holiday support, and one-to-one travel time relationship
+- **TravelTime**: Travel time calculations linked to schedules, storing duration, distance, origin (home/office/previous school), and various time options
 - **Material**: Blog-style posts with title, content, category ("교육자료" or "산업재해"), linked to multiple attachments
 - **MaterialAttachment**: Individual files linked to materials (max 5 per post, 50MB total, uploaded to GCS)
 
@@ -88,6 +93,7 @@ This is a **School Safety Management System** (학교 안전보건 관리 시스
 - `/` - Dashboard with calendar view, today's schedule, monthly summaries (admin) / Public hero page (visitors)
 - `/schools` - School management (CRUD operations) (admin only)
 - `/schedules` - Schedule management with calendar interface (admin only)
+- `/travel-time` - Travel time calculation and address management page (user only)
 - `/educational-materials` - Blog-style material posts with multi-file attachments (public access, admin upload)
 - `/educational-materials/[id]` - Individual post detail pages with file downloads
 - `/industrial-accidents` - Industrial accident documentation (public access, admin upload)
@@ -96,7 +102,12 @@ This is a **School Safety Management System** (학교 안전보건 관리 시스
 
 #### API Routes
 - `/api/schools` - School CRUD operations
+- `/api/schools/auto-address` - Automatic school address search using Naver Local Search API
 - `/api/schedules` - Schedule management with school relations
+- `/api/travel-time/calculate` - Travel time calculation using Naver Maps API (Geocoding + Direction5)
+- `/api/travel-time/auto-update` - Automatic travel time updates for today's schedules (10-minute intervals)
+- `/api/user/addresses` - User home/office address management
+- `/api/restore-data` - Data restoration from backup files
 - `/api/materials` - Multi-file upload/retrieval with category filtering, supports FormData (traditional upload)
 - `/api/materials/signed-url` - Google Cloud Storage signed URL generation for direct client uploads
 - `/api/materials/metadata` - Save file metadata to database after successful GCS uploads
@@ -122,6 +133,15 @@ Purposes are stored as JSON strings in database, parsed as arrays in frontend:
 #### School Abbreviations
 School names have predefined abbreviations defined in `src/lib/schoolUtils.ts` for calendar display optimization.
 
+#### Travel Time System
+- **Fixed Company Address**: Hardcoded to "인천광역시 남동구 구월남로 232번길 31"
+- **User Addresses**: Home and office addresses stored in User model, editable via travel-time page
+- **Auto-Address Search**: Bulk school address population using Naver Local Search API with fallback to manual entry
+- **Travel Time Calculation**: Uses Naver Maps API (Geocoding + Direction5) with realistic mock data fallback
+- **Display Format**: Shows origin and duration like "이동:32분소요" in dashboard
+- **Auto-Update**: Recalculates travel times every 10 minutes for today's schedules
+- **Mobile Optimization**: First school shows both company/home options, subsequent schools show previous school travel times
+
 #### Multi-File Upload Structure
 Materials are blog-style posts with title, content, and up to 5 file attachments (50MB total limit). Files support thumbnails for images and type icons for other formats. All files uploaded to Google Cloud Storage with public URLs stored in MaterialAttachment model with uploadOrder for display sequencing.
 
@@ -134,10 +154,10 @@ Materials are blog-style posts with title, content, and up to 5 file attachments
 
 #### Authentication & Authorization
 - **Public Pages**: `/`, `/educational-materials`, `/industrial-accidents`, `/auth/signin`, `/auth/signup` - accessible without login
-- **User Pages**: `/dashboard`, `/schools`, `/schedules` - require user authentication (both regular users and super admins)
+- **User Pages**: `/dashboard`, `/schools`, `/schedules`, `/travel-time` - require user authentication (both regular users and super admins)
 - **Admin Pages**: `/admin/*` - require super admin authentication only
 - **Role Check**: `isSuperAdmin(user)` from `@/lib/authUtils` determines super admin status
-- **Data Separation**: User-specific data (schools, schedules, dashboard memos) stored per user, shared data (educational materials, industrial accidents) accessible to all
+- **Data Separation**: User-specific data (schools, schedules, travel times, dashboard memos) stored per user, shared data (educational materials, industrial accidents) accessible to all
 - **Authentication Flow**: Simple username/password with localStorage persistence, includes user registration with approval system
 
 ## Development Guidelines
@@ -201,6 +221,8 @@ GOOGLE_CLOUD_PROJECT_ID="your-project-id"
 GOOGLE_CLOUD_BUCKET_NAME="school-safety-manager"
 GOOGLE_CLOUD_KEY_FILE="path/to/service-account-key.json"
 PIXABAY_KEY="your-pixabay-api-key-for-image-search"
+NAVER_CLIENT_ID="your-naver-client-id"
+NAVER_CLIENT_SECRET="your-naver-client-secret"
 ```
 
 **Production/Vercel:**
@@ -212,6 +234,8 @@ GOOGLE_CLOUD_PROJECT_ID="your-project-id"
 GOOGLE_CLOUD_BUCKET_NAME="school-safety-manager"
 GOOGLE_CLOUD_CREDENTIALS='{"type":"service_account","project_id":"..."}' # Full JSON string
 PIXABAY_KEY="your-pixabay-api-key"
+NAVER_CLIENT_ID="your-naver-client-id"
+NAVER_CLIENT_SECRET="your-naver-client-secret"
 ```
 
 ### Google Cloud Storage Setup
@@ -222,10 +246,18 @@ PIXABAY_KEY="your-pixabay-api-key"
 - Filename sanitization: Korean/special characters removed, length limited to 50 chars
 - Public URLs: `https://storage.googleapis.com/{bucket}/{path}`
 
+### Naver Maps API Setup
+- Service registration at Naver Cloud Platform console
+- Application registration with appropriate service environment
+- Geocoding API and Direction5 API activation
+- Client ID and Client Secret generation for API access
+- Environment variables: NAVER_CLIENT_ID and NAVER_CLIENT_SECRET
+
 ### Prerequisites
 - Node.js 18+ for Next.js 15 compatibility
 - Google Cloud account with Storage API enabled
 - Service account key for GCS access
+- Naver Cloud Platform account for travel time calculations
 
 ## Next.js 15 Specific Patterns
 
@@ -289,6 +321,9 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 
 ### Today's Schedule Section
 - Shows current day's schedules with time and school abbreviations
+- Displays travel time information with origin and duration ("이동:32분소요")
+- First school shows both company and home travel options
+- Subsequent schools show travel time from previous school
 - Real-time clock display in header
 - Uses safe parsing for schedule purposes to prevent JSON errors
 
@@ -374,16 +409,38 @@ const calendarEvents = safeCreateCalendarEvents(schedules); // Filters invalid d
 6. **Holiday Schedule Logic**: Always check `isHoliday` flag when processing schedules to handle different UI/logic paths
 7. **GCS Upload Errors**: Common 403/500 errors are due to missing CORS config, incorrect service account permissions, or malformed signed URLs
 
+## Travel Time Management System
+
+### Travel Time Architecture
+- **Naver Maps Integration**: Uses Geocoding API for address-to-coordinates conversion and Direction5 API for route calculation
+- **Mock Data Fallback**: Realistic travel time estimates when API keys aren't configured, considering regional distances and traffic patterns
+- **Fixed Company Address**: "인천광역시 남동구 구월남로 232번길 31" hardcoded for consistency
+- **Automatic Updates**: Background service recalculates travel times every 10 minutes for today's schedules
+- **Database Storage**: TravelTime model stores duration, distance, origin type, and multiple time options per schedule
+
+### Travel Time Calculation Logic
+- **First School**: Calculate from both home and office addresses, display both options
+- **Subsequent Schools**: Calculate from previous school in chronological order
+- **Time Format**: Duration in minutes (e.g., "32분"), distance in kilometers (e.g., "15.2km")
+- **Origin Types**: "집", "회사", or previous school name
+- **Error Handling**: Falls back to mock data on API failures, provides realistic estimates based on regional patterns
+
+### Address Management
+- **Auto-Search**: Naver Local Search API finds school addresses by name with fallback message for manual entry
+- **User Addresses**: Home and office addresses stored in User model, editable via travel-time page
+- **Address Validation**: Input validation and sanitization for Korean addresses
+- **Bulk Operations**: Update all school addresses at once or individual school addresses
+
 ## Critical TypeScript Patterns
 
 ### Schedule Interface Requirements
-When working with schedules, always include optional holiday fields:
+When working with schedules, always include optional holiday and travel time fields:
 ```typescript
 interface Schedule {
   id: string;
   date: string;
   schoolId: string;
-  school: { name: string; abbreviation?: string | null; };
+  school: { name: string; abbreviation?: string | null; address?: string | null; };
   ampm: string;
   startTime: string;
   endTime: string;
@@ -391,6 +448,28 @@ interface Schedule {
   otherReason?: string;
   isHoliday?: boolean;
   holidayReason?: string | null;
+  travelTime?: {
+    duration?: string;
+    origin?: string;
+    fromOfficeTime?: string;
+    fromHomeTime?: string;
+    toPreviousTime?: string;
+  };
+}
+```
+
+### TravelTime Interface Requirements
+```typescript
+interface TravelTime {
+  id: string;
+  userId: string;
+  scheduleId: string;
+  fromOfficeTime?: string;    // 회사에서 출발하는 시간
+  fromHomeTime?: string;      // 집에서 출발하는 시간
+  toPreviousTime?: string;    // 이전 학교에서 이동하는 시간
+  duration?: string;          // 이동 소요 시간 (예: "32분")
+  distance?: string;          // 이동 거리 (예: "15.2km")
+  origin?: string;            // 출발지 (집/회사/이전학교명)
 }
 ```
 
@@ -460,3 +539,21 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 - **산업재해**: Maximum 4.5MB per file, traditional Vercel upload
 - Always validate file types against allowedTypes array in signed-url route
 - Filename sanitization removes Korean characters and limits to 50 characters
+
+### Travel Time API Issues
+
+**Mock Data Usage:**
+- API automatically falls back to mock data when NAVER_CLIENT_ID/NAVER_CLIENT_SECRET are missing
+- Mock data provides realistic estimates based on regional distance patterns and traffic considerations
+- Console warnings indicate when mock data is being used instead of real API calls
+
+**Naver API Errors:**
+- **API Key Issues**: Check NAVER_CLIENT_ID and NAVER_CLIENT_SECRET are correctly set in environment variables
+- **Service Registration**: Ensure Geocoding API and Direction5 API are activated in Naver Cloud Platform console
+- **Rate Limiting**: Naver APIs have usage quotas; check console for quota exceeded errors
+- **Address Not Found**: Auto-address search falls back to manual entry message when school names don't match Naver database
+
+**Travel Time Calculation Problems:**
+- **No Travel Times Displayed**: Check if today's schedules exist and TravelTime records are created via auto-update API
+- **Inconsistent Times**: Mock data includes realistic variance; real API provides accurate route-based calculations
+- **Missing Addresses**: User home/office addresses must be set via travel-time page for calculations to work
