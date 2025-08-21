@@ -453,7 +453,13 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
         <form onSubmit={handleSearch} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
           <div className="sm:col-span-1 lg:col-span-1">
             <label htmlFor="searchBy" className="block text-sm font-medium text-gray-700 mb-1">검색 조건</label>
-            <select id="searchBy" value={searchBy} onChange={e => setSearchBy(e.target.value)} className="w-full p-2 border rounded-md">
+            <select 
+              id="searchBy" 
+              value={searchBy} 
+              onChange={e => setSearchBy(e.target.value)} 
+              className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white relative z-10"
+              style={{ WebkitAppearance: 'menulist', appearance: 'menulist' }}
+            >
               <option value="title">제목</option>
               <option value="content">내용</option>
             </select>

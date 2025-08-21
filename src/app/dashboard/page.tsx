@@ -5,7 +5,9 @@ import { useAuth } from '@/lib/simpleAuth';
 import { useRouter } from 'next/navigation';
 import { isSuperAdmin } from '@/lib/authUtils';
 import dynamic from 'next/dynamic';
+import CopyrightFooter from '@/components/CopyrightFooter';
 import type { DateClickArg } from '@fullcalendar/interaction';
+import { getHoliday, getAllHolidays } from '@/lib/holidays';
 
 // 동적으로 import된 캘린더 컴포넌트
 const DynamicScheduleCalendar = dynamic(() => import('../../components/ScheduleCalendarComponent'), {
@@ -46,6 +48,7 @@ interface Schedule {
   otherReason?: string | null;
   isHoliday?: boolean;
   holidayReason?: string | null;
+  isNationalHoliday?: boolean;
   travelTime?: {
     id: string;
     duration: string | null;
@@ -326,17 +329,46 @@ export default function DashboardPage() {
   };
 
   const handleEventClick = (clickInfo: { event: { id: string } }) => {
-    const scheduleId = clickInfo.event.id;
-    const schedule = schedules.find(s => s.id === scheduleId);
-    if (schedule) {
-      setSelectedSchedule(schedule);
+    const eventId = clickInfo.event.id;
+    
+    // 국가공휴일인지 확인
+    if (eventId.startsWith('holiday-')) {
+      const holidayDate = eventId.replace('holiday-', '');
+      // 공휴일 데이터에서 이름 찾기
+      const holiday = getAllHolidays().find(h => h.date === holidayDate);
+      const holidayName = holiday?.name || '공휴일';
+      
+      // 공휴일용 가짜 schedule 객체 생성
+      const holidaySchedule = {
+        id: eventId,
+        date: holidayDate,
+        schoolId: 'national-holiday', // 누락된 schoolId 추가
+        school: { id: 'national-holiday', name: '국가공휴일', abbreviation: null },
+        ampm: 'ALL',
+        startTime: '00:00',
+        endTime: '23:59',
+        purpose: '[]',
+        otherReason: null,
+        isHoliday: true,
+        holidayReason: holidayName,
+        isNationalHoliday: true
+      };
+      setSelectedSchedule(holidaySchedule);
       setShowScheduleModal(true);
+    } else {
+      // 일반 일정 처리
+      const schedule = schedules.find(s => s.id === eventId);
+      if (schedule) {
+        setSelectedSchedule(schedule);
+        setShowScheduleModal(true);
+      }
     }
   };
 
   // --- Calendar Events ---
   const calendarEvents = useMemo(() => {
-    return schedules.map((schedule) => {
+    // 일정 이벤트들
+    const scheduleEvents = schedules.map((schedule) => {
       const eventDate = new Date(schedule.date);
       const [startHour, startMinute] = schedule.startTime.split(':').map(Number);
       const [endHour, endMinute] = schedule.endTime.split(':').map(Number);
@@ -391,6 +423,27 @@ export default function DashboardPage() {
         }
       };
     });
+
+    // 국가공휴일 이벤트들 (2025년)
+    const holidayEvents = getAllHolidays().map((holiday) => {
+      return {
+        id: `holiday-${holiday.date}`,
+        title: holiday.name, // 공휴일 이름만 깔끔하게 표시
+        start: holiday.date,
+        allDay: true,
+        backgroundColor: '#ec4899', // 분홍색
+        textColor: '#ffffff',
+        className: 'fc-national-holiday',
+        extendedProps: {
+          isNationalHoliday: true,
+          holidayType: holiday.type,
+          holidayName: holiday.name
+        }
+      };
+    });
+
+    // 일정 이벤트와 공휴일 이벤트를 합침
+    return [...scheduleEvents, ...holidayEvents];
   }, [schedules]);
 
   // 오늘의 일정 계산 (한국 시간대 기준)
@@ -553,29 +606,27 @@ export default function DashboardPage() {
                   );
                   
                   return (
-                    <div className="space-y-2 max-h-80 overflow-y-auto">
+                    <div className="space-y-1.5 max-h-64 overflow-y-auto">
                       {sortedSchedules.map((schedule, index) => (
-                        <div key={schedule.id} className="p-3 bg-blue-50 rounded-lg border border-blue-200">
-                          <div className="flex justify-between items-start mb-2">
+                        <div key={schedule.id} className="p-2.5 bg-blue-50 rounded-lg border border-blue-200">
+                          <div className="flex justify-between items-center mb-1">
                             <div className="text-xs font-medium text-blue-900">
                               {schedule.startTime} - {schedule.endTime}
                             </div>
-                            <div className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                              #{index + 1}
+                            <div className="text-xs bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded text-center min-w-[24px]">
+                              {index + 1}
                             </div>
                           </div>
-                          <div className="text-xs text-blue-700 mb-1">
+                          <div className="text-xs text-blue-700">
                             {schedule.isHoliday ? (
                               <span>🏖️ {schedule.holidayReason}</span>
                             ) : (
-                              <span className="font-medium">{schedule.school.name}</span>
+                              <span>
+                                <span className="font-bold">{schedule.school.abbreviation || schedule.school.name}</span>
+                                <span className="font-medium">({JSON.parse(schedule.purpose || '[]').join(', ')})</span>
+                              </span>
                             )}
                           </div>
-                          {!schedule.isHoliday && (
-                            <div className="text-xs text-blue-600 mb-2">
-                              {JSON.parse(schedule.purpose || '[]').join(', ')}
-                            </div>
-                          )}
                           {!schedule.isHoliday && schedule.travelTime && (
                             <div className="text-xs bg-green-50 border border-green-200 rounded p-2">
                               {/* 첫 번째 학교인 경우 회사/집 두 옵션 표시 */}
@@ -868,7 +919,9 @@ export default function DashboardPage() {
         <div className="fixed inset-0 flex items-center justify-center z-50 px-4">
           <div className="bg-white rounded-lg p-4 w-full max-w-sm mx-auto shadow-2xl border-2 border-blue-200">
             <div className="flex justify-between items-center mb-3">
-              <h3 className="text-base font-semibold text-gray-900">일정 상세</h3>
+              <h3 className="text-base font-semibold text-gray-900">
+                {selectedSchedule.isNationalHoliday ? '🎉 국가공휴일' : '일정 상세'}
+              </h3>
               <button
                 onClick={() => setShowScheduleModal(false)}
                 className="text-gray-500 hover:text-gray-700 text-lg"
@@ -881,14 +934,22 @@ export default function DashboardPage() {
               {/* 1행: 날짜와 시간 */}
               <div>
                 <p className="text-base font-medium text-gray-900">
-                  {new Date(selectedSchedule.date).toLocaleDateString('ko-KR')} {selectedSchedule.startTime} - {selectedSchedule.endTime}
+                  {selectedSchedule.isNationalHoliday ? (
+                    new Date(selectedSchedule.date).toLocaleDateString('ko-KR')
+                  ) : (
+                    `${new Date(selectedSchedule.date).toLocaleDateString('ko-KR')} ${selectedSchedule.startTime} - ${selectedSchedule.endTime}`
+                  )}
                 </p>
               </div>
               
               {/* 2행: 학교명과 목적 */}
               <div>
                 <p className="text-base font-medium text-gray-900">
-                  {selectedSchedule.isHoliday ? (
+                  {selectedSchedule.isNationalHoliday ? (
+                    <span className="text-pink-600 font-bold text-lg">
+                      🇰🇷 {selectedSchedule.holidayReason}
+                    </span>
+                  ) : selectedSchedule.isHoliday ? (
                     `🏖️ ${selectedSchedule.holidayReason || '휴무'}`
                   ) : (
                     `${selectedSchedule.school.name} - ${JSON.parse(selectedSchedule.purpose || '[]').join(', ')}`
@@ -923,6 +984,9 @@ export default function DashboardPage() {
           </div>
         </div>
       )}
+      
+      {/* 저작권 푸터 */}
+      <CopyrightFooter className="mt-8" />
     </div>
   );
 }

@@ -154,6 +154,28 @@ body {
   font-size: 0.875rem !important;
   padding: 0.25rem !important;
   font-weight: 500 !important;
+  text-align: left !important;
+  display: block !important;
+  width: 100% !important;
+}
+
+.fc-daygrid-day-top {
+  text-align: left !important;
+  justify-content: flex-start !important;
+  display: flex !important;
+  align-items: flex-start !important;
+}
+
+.fc-daygrid-day-frame {
+  text-align: left !important;
+}
+
+/* Force left alignment for day numbers */
+.fc-daygrid-day .fc-daygrid-day-top .fc-daygrid-day-number {
+  text-align: left !important;
+  margin-left: 0 !important;
+  margin-right: auto !important;
+  justify-self: flex-start !important;
 }
 
 .fc-day-today {
@@ -191,6 +213,21 @@ body {
   background-color: #fbbf24 !important; /* 휴무일정 노란색 */
   border-color: #f59e0b !important;
   color: #000000 !important; /* 검은색 글씨 */
+}
+
+/* National holiday event */
+.fc-event.fc-national-holiday {
+  background: linear-gradient(135deg, #ec4899, #f97316) !important; /* 분홍-주황 그라데이션 */
+  border-color: #ec4899 !important;
+  color: #ffffff !important; /* 흰색 글씨 */
+  font-weight: 600 !important;
+  box-shadow: 0 2px 4px rgba(236, 72, 153, 0.3) !important;
+}
+
+.fc-event.fc-national-holiday:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(236, 72, 153, 0.4) !important;
+  transition: all 0.2s ease;
 }
 
 /* Custom Event Content */

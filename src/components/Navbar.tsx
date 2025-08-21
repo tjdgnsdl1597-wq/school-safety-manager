@@ -61,22 +61,22 @@ export default function Navbar() {
     { name: '📢 교육청 배포물', href: '/data-center/notices', icon: '📢' },
   ];
 
-  // 슈퍼관리자용 네비게이션 메뉴 (사용자 관리 + 이동시간 + 자료마당 + 중대재해 알리미) - 대시보드 제거
+  // 슈퍼관리자용 네비게이션 메뉴 (사용자 관리 + 이용약관 + 자료마당 + 중대재해 알리미) - 대시보드 제거
   const adminNavItems = [
     { name: '사용자 관리', href: '/admin/users' },
-    { name: '이동시간', href: '/travel-time' },
+    { name: '이용약관', href: '/terms' },
     { name: '자료마당', href: '/data-center/education', isDropdown: true },
     { name: '중대재해 알리미', href: '/industrial-accidents' },
   ];
 
-  // 메뉴 텍스트를 표시하는 함수 (관리자만 2줄, 나머지는 1줄)
+  // 메뉴 텍스트를 표시하는 함수 (로그인한 사용자는 2줄 표시)
   const renderMenuText = (menuName: string) => {
-    // 관리자가 아닌 경우 항상 1줄로 표시
-    if (!isAdmin) {
+    // 로그인하지 않은 경우 항상 1줄로 표시
+    if (!isLoggedIn) {
       return menuName;
     }
     
-    // 관리자인 경우만 2줄로 표시
+    // 로그인한 사용자인 경우 2줄로 표시
     if (menuName === '대시보드') {
       return <span className="text-center leading-tight">대시<br />보드</span>;
     }
@@ -85,6 +85,9 @@ export default function Navbar() {
     }
     if (menuName === '사용자 관리') {
       return <span className="text-center leading-tight">사용자<br />관리</span>;
+    }
+    if (menuName === '이용약관') {
+      return <span className="text-center leading-tight">이용<br />약관</span>;
     }
     if (menuName === '일정 관리') {
       return <span className="text-center leading-tight">일정<br />관리</span>;
@@ -97,6 +100,9 @@ export default function Navbar() {
     }
     if (menuName === '중대재해 알리미') {
       return <span className="text-center leading-tight">중대재해<br />알리미</span>;
+    }
+    if (menuName === '이동시간') {
+      return <span className="text-center leading-tight">이동시간<br />(개발중)</span>;
     }
     return menuName;
   };

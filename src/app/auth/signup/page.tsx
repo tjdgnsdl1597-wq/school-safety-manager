@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import TermsAgreement from '@/components/TermsAgreement';
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -21,6 +22,8 @@ export default function SignUpPage() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [termsValid, setTermsValid] = useState(false);
+  const [agreements, setAgreements] = useState({});
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,6 +31,12 @@ export default function SignUpPage() {
     // 입력값 검증
     if (!formData.username || !formData.password || !formData.name || !formData.position || !formData.phoneNumber || !formData.email) {
       setError('모든 필수 항목을 입력해주세요.');
+      return;
+    }
+
+    // 약관 동의 검증
+    if (!termsValid) {
+      setError('모든 필수 약관에 동의해주세요.');
       return;
     }
 
@@ -325,6 +334,17 @@ export default function SignUpPage() {
             />
           </div>
 
+          {/* 약관 동의 섹션 */}
+          <div className="bg-white/5 border border-white/20 rounded-lg p-4">
+            <TermsAgreement
+              mode="signup"
+              onAgreementChange={(isValid, agreementState) => {
+                setTermsValid(isValid);
+                setAgreements(agreementState);
+              }}
+              className="text-white"
+            />
+          </div>
 
           <button
             type="submit"

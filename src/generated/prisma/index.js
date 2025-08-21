@@ -87,6 +87,9 @@ Prisma.NullTypes = {
  * Enums
  */
 exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
+  ReadUncommitted: 'ReadUncommitted',
+  ReadCommitted: 'ReadCommitted',
+  RepeatableRead: 'RepeatableRead',
   Serializable: 'Serializable'
 });
 
@@ -176,6 +179,11 @@ exports.Prisma.SortOrder = {
   desc: 'desc'
 };
 
+exports.Prisma.QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
+};
+
 exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
@@ -201,7 +209,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "C:\\Users\\gram\\school-safety-manager\\src\\generated\\prisma",
+      "value": "C:\\Users\\PC\\school-safety-manager\\src\\generated\\prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -215,7 +223,7 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "C:\\Users\\gram\\school-safety-manager\\prisma\\schema.prisma",
+    "sourceFilePath": "C:\\Users\\PC\\school-safety-manager\\prisma\\schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
@@ -228,7 +236,7 @@ const config = {
   "datasourceNames": [
     "db"
   ],
-  "activeProvider": "sqlite",
+  "activeProvider": "postgresql",
   "inlineDatasources": {
     "db": {
       "url": {
@@ -237,8 +245,8 @@ const config = {
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"sqlite\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  id            String       @id @default(uuid())\n  username      String       @unique\n  password      String\n  name          String\n  position      String?\n  phoneNumber   String?\n  email         String?\n  department    String       @default(\"산업안전팀\")\n  profilePhoto  String?\n  role          String       @default(\"user\")\n  isActive      Boolean      @default(false)\n  homeAddress   String?\n  officeAddress String?\n  createdAt     DateTime     @default(now())\n  updatedAt     DateTime     @updatedAt\n  schedules     Schedule[]\n  schools       School[]\n  travelTimes   TravelTime[]\n}\n\nmodel School {\n  id            String     @id @default(uuid())\n  name          String     @unique\n  phoneNumber   String?\n  contactPerson String?\n  email         String?\n  address       String?\n  userId        String\n  schedules     Schedule[]\n  user          User       @relation(fields: [userId], references: [id])\n}\n\nmodel Schedule {\n  id            String      @id @default(uuid())\n  date          DateTime\n  schoolId      String\n  userId        String\n  ampm          String\n  startTime     String\n  endTime       String\n  purpose       String\n  otherReason   String?\n  isHoliday     Boolean     @default(false)\n  holidayReason String?\n  createdAt     DateTime    @default(now())\n  updatedAt     DateTime    @updatedAt\n  user          User        @relation(fields: [userId], references: [id])\n  school        School      @relation(fields: [schoolId], references: [id])\n  travelTime    TravelTime?\n}\n\nmodel Material {\n  id          String               @id @default(uuid())\n  title       String\n  content     String?\n  uploadedAt  DateTime             @default(now())\n  uploader    String\n  category    String\n  createdAt   DateTime             @default(now())\n  updatedAt   DateTime             @updatedAt\n  attachments MaterialAttachment[]\n}\n\nmodel MaterialAttachment {\n  id            String   @id @default(uuid())\n  materialId    String\n  filename      String\n  filePath      String\n  fileSize      Int\n  mimeType      String\n  thumbnailPath String?\n  uploadOrder   Int\n  createdAt     DateTime @default(now())\n  material      Material @relation(fields: [materialId], references: [id], onDelete: Cascade)\n}\n\nmodel TravelTime {\n  id             String   @id @default(uuid())\n  userId         String\n  scheduleId     String   @unique\n  fromOfficeTime String? // 회사에서 출발하는 시간\n  fromHomeTime   String? // 집에서 출발하는 시간  \n  toPreviousTime String? // 이전 학교에서 이동하는 시간\n  duration       String? // 이동 소요 시간 (예: \"32분\")\n  distance       String? // 이동 거리 (예: \"15.2km\")\n  origin         String? // 출발지 (집/회사/이전학교명)\n  calculatedAt   DateTime @default(now())\n  updatedAt      DateTime @updatedAt\n\n  user     User     @relation(fields: [userId], references: [id])\n  schedule Schedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)\n}\n",
-  "inlineSchemaHash": "051adff32d87bfe8d1d838030db09dc7d1eea94f685129c36848bb6e1562a1fe",
+  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  id            String       @id @default(uuid())\n  username      String       @unique\n  password      String\n  name          String\n  position      String?\n  phoneNumber   String?\n  email         String?\n  department    String       @default(\"산업안전팀\")\n  profilePhoto  String?\n  role          String       @default(\"user\")\n  isActive      Boolean      @default(false)\n  homeAddress   String?\n  officeAddress String?\n  createdAt     DateTime     @default(now())\n  updatedAt     DateTime     @updatedAt\n  schedules     Schedule[]\n  schools       School[]\n  travelTimes   TravelTime[]\n}\n\nmodel School {\n  id            String     @id @default(uuid())\n  name          String     @unique\n  phoneNumber   String?\n  contactPerson String?\n  email         String?\n  address       String?\n  userId        String\n  schedules     Schedule[]\n  user          User       @relation(fields: [userId], references: [id])\n}\n\nmodel Schedule {\n  id            String      @id @default(uuid())\n  date          DateTime\n  schoolId      String\n  userId        String\n  ampm          String\n  startTime     String\n  endTime       String\n  purpose       String\n  otherReason   String?\n  isHoliday     Boolean     @default(false)\n  holidayReason String?\n  createdAt     DateTime    @default(now())\n  updatedAt     DateTime    @updatedAt\n  user          User        @relation(fields: [userId], references: [id])\n  school        School      @relation(fields: [schoolId], references: [id])\n  travelTime    TravelTime?\n}\n\nmodel Material {\n  id          String               @id @default(uuid())\n  title       String\n  content     String?\n  uploadedAt  DateTime             @default(now())\n  uploader    String\n  category    String\n  createdAt   DateTime             @default(now())\n  updatedAt   DateTime             @updatedAt\n  attachments MaterialAttachment[]\n}\n\nmodel MaterialAttachment {\n  id            String   @id @default(uuid())\n  materialId    String\n  filename      String\n  filePath      String\n  fileSize      Int\n  mimeType      String\n  thumbnailPath String?\n  uploadOrder   Int\n  createdAt     DateTime @default(now())\n  material      Material @relation(fields: [materialId], references: [id], onDelete: Cascade)\n}\n\nmodel TravelTime {\n  id             String   @id @default(uuid())\n  userId         String\n  scheduleId     String   @unique\n  fromOfficeTime String? // 회사에서 출발하는 시간\n  fromHomeTime   String? // 집에서 출발하는 시간  \n  toPreviousTime String? // 이전 학교에서 이동하는 시간\n  duration       String? // 이동 소요 시간 (예: \"32분\")\n  distance       String? // 이동 거리 (예: \"15.2km\")\n  origin         String? // 출발지 (집/회사/이전학교명)\n  calculatedAt   DateTime @default(now())\n  updatedAt      DateTime @updatedAt\n\n  user     User     @relation(fields: [userId], references: [id])\n  schedule Schedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)\n}\n",
+  "inlineSchemaHash": "1a6022afede7e8e4eb7c796055150cd207c508b62a511c96cce15daabfc7493f",
   "copyEngine": true
 }
 

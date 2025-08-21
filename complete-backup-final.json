@@ -1,0 +1,896 @@
+{
+  "timestamp": "2025-08-21T12:30:30.425Z",
+  "description": "사용자별 개인정보 완전 분리된 최종 백업 (이동시간 포함)",
+  "statistics": {
+    "totalUsers": 3,
+    "totalSchools": 34,
+    "totalSchedules": 7,
+    "totalTravelTimes": 0,
+    "totalMaterials": 17,
+    "userBreakdown": [
+      {
+        "username": "tjdgnsdl1597",
+        "name": "강성훈",
+        "schoolCount": 33,
+        "scheduleCount": 6,
+        "travelTimeCount": 0
+      },
+      {
+        "username": "tjdgns1597",
+        "name": "홍길동",
+        "schoolCount": 1,
+        "scheduleCount": 1,
+        "travelTimeCount": 0
+      },
+      {
+        "username": "jyen1223",
+        "name": "조주연",
+        "schoolCount": 0,
+        "scheduleCount": 0,
+        "travelTimeCount": 0
+      }
+    ]
+  },
+  "users": [
+    {
+      "id": "2a7b32ba-b388-4db1-a0c9-486d95c4b3d2",
+      "username": "tjdgnsdl1597",
+      "password": "dlwjdrma12.",
+      "name": "강성훈",
+      "position": "대리",
+      "phoneNumber": "010-8764-2428",
+      "email": "safe08@ssif.or.kr",
+      "department": "산업안전팀",
+      "profilePhoto": null,
+      "role": "user",
+      "isActive": true,
+      "homeAddress": "서울시구로구 고척로52길 21",
+      "officeAddress": "인천광역시 남동구 구월남로 232번길 31",
+      "createdAt": "2025-08-20T01:26:59.729Z",
+      "updatedAt": "2025-08-21T12:17:13.127Z"
+    },
+    {
+      "id": "d92af26c-90de-4bc0-876b-5ee3e118f3a7",
+      "username": "tjdgns1597",
+      "password": "dlwjdrma12.",
+      "name": "홍길동",
+      "position": "주임",
+      "phoneNumber": "010-1234-5678",
+      "email": "test@ssif.or.kr",
+      "department": "산업안전팀",
+      "profilePhoto": null,
+      "role": "user",
+      "isActive": true,
+      "homeAddress": "인천광역시 서구 가정동",
+      "officeAddress": "인천광역시 연수구 컨벤시아대로 69",
+      "createdAt": "2025-08-20T09:30:36.018Z",
+      "updatedAt": "2025-08-21T12:17:13.346Z"
+    },
+    {
+      "id": "29eae667-abc8-4da0-a7c3-6819e2c015e2",
+      "username": "jyen1223",
+      "password": "1234",
+      "name": "조주연",
+      "position": "대리",
+      "phoneNumber": "01032024370",
+      "email": "safe07@ssif.or.kr",
+      "department": "산업안전팀",
+      "profilePhoto": null,
+      "role": "user",
+      "isActive": false,
+      "homeAddress": null,
+      "officeAddress": null,
+      "createdAt": "2025-08-20T23:25:41.099Z",
+      "updatedAt": "2025-08-20T23:25:41.099Z"
+    }
+  ],
+  "schools": [
+    {
+      "id": "136c25a4-9fda-4ea5-aefe-4c5446d987e9",
+      "name": "가림고등학교",
+      "phoneNumber": "032-584-1755 #6",
+      "contactPerson": "김민주 행정주무관",
+      "email": "garimgarim@korea.kr",
+      "address": null,
+      "userId": "2a7b32ba-b388-4db1-a0c9-486d95c4b3d2"
+    },
+    {
+      "id": "8090c140-1f89-4e02-883b-26e8a225f5d7",
+      "name": "가좌중학교",
+      "phoneNumber": "032-627-7026",
+      "contactPerson": "강정아 행정주무관",
+      "email": "kajwa@korea.kr",
+      "address": null,
+      "userId": "2a7b32ba-b388-4db1-a0c9-486d95c4b3d2"
+    },
+    {
+      "id": "3147adde-943d-45fb-8d1e-2fcbe45cf271",
+      "name": "간석여자중학교",
+      "phoneNumber": "032-629-7639",
+      "contactPerson": "강성아 행정주무관",
+      "email": "ganseokms@korea.kr",
+      "address": null,
+      "userId": "2a7b32ba-b388-4db1-a0c9-486d95c4b3d2"
+    },
+    {
+      "id": "a3423ec0-aacb-4bf9-bc8b-e217b76ffac9",
+      "name": "경인교육대학교부설초등학교",
+      "phoneNumber": "032-627-9791",
+      "contactPerson": "변미복 행정주무관",
+      "email": "buseol@ginue.ac.kr",
+      "address": null,
+      "userId": "2a7b32ba-b388-4db1-a0c9-486d95c4b3d2"
+    },
+    {
+      "id": "b43e2f05-9791-40eb-a216-4caf966e3ba7",
+      "name": "계산공업고등학교",
+      "phoneNumber": "010-7733-5473(시설)",
+      "contactPerson": "류진기 시설팀장",
+      "email": "kyesantech@ice.go.kr",
+      "address": null,
+      "userId": "2a7b32ba-b388-4db1-a0c9-486d95c4b3d2"
+    },
+    {
+      "id": "4a813f82-3b53-4936-bc91-8ce6aa3b2790",
+      "name": "덕적초중고등학교(분기)",
+      "phoneNumber": "032-832-9303#3",
+      "contactPerson": "강성진 행정주무관",
+      "email": "dukjuk9302@ice.go.kr",
+      "address": null,
+      "userId": "2a7b32ba-b388-4db1-a0c9-486d95c4b3d2"
+    },
+    {
+      "id": "edaf6400-2d48-411f-9bf8-3c63ba60af9d",
+      "name": "마니산유치원",
+      "phoneNumber": "032-123-4567",
+      "contactPerson": "홍길동",
+      "email": "test@ssif.or.kr",
+      "address": "인천광역시 강화군",
+      "userId": "d92af26c-90de-4bc0-876b-5ee3e118f3a7"
+    },
+    {
+      "id": "30f2135a-7cb5-41e6-9396-34ff8854bfd1",
+      "name": "명현중학교",
+      "phoneNumber": "032-554-6832 #2",
+      "contactPerson": "박경미 행정주무관",
+      "email": "mh1228304269@ice.go.kr",
+      "address": null,
+      "userId": "2a7b32ba-b388-4db1-a0c9-486d95c4b3d2"
+    },
+    {
+      "id": "4760c8eb-13c8-47c7-bcf8-63218b78bd79",
+      "name": "삼산유치원",
+      "phoneNumber": "032-628-4374",
+      "contactPerson": "김윤정 행정실장",
+      "email": "samsan2262@ice.go.kr",
+      "address": null,
+      "userId": "2a7b32ba-b388-4db1-a0c9-486d95c4b3d2"
+    },
+    {
+      "id": "7ca60529-9926-42d3-a8fe-41d1f40588f5",
+      "name": "상정중학교",
+      "phoneNumber": "032-628-4320",
+      "contactPerson": "임채리 행정주무관",
+      "email": "sangjeong4126@ice.go.kr",
+      "address": null,
+      "userId": "2a7b32ba-b388-4db1-a0c9-486d95c4b3d2"
+    },
+    {
+      "id": "02109cef-ab25-45a7-9cbc-fffc67a630bb",
+      "name": "숭덕여자고등학교",
+      "phoneNumber": "032-462-5296",
+      "contactPerson": "신진호 시설주무관",
+      "email": "daeun0221@ice.go.kr",
+      "address": null,
+      "userId": "2a7b32ba-b388-4db1-a0c9-486d95c4b3d2"
+    },
+    {
+      "id": "78da3fb7-d515-4954-83e8-3c7f1118aca8",
+      "name": "숭덕여자중학교",
+      "phoneNumber": "032-462-5296",
+      "contactPerson": "신진호 시설주무관",
+      "email": "daeun0221@ice.go.kr",
+      "address": null,
+      "userId": "2a7b32ba-b388-4db1-a0c9-486d95c4b3d2"
+    },
+    {
+      "id": "744df326-70a9-43cc-a68b-bc9083b79f22",
+      "name": "영흥초등학교(분기)",
+      "phoneNumber": "032-627-9820",
+      "contactPerson": "행정실장",
+      "email": "yh8860435@korea.kr",
+      "address": null,
+      "userId": "2a7b32ba-b388-4db1-a0c9-486d95c4b3d2"
+    },
+    {
+      "id": "283907e7-018c-4942-ac36-396a6ab6ba4c",
+      "name": "인성여자중학교",
+      "phoneNumber": "032-629-3364",
+      "contactPerson": "신장수 행정실장",
+      "email": "shinbook@ice.go.kr",
+      "address": null,
+      "userId": "2a7b32ba-b388-4db1-a0c9-486d95c4b3d2"
+    },
+    {
+      "id": "fbe177bf-9719-46ba-977a-3f937e02f6b7",
+      "name": "인천가석초등학교",
+      "phoneNumber": "032-628-5989",
+      "contactPerson": "정연욱 행정주무관",
+      "email": "jungyo1129@naver.com",
+      "address": null,
+      "userId": "2a7b32ba-b388-4db1-a0c9-486d95c4b3d2"
+    },
+    {
+      "id": "fe0f236f-3b03-4373-b8a6-d6b71bff4137",
+      "name": "인천건지초등학교",
+      "phoneNumber": "032-628-5855 #2",
+      "contactPerson": "김정숙 행정주무관",
+      "email": "gunji9608@ice.go.kr",
+      "address": null,
+      "userId": "2a7b32ba-b388-4db1-a0c9-486d95c4b3d2"
+    },
+    {
+      "id": "873d52e4-e0c4-42c0-8e10-1c692dd406e0",
+      "name": "인천대정초등학교",
+      "phoneNumber": "032-628-1378",
+      "contactPerson": "황은정 행정주무관",
+      "email": "dj5270684@korea.kr",
+      "address": null,
+      "userId": "2a7b32ba-b388-4db1-a0c9-486d95c4b3d2"
+    },
+    {
+      "id": "ec06f1f8-0f3a-4276-b980-c149d7695853",
+      "name": "인천루원중학교",
+      "phoneNumber": "032-500-9505",
+      "contactPerson": "이미선 행정주무관",
+      "email": "luwon@ice.go.kr",
+      "address": null,
+      "userId": "2a7b32ba-b388-4db1-a0c9-486d95c4b3d2"
+    },
+    {
+      "id": "da928e0e-1a1a-4d9b-b748-ab4504e08db0",
+      "name": "인천미송유치원",
+      "phoneNumber": "032-460-6950",
+      "contactPerson": "박선미 행정실장",
+      "email": "mskd@ice.go.kr",
+      "address": null,
+      "userId": "2a7b32ba-b388-4db1-a0c9-486d95c4b3d2"
+    },
+    {
+      "id": "dafcdbdb-d10e-4acd-8dfc-5010407e224d",
+      "name": "인천소방고등학교",
+      "phoneNumber": "032-760-0107",
+      "contactPerson": "이정건 시설주무관",
+      "email": "sobang321@ice.go.kr",
+      "address": null,
+      "userId": "2a7b32ba-b388-4db1-a0c9-486d95c4b3d2"
+    },
+    {
+      "id": "37d368dd-8078-4a8a-8b5d-b493f63f551e",
+      "name": "인천송림초등학교",
+      "phoneNumber": "032-764-2342 #2",
+      "contactPerson": "이만연 행정주무관",
+      "email": "songrim31@korea.kr",
+      "address": null,
+      "userId": "2a7b32ba-b388-4db1-a0c9-486d95c4b3d2"
+    },
+    {
+      "id": "f2876051-c087-4f32-ab26-05f4f40ca970",
+      "name": "인천신흥초등학교",
+      "phoneNumber": "032-629-0440 #2",
+      "contactPerson": "안종철 행정실장",
+      "email": "sinheung@korea.kr",
+      "address": null,
+      "userId": "2a7b32ba-b388-4db1-a0c9-486d95c4b3d2"
+    },
+    {
+      "id": "f72c2441-0c23-4625-8a24-b5994101fb48",
+      "name": "인천안남중학교",
+      "phoneNumber": "032-549-4784 #2",
+      "contactPerson": "강 욱 행정주무관",
+      "email": "annammid@ice.go.kr",
+      "address": null,
+      "userId": "2a7b32ba-b388-4db1-a0c9-486d95c4b3d2"
+    },
+    {
+      "id": "63c5438f-44e5-4dd3-9fce-8c0b9479a08d",
+      "name": "인천안남초등학교",
+      "phoneNumber": "032-542-7517 #2",
+      "contactPerson": "이민아 행정주무관",
+      "email": "annam7516@korea.kr",
+      "address": null,
+      "userId": "2a7b32ba-b388-4db1-a0c9-486d95c4b3d2"
+    },
+    {
+      "id": "897fa84e-6d72-4906-81ae-3ddd6bfcff07",
+      "name": "인천양촌중학교",
+      "phoneNumber": "032-627-8183",
+      "contactPerson": "김민경 행정주무관",
+      "email": "yangchonm@ice.go.kr",
+      "address": null,
+      "userId": "2a7b32ba-b388-4db1-a0c9-486d95c4b3d2"
+    },
+    {
+      "id": "9730d9b7-0ab8-4c8d-bf86-cc0a4421bd96",
+      "name": "인천예림학교",
+      "phoneNumber": "032-502-0804 #2",
+      "contactPerson": "김명숙 행정주무관",
+      "email": "ms5142@ice.go.kr",
+      "address": null,
+      "userId": "2a7b32ba-b388-4db1-a0c9-486d95c4b3d2"
+    },
+    {
+      "id": "48ccd08d-2265-453a-837e-9e10f9f10cdd",
+      "name": "인천예일고등학교",
+      "phoneNumber": "032-555-6307 #2",
+      "contactPerson": "김혜림 행정주무관",
+      "email": "limm0710@ice.go.kr",
+      "address": null,
+      "userId": "2a7b32ba-b388-4db1-a0c9-486d95c4b3d2"
+    },
+    {
+      "id": "ecf811e0-b5d6-4b78-8963-6a6fea2b89bf",
+      "name": "인천초은중학교",
+      "phoneNumber": "032-569-5791 #2",
+      "contactPerson": "정성규 행정주무관",
+      "email": "chdmswnd@ice.go.kr",
+      "address": null,
+      "userId": "2a7b32ba-b388-4db1-a0c9-486d95c4b3d2"
+    },
+    {
+      "id": "9aad0477-35bf-4108-bd04-723bd73b74c6",
+      "name": "인천효성동초등학교",
+      "phoneNumber": "032-547-0815 #2",
+      "contactPerson": "김지숙 행정주무관",
+      "email": "hsd@ice.go.kr(학교)\nji7979@ice.go.kr(행정주무관)",
+      "address": null,
+      "userId": "2a7b32ba-b388-4db1-a0c9-486d95c4b3d2"
+    },
+    {
+      "id": "445f12f8-9632-4f5a-b1dd-40771ca9593e",
+      "name": "임학중학교",
+      "phoneNumber": "032-552-2122 #2",
+      "contactPerson": "김선화 행정주무관",
+      "email": "imhak@ice.go.kr",
+      "address": null,
+      "userId": "2a7b32ba-b388-4db1-a0c9-486d95c4b3d2"
+    },
+    {
+      "id": "13980d97-5793-4eb2-b905-4eeb03fff25d",
+      "name": "재능대학교 송림캠퍼스부속유치원",
+      "phoneNumber": "032-761-5000\n010-6419-6082",
+      "contactPerson": "이경진 원감",
+      "email": "jnckids@hanmail.net",
+      "address": null,
+      "userId": "2a7b32ba-b388-4db1-a0c9-486d95c4b3d2"
+    },
+    {
+      "id": "372b53ba-c0a3-4e2f-8ed0-afa48ad24843",
+      "name": "제물포중학교",
+      "phoneNumber": "032-628-9814",
+      "contactPerson": "서훈석 행정주무관",
+      "email": "jemulpoms@ice.go.kr",
+      "address": null,
+      "userId": "2a7b32ba-b388-4db1-a0c9-486d95c4b3d2"
+    },
+    {
+      "id": "c6364a5e-dc52-4a74-8cfc-1dbdf55a64d2",
+      "name": "칼빈매니토바국제학교",
+      "phoneNumber": "010-3887-2948",
+      "contactPerson": "조명열 시설관리과장",
+      "email": "myjo@calvinschool.kr(시설과장)",
+      "address": null,
+      "userId": "2a7b32ba-b388-4db1-a0c9-486d95c4b3d2"
+    },
+    {
+      "id": "c1890d20-ff39-49c9-89bf-c103227739b7",
+      "name": "휴무일정",
+      "phoneNumber": null,
+      "contactPerson": null,
+      "email": null,
+      "address": null,
+      "userId": "2a7b32ba-b388-4db1-a0c9-486d95c4b3d2"
+    }
+  ],
+  "schedules": [
+    {
+      "id": "bab1e8de-7fa7-46a0-8772-3d7736a63372",
+      "date": "2025-08-14T00:00:00.000Z",
+      "schoolId": "c1890d20-ff39-49c9-89bf-c103227739b7",
+      "userId": "d92af26c-90de-4bc0-876b-5ee3e118f3a7",
+      "ampm": "AM",
+      "startTime": "09:00",
+      "endTime": "10:00",
+      "purpose": "[]",
+      "otherReason": null,
+      "isHoliday": true,
+      "holidayReason": "asd",
+      "createdAt": "2025-08-20T10:08:44.287Z",
+      "updatedAt": "2025-08-20T10:08:44.287Z"
+    },
+    {
+      "id": "5d342919-cf4c-45b7-942b-a529f1edbe17",
+      "date": "2025-08-14T00:00:00.000Z",
+      "schoolId": "c1890d20-ff39-49c9-89bf-c103227739b7",
+      "userId": "2a7b32ba-b388-4db1-a0c9-486d95c4b3d2",
+      "ampm": "AM",
+      "startTime": "09:00",
+      "endTime": "10:00",
+      "purpose": "[]",
+      "otherReason": null,
+      "isHoliday": true,
+      "holidayReason": "asd",
+      "createdAt": "2025-08-20T09:55:27.099Z",
+      "updatedAt": "2025-08-20T09:55:27.099Z"
+    },
+    {
+      "id": "6a5beebd-d5e6-403d-a0e7-1e17970a50ee",
+      "date": "2025-08-19T00:00:00.000Z",
+      "schoolId": "873d52e4-e0c4-42c0-8e10-1c692dd406e0",
+      "userId": "2a7b32ba-b388-4db1-a0c9-486d95c4b3d2",
+      "ampm": "AM",
+      "startTime": "09:00",
+      "endTime": "10:00",
+      "purpose": "[\"월점검\",\"근골조사\"]",
+      "otherReason": null,
+      "isHoliday": false,
+      "holidayReason": null,
+      "createdAt": "2025-08-20T10:16:24.279Z",
+      "updatedAt": "2025-08-20T10:16:24.279Z"
+    },
+    {
+      "id": "30dcc302-b42e-4710-984e-181ff114f430",
+      "date": "2025-08-20T00:00:00.000Z",
+      "schoolId": "136c25a4-9fda-4ea5-aefe-4c5446d987e9",
+      "userId": "2a7b32ba-b388-4db1-a0c9-486d95c4b3d2",
+      "ampm": "AM",
+      "startTime": "10:30",
+      "endTime": "11:30",
+      "purpose": "[\"월점검\"]",
+      "otherReason": null,
+      "isHoliday": false,
+      "holidayReason": null,
+      "createdAt": "2025-08-20T11:40:40.786Z",
+      "updatedAt": "2025-08-20T11:40:40.786Z"
+    },
+    {
+      "id": "0d4b48ed-7a19-4761-9bf6-48547efde9f0",
+      "date": "2025-08-20T00:00:00.000Z",
+      "schoolId": "3147adde-943d-45fb-8d1e-2fcbe45cf271",
+      "userId": "2a7b32ba-b388-4db1-a0c9-486d95c4b3d2",
+      "ampm": "AM",
+      "startTime": "09:00",
+      "endTime": "10:00",
+      "purpose": "[\"월점검\",\"근골조사\"]",
+      "otherReason": null,
+      "isHoliday": false,
+      "holidayReason": null,
+      "createdAt": "2025-08-20T09:53:15.267Z",
+      "updatedAt": "2025-08-20T09:53:15.267Z"
+    },
+    {
+      "id": "490c9bbb-ca3d-45ef-a6d7-2e50b6fb4045",
+      "date": "2025-08-21T00:00:00.000Z",
+      "schoolId": "fe0f236f-3b03-4373-b8a6-d6b71bff4137",
+      "userId": "2a7b32ba-b388-4db1-a0c9-486d95c4b3d2",
+      "ampm": "AM",
+      "startTime": "10:00",
+      "endTime": "11:00",
+      "purpose": "[\"근골조사\",\"산업재해\"]",
+      "otherReason": "산재발생일: 2025-08-29",
+      "isHoliday": false,
+      "holidayReason": null,
+      "createdAt": "2025-08-20T09:55:09.206Z",
+      "updatedAt": "2025-08-20T09:55:09.206Z"
+    },
+    {
+      "id": "7cb90cec-e50f-4a40-903f-8bd09b366cdf",
+      "date": "2025-08-22T00:00:00.000Z",
+      "schoolId": "4760c8eb-13c8-47c7-bcf8-63218b78bd79",
+      "userId": "2a7b32ba-b388-4db1-a0c9-486d95c4b3d2",
+      "ampm": "AM",
+      "startTime": "09:00",
+      "endTime": "10:00",
+      "purpose": "[\"산업재해\",\"교육\",\"기타\"]",
+      "otherReason": "교육: ㄴㄴㄴㄴ / 산재발생일: 2025-08-11 / 기타: ㅈㅈㅈㅈ",
+      "isHoliday": false,
+      "holidayReason": null,
+      "createdAt": "2025-08-20T11:36:55.423Z",
+      "updatedAt": "2025-08-20T11:36:55.423Z"
+    }
+  ],
+  "travelTimes": [],
+  "materials": [
+    {
+      "id": "9db81a41-5bef-47ab-b52f-75ccbc13f198",
+      "title": "(250429)중대재해 발생 알림(3)_기타",
+      "content": null,
+      "uploadedAt": "2025-08-20T11:53:32.402Z",
+      "uploader": "알 수 없는 사용자",
+      "category": "산업재해",
+      "createdAt": "2025-08-20T11:53:32.404Z",
+      "updatedAt": "2025-08-20T11:53:32.404Z",
+      "attachments": [
+        {
+          "id": "1cde330f-de6f-4f18-87f2-f649449456eb",
+          "materialId": "9db81a41-5bef-47ab-b52f-75ccbc13f198",
+          "filename": "(250429)중대재해 발생 알림(3)_기타.jpg",
+          "filePath": "https://storage.googleapis.com/school-safety-manager/산업재해/1755690811885__250429_중대재해_발생_알림_3__기타.jpg",
+          "fileSize": 176274,
+          "mimeType": "image/jpeg",
+          "thumbnailPath": "https://storage.googleapis.com/school-safety-manager/산업재해/1755690811885__250429_중대재해_발생_알림_3__기타.jpg",
+          "uploadOrder": 1,
+          "createdAt": "2025-08-20T11:53:32.404Z"
+        }
+      ]
+    },
+    {
+      "id": "9f9ced3d-a15c-4bed-8f02-afed01492b66",
+      "title": "(250430)중대재해 발생 알림(1)_건설",
+      "content": null,
+      "uploadedAt": "2025-08-20T14:48:02.639Z",
+      "uploader": "알 수 없는 사용자",
+      "category": "산업재해",
+      "createdAt": "2025-08-20T14:48:02.640Z",
+      "updatedAt": "2025-08-20T14:48:02.640Z",
+      "attachments": [
+        {
+          "id": "076634f7-a784-491a-87e2-6e4b5a2f6901",
+          "materialId": "9f9ced3d-a15c-4bed-8f02-afed01492b66",
+          "filename": "(250430)중대재해 발생 알림(1)_건설.jpg",
+          "filePath": "https://storage.googleapis.com/school-safety-manager/산업재해/1755701282323__250430_중대재해_발생_알림_1__건설.jpg",
+          "fileSize": 175662,
+          "mimeType": "image/jpeg",
+          "thumbnailPath": "https://storage.googleapis.com/school-safety-manager/산업재해/1755701282323__250430_중대재해_발생_알림_1__건설.jpg",
+          "uploadOrder": 1,
+          "createdAt": "2025-08-20T14:48:02.640Z"
+        }
+      ]
+    },
+    {
+      "id": "cf17f9cd-0d41-49a9-9840-bfd176a7a6d9",
+      "title": "(250507)중대재해 발생 알림(2)_제조",
+      "content": null,
+      "uploadedAt": "2025-08-20T14:48:05.837Z",
+      "uploader": "알 수 없는 사용자",
+      "category": "산업재해",
+      "createdAt": "2025-08-20T14:48:05.838Z",
+      "updatedAt": "2025-08-20T14:48:05.838Z",
+      "attachments": [
+        {
+          "id": "127c2727-8966-4ce0-85b2-12bcabfbc521",
+          "materialId": "cf17f9cd-0d41-49a9-9840-bfd176a7a6d9",
+          "filename": "(250507)중대재해 발생 알림(2)_제조.jpg",
+          "filePath": "https://storage.googleapis.com/school-safety-manager/산업재해/1755701285635__250507_중대재해_발생_알림_2__제조.jpg",
+          "fileSize": 209256,
+          "mimeType": "image/jpeg",
+          "thumbnailPath": "https://storage.googleapis.com/school-safety-manager/산업재해/1755701285635__250507_중대재해_발생_알림_2__제조.jpg",
+          "uploadOrder": 1,
+          "createdAt": "2025-08-20T14:48:05.838Z"
+        }
+      ]
+    },
+    {
+      "id": "6e90b8ee-ef02-4240-a140-86892ade7e2e",
+      "title": "(250514)중대재해 발생 알림(1)_기타",
+      "content": null,
+      "uploadedAt": "2025-08-20T14:48:08.808Z",
+      "uploader": "알 수 없는 사용자",
+      "category": "산업재해",
+      "createdAt": "2025-08-20T14:48:08.809Z",
+      "updatedAt": "2025-08-20T14:48:08.809Z",
+      "attachments": [
+        {
+          "id": "d8d9d91e-e17e-461b-80f0-fda393bc3ef2",
+          "materialId": "6e90b8ee-ef02-4240-a140-86892ade7e2e",
+          "filename": "(250514)중대재해 발생 알림(1)_기타.jpg",
+          "filePath": "https://storage.googleapis.com/school-safety-manager/산업재해/1755701288633__250514_중대재해_발생_알림_1__기타.jpg",
+          "fileSize": 210814,
+          "mimeType": "image/jpeg",
+          "thumbnailPath": "https://storage.googleapis.com/school-safety-manager/산업재해/1755701288633__250514_중대재해_발생_알림_1__기타.jpg",
+          "uploadOrder": 1,
+          "createdAt": "2025-08-20T14:48:08.809Z"
+        }
+      ]
+    },
+    {
+      "id": "24df07a2-1773-49ec-8eb0-44c33cadb79d",
+      "title": "(250526)중대재해 발생 알림(2)_기타",
+      "content": null,
+      "uploadedAt": "2025-08-20T14:48:11.411Z",
+      "uploader": "알 수 없는 사용자",
+      "category": "산업재해",
+      "createdAt": "2025-08-20T14:48:11.413Z",
+      "updatedAt": "2025-08-20T14:48:11.413Z",
+      "attachments": [
+        {
+          "id": "f9b41754-fc22-4ec3-9070-6d504ad7bacb",
+          "materialId": "24df07a2-1773-49ec-8eb0-44c33cadb79d",
+          "filename": "(250526)중대재해 발생 알림(2)_기타.jpg",
+          "filePath": "https://storage.googleapis.com/school-safety-manager/산업재해/1755701291189__250526_중대재해_발생_알림_2__기타.jpg",
+          "fileSize": 184304,
+          "mimeType": "image/jpeg",
+          "thumbnailPath": "https://storage.googleapis.com/school-safety-manager/산업재해/1755701291189__250526_중대재해_발생_알림_2__기타.jpg",
+          "uploadOrder": 1,
+          "createdAt": "2025-08-20T14:48:11.413Z"
+        }
+      ]
+    },
+    {
+      "id": "3ddbbaa1-0d86-4347-b0c9-3629db7b2e2a",
+      "title": "(250530)중대재해 발생 알림(1)_기타",
+      "content": null,
+      "uploadedAt": "2025-08-20T14:48:14.206Z",
+      "uploader": "알 수 없는 사용자",
+      "category": "산업재해",
+      "createdAt": "2025-08-20T14:48:14.207Z",
+      "updatedAt": "2025-08-20T14:48:14.207Z",
+      "attachments": [
+        {
+          "id": "bd5ea911-18b8-44ad-8419-25a900de706a",
+          "materialId": "3ddbbaa1-0d86-4347-b0c9-3629db7b2e2a",
+          "filename": "(250530)중대재해 발생 알림(1)_기타.jpg",
+          "filePath": "https://storage.googleapis.com/school-safety-manager/산업재해/1755701294025__250530_중대재해_발생_알림_1__기타.jpg",
+          "fileSize": 174229,
+          "mimeType": "image/jpeg",
+          "thumbnailPath": "https://storage.googleapis.com/school-safety-manager/산업재해/1755701294025__250530_중대재해_발생_알림_1__기타.jpg",
+          "uploadOrder": 1,
+          "createdAt": "2025-08-20T14:48:14.207Z"
+        }
+      ]
+    },
+    {
+      "id": "83ae8580-9ae3-47d2-af82-a775c4d77977",
+      "title": "(250605)중대재해 발생 알림(1)_건설",
+      "content": null,
+      "uploadedAt": "2025-08-20T14:48:16.922Z",
+      "uploader": "알 수 없는 사용자",
+      "category": "산업재해",
+      "createdAt": "2025-08-20T14:48:16.923Z",
+      "updatedAt": "2025-08-20T14:48:16.923Z",
+      "attachments": [
+        {
+          "id": "3378ce26-1966-4fcc-bfd7-d3a35c90bf67",
+          "materialId": "83ae8580-9ae3-47d2-af82-a775c4d77977",
+          "filename": "(250605)중대재해 발생 알림(1)_건설.jpg",
+          "filePath": "https://storage.googleapis.com/school-safety-manager/산업재해/1755701296736__250605_중대재해_발생_알림_1__건설.jpg",
+          "fileSize": 198376,
+          "mimeType": "image/jpeg",
+          "thumbnailPath": "https://storage.googleapis.com/school-safety-manager/산업재해/1755701296736__250605_중대재해_발생_알림_1__건설.jpg",
+          "uploadOrder": 1,
+          "createdAt": "2025-08-20T14:48:16.923Z"
+        }
+      ]
+    },
+    {
+      "id": "7b787d1c-a184-45ef-b2bd-090c40df1a3e",
+      "title": "(250625)중대재해 발생 알림(2)_기타",
+      "content": null,
+      "uploadedAt": "2025-08-20T14:48:19.807Z",
+      "uploader": "알 수 없는 사용자",
+      "category": "산업재해",
+      "createdAt": "2025-08-20T14:48:19.808Z",
+      "updatedAt": "2025-08-20T14:48:19.808Z",
+      "attachments": [
+        {
+          "id": "dd99ca8a-1369-4dd5-b93c-55640f07d659",
+          "materialId": "7b787d1c-a184-45ef-b2bd-090c40df1a3e",
+          "filename": "(250625)중대재해 발생 알림(2)_기타.jpg",
+          "filePath": "https://storage.googleapis.com/school-safety-manager/산업재해/1755701299615__250625_중대재해_발생_알림_2__기타.jpg",
+          "fileSize": 214615,
+          "mimeType": "image/jpeg",
+          "thumbnailPath": "https://storage.googleapis.com/school-safety-manager/산업재해/1755701299615__250625_중대재해_발생_알림_2__기타.jpg",
+          "uploadOrder": 1,
+          "createdAt": "2025-08-20T14:48:19.808Z"
+        }
+      ]
+    },
+    {
+      "id": "56dee345-0d92-44b1-8a83-a28a42543d8b",
+      "title": "(250704)중대재해 발생 알림(2)_제조",
+      "content": null,
+      "uploadedAt": "2025-08-20T14:48:22.557Z",
+      "uploader": "알 수 없는 사용자",
+      "category": "산업재해",
+      "createdAt": "2025-08-20T14:48:22.558Z",
+      "updatedAt": "2025-08-20T14:48:22.558Z",
+      "attachments": [
+        {
+          "id": "dfea53ad-c8a0-47d7-98a1-cadb05bf3bb9",
+          "materialId": "56dee345-0d92-44b1-8a83-a28a42543d8b",
+          "filename": "(250704)중대재해 발생 알림(2)_제조.jpg",
+          "filePath": "https://storage.googleapis.com/school-safety-manager/산업재해/1755701302379__250704_중대재해_발생_알림_2__제조.jpg",
+          "fileSize": 206529,
+          "mimeType": "image/jpeg",
+          "thumbnailPath": "https://storage.googleapis.com/school-safety-manager/산업재해/1755701302379__250704_중대재해_발생_알림_2__제조.jpg",
+          "uploadOrder": 1,
+          "createdAt": "2025-08-20T14:48:22.558Z"
+        }
+      ]
+    },
+    {
+      "id": "c20187c6-3619-412f-8a96-a6196325daf9",
+      "title": "(250707)중대재해 발생 알림(2)_기타",
+      "content": null,
+      "uploadedAt": "2025-08-20T14:48:25.285Z",
+      "uploader": "알 수 없는 사용자",
+      "category": "산업재해",
+      "createdAt": "2025-08-20T14:48:25.286Z",
+      "updatedAt": "2025-08-20T14:48:25.286Z",
+      "attachments": [
+        {
+          "id": "9c198a9f-c02b-4a8e-aa7b-bba97cb64124",
+          "materialId": "c20187c6-3619-412f-8a96-a6196325daf9",
+          "filename": "(250707)중대재해 발생 알림(2)_기타.jpg",
+          "filePath": "https://storage.googleapis.com/school-safety-manager/산업재해/1755701305113__250707_중대재해_발생_알림_2__기타.jpg",
+          "fileSize": 198293,
+          "mimeType": "image/jpeg",
+          "thumbnailPath": "https://storage.googleapis.com/school-safety-manager/산업재해/1755701305113__250707_중대재해_발생_알림_2__기타.jpg",
+          "uploadOrder": 1,
+          "createdAt": "2025-08-20T14:48:25.286Z"
+        }
+      ]
+    },
+    {
+      "id": "442e7101-af4a-4dd3-9a37-6c506bc09700",
+      "title": "(250707)중대재해 발생 알림(3)_기타",
+      "content": null,
+      "uploadedAt": "2025-08-20T14:48:27.952Z",
+      "uploader": "알 수 없는 사용자",
+      "category": "산업재해",
+      "createdAt": "2025-08-20T14:48:27.953Z",
+      "updatedAt": "2025-08-20T14:48:27.953Z",
+      "attachments": [
+        {
+          "id": "47da44e9-635b-471c-991c-3863750fb6ad",
+          "materialId": "442e7101-af4a-4dd3-9a37-6c506bc09700",
+          "filename": "(250707)중대재해 발생 알림(3)_기타.jpg",
+          "filePath": "https://storage.googleapis.com/school-safety-manager/산업재해/1755701307777__250707_중대재해_발생_알림_3__기타.jpg",
+          "fileSize": 180165,
+          "mimeType": "image/jpeg",
+          "thumbnailPath": "https://storage.googleapis.com/school-safety-manager/산업재해/1755701307777__250707_중대재해_발생_알림_3__기타.jpg",
+          "uploadOrder": 1,
+          "createdAt": "2025-08-20T14:48:27.953Z"
+        }
+      ]
+    },
+    {
+      "id": "f8a2dd9f-5c92-48de-8131-4a36ee2fe985",
+      "title": "(250718)중대재해 발생 알림(1)_제조",
+      "content": null,
+      "uploadedAt": "2025-08-20T14:48:31.015Z",
+      "uploader": "알 수 없는 사용자",
+      "category": "산업재해",
+      "createdAt": "2025-08-20T14:48:31.016Z",
+      "updatedAt": "2025-08-20T14:48:31.016Z",
+      "attachments": [
+        {
+          "id": "883398a0-4136-4fe6-9f4b-99391dac48d8",
+          "materialId": "f8a2dd9f-5c92-48de-8131-4a36ee2fe985",
+          "filename": "(250718)중대재해 발생 알림(1)_제조.jpg",
+          "filePath": "https://storage.googleapis.com/school-safety-manager/산업재해/1755701310842__250718_중대재해_발생_알림_1__제조.jpg",
+          "fileSize": 246174,
+          "mimeType": "image/jpeg",
+          "thumbnailPath": "https://storage.googleapis.com/school-safety-manager/산업재해/1755701310842__250718_중대재해_발생_알림_1__제조.jpg",
+          "uploadOrder": 1,
+          "createdAt": "2025-08-20T14:48:31.016Z"
+        }
+      ]
+    },
+    {
+      "id": "fcd73faf-8b01-4eb0-9a0d-9aab689e3a28",
+      "title": "(250729)중대재해 발생 알림(1)_건설",
+      "content": null,
+      "uploadedAt": "2025-08-20T14:48:33.768Z",
+      "uploader": "알 수 없는 사용자",
+      "category": "산업재해",
+      "createdAt": "2025-08-20T14:48:33.770Z",
+      "updatedAt": "2025-08-20T14:48:33.770Z",
+      "attachments": [
+        {
+          "id": "36442fbb-d883-4c6c-914f-f0edd29aa908",
+          "materialId": "fcd73faf-8b01-4eb0-9a0d-9aab689e3a28",
+          "filename": "(250729)중대재해 발생 알림(1)_건설.jpg",
+          "filePath": "https://storage.googleapis.com/school-safety-manager/산업재해/1755701313586__250729_중대재해_발생_알림_1__건설.jpg",
+          "fileSize": 182732,
+          "mimeType": "image/jpeg",
+          "thumbnailPath": "https://storage.googleapis.com/school-safety-manager/산업재해/1755701313586__250729_중대재해_발생_알림_1__건설.jpg",
+          "uploadOrder": 1,
+          "createdAt": "2025-08-20T14:48:33.770Z"
+        }
+      ]
+    },
+    {
+      "id": "afaf056b-b2bd-41b3-a047-bb263b8df858",
+      "title": "(250805)중대재해 발생 알림(2)_건설",
+      "content": null,
+      "uploadedAt": "2025-08-20T14:48:36.766Z",
+      "uploader": "알 수 없는 사용자",
+      "category": "산업재해",
+      "createdAt": "2025-08-20T14:48:36.767Z",
+      "updatedAt": "2025-08-20T14:48:36.767Z",
+      "attachments": [
+        {
+          "id": "aec07e70-6656-4690-a85e-f7b0300e05c4",
+          "materialId": "afaf056b-b2bd-41b3-a047-bb263b8df858",
+          "filename": "(250805)중대재해 발생 알림(2)_건설.jpg",
+          "filePath": "https://storage.googleapis.com/school-safety-manager/산업재해/1755701316588__250805_중대재해_발생_알림_2__건설.jpg",
+          "fileSize": 212907,
+          "mimeType": "image/jpeg",
+          "thumbnailPath": "https://storage.googleapis.com/school-safety-manager/산업재해/1755701316588__250805_중대재해_발생_알림_2__건설.jpg",
+          "uploadOrder": 1,
+          "createdAt": "2025-08-20T14:48:36.767Z"
+        }
+      ]
+    },
+    {
+      "id": "82cfc82d-6a23-405c-98dc-336eb03481ca",
+      "title": "(250812)중대재해 발생 알림(1)_기타",
+      "content": null,
+      "uploadedAt": "2025-08-20T14:48:42.273Z",
+      "uploader": "알 수 없는 사용자",
+      "category": "산업재해",
+      "createdAt": "2025-08-20T14:48:42.274Z",
+      "updatedAt": "2025-08-20T14:48:42.274Z",
+      "attachments": [
+        {
+          "id": "9e5e4128-a257-4d17-acba-7b102505dcc2",
+          "materialId": "82cfc82d-6a23-405c-98dc-336eb03481ca",
+          "filename": "(250812)중대재해 발생 알림(1)_기타.jpg",
+          "filePath": "https://storage.googleapis.com/school-safety-manager/산업재해/1755701322008__250812_중대재해_발생_알림_1__기타.jpg",
+          "fileSize": 190827,
+          "mimeType": "image/jpeg",
+          "thumbnailPath": "https://storage.googleapis.com/school-safety-manager/산업재해/1755701322008__250812_중대재해_발생_알림_1__기타.jpg",
+          "uploadOrder": 1,
+          "createdAt": "2025-08-20T14:48:42.274Z"
+        }
+      ]
+    },
+    {
+      "id": "bead969e-9a71-4538-87cd-ffea511c5aad",
+      "title": "(250813)중대재해 발생 알림(1)_기타",
+      "content": null,
+      "uploadedAt": "2025-08-20T14:48:45.096Z",
+      "uploader": "알 수 없는 사용자",
+      "category": "산업재해",
+      "createdAt": "2025-08-20T14:48:45.097Z",
+      "updatedAt": "2025-08-20T14:48:45.097Z",
+      "attachments": [
+        {
+          "id": "8d6d5f50-a575-4d65-8a09-94084053f0e0",
+          "materialId": "bead969e-9a71-4538-87cd-ffea511c5aad",
+          "filename": "(250813)중대재해 발생 알림(1)_기타.jpg",
+          "filePath": "https://storage.googleapis.com/school-safety-manager/산업재해/1755701324933__250813_중대재해_발생_알림_1__기타.jpg",
+          "fileSize": 175070,
+          "mimeType": "image/jpeg",
+          "thumbnailPath": "https://storage.googleapis.com/school-safety-manager/산업재해/1755701324933__250813_중대재해_발생_알림_1__기타.jpg",
+          "uploadOrder": 1,
+          "createdAt": "2025-08-20T14:48:45.097Z"
+        }
+      ]
+    },
+    {
+      "id": "5fc82034-f302-4aae-8b1e-3f29f744cd4d",
+      "title": "(250813)중대재해 발생 알림(3)_건설",
+      "content": null,
+      "uploadedAt": "2025-08-20T14:48:50.923Z",
+      "uploader": "알 수 없는 사용자",
+      "category": "산업재해",
+      "createdAt": "2025-08-20T14:48:50.924Z",
+      "updatedAt": "2025-08-20T14:48:50.924Z",
+      "attachments": [
+        {
+          "id": "00cb6cea-84ce-493f-926d-ec4a54ee1986",
+          "materialId": "5fc82034-f302-4aae-8b1e-3f29f744cd4d",
+          "filename": "(250813)중대재해 발생 알림(3)_건설.jpg",
+          "filePath": "https://storage.googleapis.com/school-safety-manager/산업재해/1755701330663__250813_중대재해_발생_알림_3__건설.jpg",
+          "fileSize": 191881,
+          "mimeType": "image/jpeg",
+          "thumbnailPath": "https://storage.googleapis.com/school-safety-manager/산업재해/1755701330663__250813_중대재해_발생_알림_3__건설.jpg",
+          "uploadOrder": 1,
+          "createdAt": "2025-08-20T14:48:50.924Z"
+        }
+      ]
+    }
+  ]
+}

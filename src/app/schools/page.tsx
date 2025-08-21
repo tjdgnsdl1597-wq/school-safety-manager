@@ -3,6 +3,7 @@
 import { useState, useEffect, FormEvent } from 'react';
 import { useAuth } from '@/lib/simpleAuth';
 import { useRouter } from 'next/navigation';
+import CopyrightFooter from '@/components/CopyrightFooter';
 
 interface School {
   id: string;
@@ -507,6 +508,9 @@ export default function SchoolsPage() {
           </div>
         </div>
       </div>
+      
+      {/* 저작권 푸터 */}
+      <CopyrightFooter className="mt-8" />
     </div>
   );
 }

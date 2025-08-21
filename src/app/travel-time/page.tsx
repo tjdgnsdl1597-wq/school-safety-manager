@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/simpleAuth';
 import { useRouter } from 'next/navigation';
+import CopyrightFooter from '@/components/CopyrightFooter';
 
 interface TravelTimeData {
   fromOfficeToFirst?: string;
@@ -61,8 +62,16 @@ export default function TravelTimePage() {
   // 로그인한 사용자의 학교 목록 로드
   useEffect(() => {
     const fetchSchools = async () => {
+      if (!user) return;
+      
       try {
-        const response = await fetch('/api/schools');
+        const response = await fetch('/api/schools', {
+          headers: {
+            'Content-Type': 'application/json',
+            'x-user-id': user.id,
+            'x-user-role': user.role
+          }
+        });
         if (response.ok) {
           const schoolsData = await response.json();
           setSchools(schoolsData);
@@ -72,10 +81,10 @@ export default function TravelTimePage() {
       }
     };
 
-    if (isAuthenticated) {
+    if (isAuthenticated && user) {
       fetchSchools();
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, user]);
 
   // 학교 주소 업데이트
   const updateSchoolAddress = async (schoolId: string, address: string) => {
@@ -87,12 +96,15 @@ export default function TravelTimePage() {
       });
 
       if (response.ok) {
+        const data = await response.json();
         // 로컬 상태 업데이트
         setSchools(prev => prev.map(school => 
           school.id === schoolId ? { ...school, address } : school
         ));
+        alert(`✅ ${data.school.name} 주소가 성공적으로 저장되었습니다.`);
       } else {
-        alert('학교 주소 업데이트에 실패했습니다.');
+        const errorData = await response.json().catch(() => ({}));
+        alert(`❌ 학교 주소 업데이트에 실패했습니다: ${errorData.details || '알 수 없는 오류'}`);
       }
     } catch (error) {
       console.error('학교 주소 업데이트 실패:', error);
@@ -100,73 +112,20 @@ export default function TravelTimePage() {
     }
   };
 
-  // 자동 주소 검색
-  const autoSearchAddresses = async () => {
-    if (!user) return;
-    
-    setLoading(true);
-    try {
-      const response = await fetch('/api/schools/auto-address', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: user.id })
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        alert(`${data.message}\n성공: ${data.results.filter((r: any) => r.success).length}개`);
-        
-        // 학교 목록 새로고침
-        const schoolsResponse = await fetch('/api/schools');
-        if (schoolsResponse.ok) {
-          const updatedSchools = await schoolsResponse.json();
-          setSchools(updatedSchools);
-        }
-      } else {
-        alert('자동 주소 검색에 실패했습니다.');
-      }
-    } catch (error) {
-      console.error('자동 주소 검색 실패:', error);
-      alert('자동 주소 검색 중 오류가 발생했습니다.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // 단일 학교 주소 검색
-  const searchSingleAddress = async (schoolId: string, schoolName: string) => {
-    setLoading(true);
-    try {
-      const response = await fetch('/api/schools/auto-address', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ schoolId, schoolName })
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setSchools(prev => prev.map(school => 
-          school.id === schoolId ? { ...school, address: data.school.address } : school
-        ));
-        alert('주소가 자동으로 설정되었습니다.');
-      } else {
-        alert('해당 학교의 주소를 찾을 수 없습니다.');
-      }
-    } catch (error) {
-      console.error('단일 주소 검색 실패:', error);
-      alert('주소 검색 중 오류가 발생했습니다.');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // 선택된 날짜의 일정 로드
   useEffect(() => {
     const fetchSchedules = async () => {
-      if (!selectedDate) return;
+      if (!selectedDate || !user) return;
       
       try {
-        const response = await fetch(`/api/schedules?date=${selectedDate}`);
+        const response = await fetch(`/api/schedules?date=${selectedDate}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'x-user-id': user.id,
+            'x-user-role': user.role
+          }
+        });
         if (response.ok) {
           const schedulesData = await response.json();
           // 시간순으로 정렬
@@ -182,10 +141,10 @@ export default function TravelTimePage() {
       }
     };
 
-    if (isAuthenticated && selectedDate) {
+    if (isAuthenticated && selectedDate && user) {
       fetchSchedules();
     }
-  }, [isAuthenticated, selectedDate]);
+  }, [isAuthenticated, selectedDate, user]);
 
   // 주소 업데이트
   const updateAddresses = async () => {
@@ -248,13 +207,25 @@ export default function TravelTimePage() {
 
       if (response.ok) {
         const travelTimeData = await response.json();
+        console.log('이동시간 계산 결과:', travelTimeData);
+        
+        // 오류가 있는 경우 알림 표시
+        if (travelTimeData.hasErrors && travelTimeData.errors) {
+          const errorMessage = `일부 이동시간 계산에 실패했습니다:\n${travelTimeData.errors.join('\n')}`;
+          alert(errorMessage);
+        }
+        
         setTravelData(travelTimeData);
       } else {
-        alert('이동시간 계산에 실패했습니다.');
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage = errorData.details 
+          ? `이동시간 계산에 실패했습니다:\n${errorData.details}`
+          : '이동시간 계산에 실패했습니다.';
+        alert(errorMessage);
       }
     } catch (error) {
       console.error('이동시간 계산 실패:', error);
-      alert('이동시간 계산 중 오류가 발생했습니다.');
+      alert('네트워크 오류로 이동시간 계산에 실패했습니다.');
     } finally {
       setLoading(false);
     }
@@ -350,15 +321,8 @@ export default function TravelTimePage() {
 
           {/* 등록된 학교 목록 및 주소 설정 섹션 */}
           <div className="mb-8">
-            <div className="flex justify-between items-center mb-4">
+            <div className="mb-4">
               <h2 className="text-xl font-semibold text-gray-700">🏫 등록된 학교 목록 및 주소 설정</h2>
-              <button
-                onClick={autoSearchAddresses}
-                disabled={loading || schools.length === 0}
-                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {loading ? '검색 중...' : '🔍 모든 학교 주소 자동 검색'}
-              </button>
             </div>
             
             {schools.length > 0 ? (
@@ -386,27 +350,20 @@ export default function TravelTimePage() {
                                 s.id === school.id ? { ...s, address: e.target.value } : s
                               ));
                             }}
-                            placeholder="학교명으로 찾기가 어려우면 그냥 직접 채워주세요"
+                            placeholder="학교 주소를 직접 입력해주세요"
                             className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                           />
                           <button
-                            onClick={() => searchSingleAddress(school.id, school.name)}
-                            disabled={loading}
-                            className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-2 rounded-lg transition-colors disabled:opacity-50"
-                            title="이 학교 주소만 자동 검색"
-                          >
-                            🔍
-                          </button>
-                          <button
                             onClick={() => updateSchoolAddress(school.id, school.address || '')}
-                            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors"
+                            disabled={loading || !school.address?.trim()}
+                            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                           >
-                            저장
+                            {loading ? '저장 중...' : '저장'}
                           </button>
                         </div>
                         {!school.address && (
                           <p className="text-xs text-gray-500 mt-1">
-                            💡 자동 검색이 안 되면 직접 입력해주세요
+                            💡 수동입력 부탁드립니다
                           </p>
                         )}
                       </div>
@@ -519,6 +476,9 @@ export default function TravelTimePage() {
           )}
         </div>
       </div>
+      
+      {/* 저작권 푸터 */}
+      <CopyrightFooter className="mt-8" />
     </div>
   );
 }
