@@ -325,16 +325,20 @@ export default function DashboardPage() {
     console.log('선택된 날짜:', arg.dateStr);
   };
 
-  const handleEventClick = (clickInfo: { event: { id: string, extendedProps: any, title: string } }) => {
+  const handleEventClick = (clickInfo: { event: { id: string } }) => {
     const eventId = clickInfo.event.id;
     
     // 국가공휴일인지 확인
     if (eventId.startsWith('holiday-')) {
-      const holidayInfo = clickInfo.event.extendedProps;
+      const holidayDate = eventId.replace('holiday-', '');
+      // 공휴일 데이터에서 이름 찾기
+      const holiday = getAllHolidays().find(h => h.date === holidayDate);
+      const holidayName = holiday?.name || '공휴일';
+      
       // 공휴일용 가짜 schedule 객체 생성
       const holidaySchedule = {
         id: eventId,
-        date: eventId.replace('holiday-', ''),
+        date: holidayDate,
         schoolId: 'national-holiday', // 누락된 schoolId 추가
         school: { id: 'national-holiday', name: '국가공휴일', abbreviation: null },
         ampm: 'ALL',
@@ -343,7 +347,7 @@ export default function DashboardPage() {
         purpose: '[]',
         otherReason: null,
         isHoliday: true,
-        holidayReason: holidayInfo.holidayName,
+        holidayReason: holidayName,
         isNationalHoliday: true
       };
       setSelectedSchedule(holidaySchedule);
