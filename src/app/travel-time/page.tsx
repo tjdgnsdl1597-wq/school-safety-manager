@@ -96,12 +96,15 @@ export default function TravelTimePage() {
       });
 
       if (response.ok) {
+        const data = await response.json();
         // 로컬 상태 업데이트
         setSchools(prev => prev.map(school => 
           school.id === schoolId ? { ...school, address } : school
         ));
+        alert(`✅ ${data.school.name} 주소가 성공적으로 저장되었습니다.`);
       } else {
-        alert('학교 주소 업데이트에 실패했습니다.');
+        const errorData = await response.json().catch(() => ({}));
+        alert(`❌ 학교 주소 업데이트에 실패했습니다: ${errorData.details || '알 수 없는 오류'}`);
       }
     } catch (error) {
       console.error('학교 주소 업데이트 실패:', error);
