@@ -78,13 +78,27 @@ export async function POST(request: Request) {
       'video/mp4',
       'video/webm',
       'text/plain',
+      // 압축 파일 타입들 - 다양한 MIME 타입 지원
       'application/zip',
+      'application/x-zip',
+      'application/x-zip-compressed',
+      'application/octet-stream', // 알집이 이 타입으로 인식되는 경우가 많음
       'application/x-rar-compressed',
+      'application/x-rar',
       'application/x-7z-compressed',
+      'application/x-tar',
+      'application/gzip',
+      'application/x-gzip',
     ];
 
     if (!allowedTypes.includes(contentType)) {
-      return NextResponse.json({ error: 'Unsupported file type' }, { status: 400 });
+      console.log('지원하지 않는 파일 타입:', contentType);
+      console.log('허용된 타입들:', allowedTypes);
+      return NextResponse.json({ 
+        error: 'Unsupported file type', 
+        receivedType: contentType,
+        allowedTypes: allowedTypes 
+      }, { status: 400 });
     }
 
     // GCS 파일 경로 생성
