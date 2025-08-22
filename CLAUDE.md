@@ -7,10 +7,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### **🔥 CRITICAL: 절대 금지 사항 (NEVER DELETE) 🔥**
 **⚠️ 실제 운영 서비스로 1000명 이상의 사용자가 이용할 예정입니다. 다음 개인정보들은 어떤 상황에서도 삭제/손실하면 안됩니다:**
 
-#### **💾 자동 백업 시스템 (1시간마다)**
-- **Vercel Cron Job**이 `/api/auto-backup`을 매시간 자동 실행
-- 모든 사용자의 개인정보가 자동으로 백업됨
-- 사용자 수 무제한 지원 (현재 3명 → 1000명까지 대응)
+#### **💾 백업 시스템 (Neon PostgreSQL PITR)**
+- **Neon PostgreSQL Point-in-Time Restore**가 실시간으로 모든 변경사항 추적
+- **7일 보존 기간**: 1초 단위까지 정확한 시점 복구 가능
+- 사용자 수 무제한 지원 (현재 → 1000명까지 대응)
+- **참고**: `/api/auto-backup` 엔드포인트는 구현되어 있지만 실제 백업은 Neon PITR에 의존
 
 #### **📋 백업 대상 개인정보 (전체 목록)**
 1. **사용자 계정 정보**
@@ -46,10 +47,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `백업 상태 확인해줘` → 마지막 백업 시간 확인
 
 ### **🚨 데이터 손실 시 대응 절차**
-1. **즉시 백업 상태 확인**: GET `/api/auto-backup`
-2. **최신 백업으로 복원**: POST `/api/restore-backup` 
-3. **복원 후 데이터 무결성 검증**: 사용자 수, 학교 수, 일정 수 확인
-4. **긴급 상황시**: 1시간 이내 최신 데이터로 100% 복구 가능
+1. **Neon PITR 복구**: Neon 대시보드에서 Point-in-Time Restore 실행 (7일 이내 1초 단위)
+2. **복원 후 데이터 무결성 검증**: 사용자 수, 학교 수, 일정 수 확인
+3. **긴급 상황시**: 실시간 백업으로 즉시 복구 가능
+4. **대안**: `/api/auto-backup` 및 `/api/restore-backup` API도 사용 가능하지만 주 백업은 Neon
 
 ### **💀 절대 금지되는 위험한 작업들**
 ```bash
@@ -773,3 +774,59 @@ try {
 - 새로운 파일 업로드 시 자동 공개 설정이 정상 작동하는지 모니터링
 - GCS 버킷 권한 정책 변경 시 make-public API 재실행 필요할 수 있음
 - 모달 이미지 표시가 다양한 해상도에서 올바르게 작동하는지 주기적 확인
+
+## Key API Architecture Patterns
+
+### API Route Structure
+The application uses Next.js 15 App Router with extensive API routes organized by feature:
+
+**Core APIs:**
+- `/api/auth/*` - Authentication (login, signup, password management)
+- `/api/schools/*` - School management with bulk operations and auto-address
+- `/api/schedules` - Calendar schedule management
+- `/api/materials/*` - File upload system with GCS integration
+- `/api/travel-time/*` - Naver Maps API integration for route calculation
+- `/api/admin/*` - Admin-only operations (user management, file fixes)
+
+**Critical Administrative APIs:**
+- `/api/materials/make-public` - Batch file permission fixes for GCS
+- `/api/admin/fix-files` - Admin UI for file permission management
+- `/api/auto-backup` - Backup system integration (Vercel Cron configured)
+
+### Authentication & Authorization Architecture
+- **Custom React Context**: `src/lib/simpleAuth.tsx` (replaced NextAuth for stability)
+- **localStorage-based sessions**: Client-side persistence
+- **Role-based access**: `isSuperAdmin()` utility in `src/lib/authUtils.ts`
+- **Public/Private page routing**: Handled by `AuthCheck` component
+
+### File Upload System Architecture
+**Dual Upload Strategy:**
+- **교육자료 categories**: Direct 50MB GCS upload via signed URLs (bypasses Vercel limits)
+- **산업재해**: Traditional Vercel upload (4.5MB limit)
+- **Automatic public permissions**: Files auto-set to public via `makePublic()` + ACL fallback
+
+### Database Architecture Highlights
+- **Prisma Client Location**: Custom output to `src/generated/prisma`
+- **Environment Switching**: PostgreSQL (production) / SQLite (development)  
+- **User-School Relationship**: One-to-many with user isolation
+- **Schedule-TravelTime**: One-to-one relationship for route optimization
+
+### Mobile-First Design Patterns
+- **Progressive Web App**: Manifest, service worker, safe-area support
+- **Responsive Navigation**: Desktop navbar + mobile hamburger + bottom navigation
+- **Touch-Optimized**: Special mobile dropdown handling to prevent event bubbling issues
+
+### Critical Error Prevention
+Always use these helper functions:
+```typescript
+import { safeParsePurpose, safeUrl, safeCreateCalendarEvents } from '@/lib/utils';
+const purposes = safeParsePurpose(schedule.purpose); // Prevents JSON parse errors
+const href = safeUrl(material.filePath); // Prevents invalid URL errors
+```
+
+### Google Cloud Storage Integration
+- **Bucket**: `school-safety-manager` 
+- **File Pattern**: `{category}/{timestamp}_{sanitized_filename}`
+- **Public URL**: `https://storage.googleapis.com/school-safety-manager/{path}`
+- **Korean Filename Support**: Sanitization removes Korean chars, length limited to 50
+- **Permission Management**: Double safety with `makePublic()` + ACL fallback
