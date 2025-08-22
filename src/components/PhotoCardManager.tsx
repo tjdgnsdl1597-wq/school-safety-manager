@@ -278,7 +278,7 @@ export default function PhotoCardManager({ category, title }: PhotoCardManagerPr
       <HeroSection title={title} />
       
       <div className="container mx-auto px-6 py-8">
-        {/* 방문자용 소개글 */}
+        {/* 방문자용 소개글 - 카테고리별 다른 내용 */}
         {!isAdmin && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -287,26 +287,139 @@ export default function PhotoCardManager({ category, title }: PhotoCardManagerPr
             className="bg-white/90 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-orange-200 mb-12"
           >
             <div className="flex items-start mb-6">
-              <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
-                <span className="text-white text-xl">⚠️</span>
-              </div>
-              <div>
-                <h2 className="text-2xl font-bold text-gray-800 mb-3">중대재해 알리미 소개</h2>
-                <div className="text-gray-700 leading-relaxed space-y-3">
-                  <p>
-                    본 자료는 <span className="font-semibold text-orange-600">고용노동부 중대재해 사이렌</span>에서 
-                    학교 현장에서 발생할 수 있는 다양한 안전사고 사례를 선별하여 제공합니다.
-                  </p>
-                  <p>
-                    학교 관계자와 교육 현장 종사자들이 중대재해를 미리 예방하고 안전한 교육 환경을 조성할 수 있도록 
-                    실제 사례를 바탕으로 한 예방 자료를 지속적으로 업데이트하고 있습니다.
-                  </p>
-                  <p className="text-sm text-gray-600 mt-4 p-3 bg-gray-50 rounded-lg">
-                    <span className="font-semibold">💡 활용 방법:</span> 각 자료를 클릭하여 상세 내용을 확인하고, 
-                    해당 사례의 예방책과 안전 수칙을 숙지하여 현장에 적용해 주시기 바랍니다.
-                  </p>
-                </div>
-              </div>
+              {(() => {
+                // 카테고리별 다른 아이콘과 색상
+                const getCategoryInfo = () => {
+                  switch (category) {
+                    case '교육자료':
+                      return {
+                        icon: '📚',
+                        color: 'from-blue-500 to-indigo-500',
+                        title: '교육자료 소개',
+                        content: (
+                          <>
+                            <p>
+                              본 자료는 <span className="font-semibold text-blue-600">학교 안전보건 교육</span>에 
+                              필요한 다양한 교육 콘텐츠를 제공합니다.
+                            </p>
+                            <p>
+                              교직원과 학생들의 안전의식 향상을 위한 체계적인 교육 프로그램과 실무 가이드를 
+                              지속적으로 업데이트하여 안전한 교육환경 조성에 기여하고 있습니다.
+                            </p>
+                            <p className="text-sm text-gray-600 mt-4 p-3 bg-gray-50 rounded-lg">
+                              <span className="font-semibold">💡 활용 방법:</span> 각 교육자료를 다운로드하여 
+                              학교 현장에서 안전보건 교육 시 활용해 주시기 바랍니다.
+                            </p>
+                          </>
+                        )
+                      };
+                    case '안전보건표지':
+                      return {
+                        icon: '🎯',
+                        color: 'from-green-500 to-emerald-500',
+                        title: '안전보건표지 및 포스터',
+                        content: (
+                          <>
+                            <p>
+                              본 자료는 <span className="font-semibold text-green-600">학교 현장 안전표지</span>와 
+                              포스터를 제공하여 시각적 안전 정보를 전달합니다.
+                            </p>
+                            <p>
+                              위험표시, 금지표시, 지시표시, 안내표시 등 다양한 안전보건표지를 통해 
+                              학교 구성원들이 쉽게 안전 수칙을 인지하고 실천할 수 있도록 지원합니다.
+                            </p>
+                            <p className="text-sm text-gray-600 mt-4 p-3 bg-gray-50 rounded-lg">
+                              <span className="font-semibold">💡 활용 방법:</span> 필요한 표지를 다운로드하여 
+                              학교 내 적절한 위치에 부착하여 안전사고 예방에 활용해 주세요.
+                            </p>
+                          </>
+                        )
+                      };
+                    case '안전서류양식':
+                      return {
+                        icon: '📄',
+                        color: 'from-purple-500 to-violet-500',
+                        title: '안전서류 양식',
+                        content: (
+                          <>
+                            <p>
+                              본 자료는 <span className="font-semibold text-purple-600">학교 안전관리</span>에 
+                              필요한 각종 서류 양식을 제공합니다.
+                            </p>
+                            <p>
+                              안전점검표, 사고보고서, 위험성평가표 등 법적 요구사항을 충족하는 
+                              표준화된 양식으로 체계적인 안전관리 업무를 수행할 수 있도록 지원합니다.
+                            </p>
+                            <p className="text-sm text-gray-600 mt-4 p-3 bg-gray-50 rounded-lg">
+                              <span className="font-semibold">💡 활용 방법:</span> 필요한 양식을 다운로드하여 
+                              학교 안전관리 업무에 활용하고 관련 기록을 체계적으로 관리해 주세요.
+                            </p>
+                          </>
+                        )
+                      };
+                    case '교육청배포물':
+                      return {
+                        icon: '📢',
+                        color: 'from-amber-500 to-orange-500',
+                        title: '교육청 배포물',
+                        content: (
+                          <>
+                            <p>
+                              본 자료는 <span className="font-semibold text-amber-600">인천광역시교육청</span>에서 
+                              배포하는 공식 안전보건 자료를 제공합니다.
+                            </p>
+                            <p>
+                              교육청 정책 안내, 안전 가이드라인, 공문 등 학교 현장에서 반드시 숙지해야 할 
+                              공식 자료들을 신속하게 전달하여 일관된 안전관리가 이루어지도록 지원합니다.
+                            </p>
+                            <p className="text-sm text-gray-600 mt-4 p-3 bg-gray-50 rounded-lg">
+                              <span className="font-semibold">💡 활용 방법:</span> 교육청 공식 자료를 확인하여 
+                              학교 안전관리 정책을 정확히 이해하고 현장에 적용해 주시기 바랍니다.
+                            </p>
+                          </>
+                        )
+                      };
+                    default: // 산업재해 (중대재해)
+                      return {
+                        icon: '⚠️',
+                        color: 'from-orange-500 to-red-500',
+                        title: '중대재해 알리미 소개',
+                        content: (
+                          <>
+                            <p>
+                              본 자료는 <span className="font-semibold text-orange-600">고용노동부 중대재해 사이렌</span>에서 
+                              학교 현장에서 발생할 수 있는 다양한 안전사고 사례를 선별하여 제공합니다.
+                            </p>
+                            <p>
+                              학교 관계자와 교육 현장 종사자들이 중대재해를 미리 예방하고 안전한 교육 환경을 조성할 수 있도록 
+                              실제 사례를 바탕으로 한 예방 자료를 지속적으로 업데이트하고 있습니다.
+                            </p>
+                            <p className="text-sm text-gray-600 mt-4 p-3 bg-gray-50 rounded-lg">
+                              <span className="font-semibold">💡 활용 방법:</span> 각 자료를 클릭하여 상세 내용을 확인하고, 
+                              해당 사례의 예방책과 안전 수칙을 숙지하여 현장에 적용해 주시기 바랍니다.
+                            </p>
+                          </>
+                        )
+                      };
+                  }
+                };
+
+                const categoryInfo = getCategoryInfo();
+                
+                return (
+                  <>
+                    <div className={`w-12 h-12 bg-gradient-to-r ${categoryInfo.color} rounded-xl flex items-center justify-center mr-4 flex-shrink-0`}>
+                      <span className="text-white text-xl">{categoryInfo.icon}</span>
+                    </div>
+                    <div>
+                      <h2 className="text-2xl font-bold text-gray-800 mb-3">{categoryInfo.title}</h2>
+                      <div className="text-gray-700 leading-relaxed space-y-3">
+                        {categoryInfo.content}
+                      </div>
+                    </div>
+                  </>
+                );
+              })()}
             </div>
           </motion.div>
         )}

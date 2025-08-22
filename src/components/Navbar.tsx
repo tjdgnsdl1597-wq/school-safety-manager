@@ -267,8 +267,8 @@ export default function Navbar() {
             </div>
           </div>
 
-          {/* 모바일 햄버거 메뉴 */}
-          <div className="md:hidden flex items-center space-x-2">
+          {/* 모바일 햄버거 메뉴 - 로그인하지 않은 사용자만 표시 */}
+          <div className={`md:hidden flex items-center space-x-2 ${isLoggedIn ? 'hidden' : ''}`}>
             {user && (
               <div className="flex items-center space-x-1 px-2 py-1 bg-white/10 rounded-full">
                 <div className="w-2 h-2 bg-green-400 rounded-full"></div>

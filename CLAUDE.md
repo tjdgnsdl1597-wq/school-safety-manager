@@ -555,6 +555,64 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 
 ## Critical Troubleshooting
 
+### 모바일 드롭다운 문제 해결
+
+**문제 증상**: 모바일에서 자료마당 드롭다운 메뉴 항목을 터치하면 바로 닫히면서 클릭이 안 되는 문제
+
+**원인**: 이벤트 버블링 (Event Bubbling) - 터치 이벤트가 부모 요소까지 전달되어 외부 클릭으로 인식되어 드롭다운이 즉시 닫힘
+
+**해결책**: 
+1. **터치 이벤트 제거**: 모바일에서 `touchstart` 외부 클릭 감지 이벤트 제거
+2. **데스크톱 전용 외부 클릭**: `isTouchDevice()` 체크로 마우스만 있는 디바이스에서만 외부 클릭 감지
+3. **햄버거 메뉴 연동**: 모바일에서는 햄버거 메뉴 닫을 때만 드롭다운 닫기
+4. **페이지 이동시 자동 닫힘**: 모바일에서 페이지 이동시 햄버거 메뉴 자동 닫기
+
+**구현 코드 (GitHub 커밋: b31cd7c, 8968bc0)**:
+```typescript
+// 드롭다운 외부 클릭 감지 (데스크톱만)
+useEffect(() => {
+  function handleOutsideClick(event: MouseEvent) {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      setIsDataCenterOpen(false);
+    }
+  }
+
+  // 터치 디바이스가 아닐 때만 마우스 이벤트 처리
+  if (!isTouchDevice()) {
+    document.addEventListener('mousedown', handleOutsideClick);
+  }
+  
+  return () => {
+    document.removeEventListener('mousedown', handleOutsideClick);
+  };
+}, []);
+
+// 페이지 변경시 모바일 햄버거 메뉴 닫기
+useEffect(() => {
+  if (isTouchDevice()) {
+    setIsMenuOpen(false);
+    setIsDataCenterOpen(false);
+  }
+}, [pathname]);
+
+// 햄버거 버튼 클릭 시 드롭다운도 함께 관리
+onClick={() => {
+  setIsMenuOpen(!isMenuOpen);
+  // 햄버거 메뉴를 닫을 때 드롭다운도 함께 닫기
+  if (isMenuOpen) {
+    setIsDataCenterOpen(false);
+  }
+}}
+
+// 모바일 자료마당 버튼 - 토글 기능 제거, 항상 열기만
+onClick={() => setIsDataCenterOpen(true)}
+```
+
+**관련 커밋**:
+- `1171afd`: 모바일 자료마당 드롭다운 토글 기능 제거
+- `b31cd7c`: 모바일 자료마당 드롭다운 터치 이벤트 충돌 완전 해결
+- `8968bc0`: 모바일 페이지 이동시 햄버거 메뉴 자동 닫힘 기능 추가
+
 ### Google Cloud Storage Upload Issues
 
 **403 Forbidden Errors:**

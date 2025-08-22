@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from '../components/Navbar';
+import BottomNavigation from '../components/BottomNavigation';
 import Providers from '../components/Providers';
 import AuthCheck from '../components/AuthCheck';
 import ErrorBoundary from '../components/ErrorBoundary';
@@ -66,9 +67,10 @@ export default function RootLayout({
             <AuthCheck>
               <DynamicTitle />
               <Navbar />
-              <main className="pt-4 pb-safe">
+              <main className="pt-4 pb-20 md:pb-safe">
                 {children}
               </main>
+              <BottomNavigation />
             </AuthCheck>
           </Providers>
         </ErrorBoundary>
