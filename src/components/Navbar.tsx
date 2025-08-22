@@ -195,11 +195,15 @@ export default function Navbar() {
                     {isDataCenterOpen && (
                       <div className="absolute top-full left-0 mt-2 w-64 bg-white/95 backdrop-blur-sm border border-gray-200 rounded-lg shadow-xl shadow-black/10 overflow-hidden z-50 animate-in slide-in-from-top-2 duration-200">
                         {dataCenterItems.map((subItem) => (
-                          <Link
+                          <button
                             key={subItem.href}
-                            href={subItem.href}
-                            onClick={() => setIsDataCenterOpen(false)}
-                            className={`block px-4 py-3 text-sm font-medium transition-all duration-200 ${
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setIsDataCenterOpen(false);
+                              router.push(subItem.href);
+                            }}
+                            className={`w-full text-left block px-4 py-3 text-sm font-medium transition-all duration-200 ${
                               pathname === subItem.href
                                 ? 'bg-blue-50 text-blue-600 border-l-4 border-blue-500'
                                 : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
@@ -209,7 +213,7 @@ export default function Navbar() {
                               <span className="text-lg">{subItem.icon}</span>
                               <span>{subItem.name.replace(subItem.icon + ' ', '')}</span>
                             </div>
-                          </Link>
+                          </button>
                         ))}
                       </div>
                     )}
