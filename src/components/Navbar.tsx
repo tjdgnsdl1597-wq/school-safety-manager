@@ -293,50 +293,24 @@ export default function Navbar() {
                   const isDataCenterActive = pathname.startsWith('/data-center');
                   return (
                     <div key={item.name}>
+                      {/* 자료마당 메인 버튼 - 심플 버전 */}
                       <button
-                        onClick={isTouchDevice() ? undefined : handleDataCenterToggle}
-                        onTouchEnd={isTouchDevice() ? handleDataCenterToggle : undefined}
-                        aria-expanded={isDataCenterOpen}
-                        aria-haspopup="true"
-                        aria-label="자료마당 메뉴 열기/닫기"
-                        className={`w-full px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300 flex items-center justify-between ${
+                        onClick={() => setIsDataCenterOpen(!isDataCenterOpen)}
+                        className={`w-full px-4 py-3 rounded-lg text-sm font-medium transition-colors flex items-center justify-between ${
                           isDataCenterActive
-                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/25' 
+                            ? 'bg-blue-600 text-white' 
                             : 'text-gray-300 hover:text-white hover:bg-white/10'
                         }`}
-                        style={{ 
-                          touchAction: 'manipulation',
-                          position: 'relative',
-                          zIndex: 1,
-                          pointerEvents: isDataCenterOpen ? 'none' : 'auto'
-                        }}
                       >
                         <span>{renderMenuText(item.name)}</span>
-                        <svg 
-                          className={`w-4 h-4 transition-transform duration-200 ${isDataCenterOpen ? 'rotate-180' : ''}`} 
-                          fill="none" 
-                          stroke="currentColor" 
-                          viewBox="0 0 24 24"
-                          aria-hidden="true"
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                        </svg>
+                        <span className={`transform transition-transform ${isDataCenterOpen ? 'rotate-180' : ''}`}>
+                          ▼
+                        </span>
                       </button>
 
-                      {/* 모바일 서브메뉴 - 애니메이션 효과 개선 */}
+                      {/* 드롭다운 메뉴 - 완전 새로운 심플 버전 */}
                       {isDataCenterOpen && (
-                        <div 
-                          className="mt-2 ml-4 space-y-1 animate-in slide-in-from-top-2 duration-200"
-                          style={{ 
-                            position: 'relative',
-                            zIndex: 1000,
-                            pointerEvents: 'auto',
-                            isolation: 'isolate'
-                          }}
-                          onTouchStart={(e) => e.stopPropagation()}
-                          onTouchEnd={(e) => e.stopPropagation()}
-                          onClick={(e) => e.stopPropagation()}
-                        >
+                        <div className="mt-2 ml-4 space-y-1">
                           {dataCenterItems.map((subItem) => (
                             <Link
                               key={subItem.href}
@@ -345,16 +319,14 @@ export default function Navbar() {
                                 setIsMenuOpen(false);
                                 setIsDataCenterOpen(false);
                               }}
-                              className={`block px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
+                              className={`flex items-center space-x-2 px-4 py-2 rounded text-sm ${
                                 pathname === subItem.href
-                                  ? 'bg-blue-500 text-white shadow-md'
+                                  ? 'bg-blue-500 text-white'
                                   : 'text-gray-400 hover:text-white hover:bg-white/10'
                               }`}
                             >
-                              <div className="flex items-center space-x-2">
-                                <span className="text-base">{subItem.icon}</span>
-                                <span>{subItem.name.replace(subItem.icon + ' ', '')}</span>
-                              </div>
+                              <span>{subItem.icon}</span>
+                              <span>{subItem.name.replace(subItem.icon + ' ', '')}</span>
                             </Link>
                           ))}
                         </div>
