@@ -351,6 +351,7 @@ export default function Navbar() {
                                 setIsDataCenterOpen(false);
                                 router.push(subItem.href);
                               }}
+                              onTouchStart={(e) => e.stopPropagation()}
                               onTouchEnd={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
@@ -369,14 +370,6 @@ export default function Navbar() {
                                 zIndex: 1001,
                                 pointerEvents: 'auto',
                                 isolation: 'isolate'
-                              }}
-                              onTouchStart={(e) => e.stopPropagation()}
-                              onTouchEnd={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                setIsMenuOpen(false);
-                                setIsDataCenterOpen(false);
-                                router.push(subItem.href);
                               }}
                             >
                               <div className="flex items-center space-x-2">
