@@ -295,7 +295,7 @@ export default function Navbar() {
                     <div key={item.name}>
                       {/* 자료마당 메인 버튼 - 심플 버전 */}
                       <button
-                        onClick={() => setIsDataCenterOpen(!isDataCenterOpen)}
+                        onClick={() => setIsDataCenterOpen(true)}
                         className={`w-full px-4 py-3 rounded-lg text-sm font-medium transition-colors flex items-center justify-between ${
                           isDataCenterActive
                             ? 'bg-blue-600 text-white' 
