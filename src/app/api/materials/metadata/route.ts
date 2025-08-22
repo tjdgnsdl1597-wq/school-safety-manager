@@ -32,23 +32,26 @@ export async function POST(request: Request) {
         const bucket = storage.bucket(bucketName);
 
         for (const attachment of attachments) {
-          // filePath에서 파일 경로 추출
-          const filePath = attachment.filePath; // 예: "education-notices/1755877897650_test.pdf"
-          const file = bucket.file(filePath);
+          // publicUrl에서 버킷 내 파일 경로 추출
+          // attachment.publicUrl = "https://storage.googleapis.com/bucket-name/path/file.ext"
+          // attachment.filePath = "path/file.ext" (실제 버킷 내 경로)
+          const bucketPath = attachment.filePath || attachment.publicUrl.replace(`https://storage.googleapis.com/${bucketName}/`, '');
+          console.log(`공개 설정할 파일 경로: ${bucketPath}`);
+          const file = bucket.file(bucketPath);
 
           try {
             await file.makePublic();
-            console.log(`파일 공개 설정 완료: ${filePath}`);
+            console.log(`파일 공개 설정 완료: ${bucketPath}`);
           } catch (publicError) {
-            console.warn(`파일 공개 설정 실패, ACL 방식 시도: ${filePath}`, publicError);
+            console.warn(`파일 공개 설정 실패, ACL 방식 시도: ${bucketPath}`, publicError);
             try {
               await file.acl.add({
                 entity: 'allUsers',
                 role: 'READER'
               });
-              console.log(`파일 ACL 공개 설정 완료: ${filePath}`);
+              console.log(`파일 ACL 공개 설정 완료: ${bucketPath}`);
             } catch (aclError) {
-              console.error(`파일 공개 설정 완전 실패: ${filePath}`, aclError);
+              console.error(`파일 공개 설정 완전 실패: ${bucketPath}`, aclError);
             }
           }
         }

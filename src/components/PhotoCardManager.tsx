@@ -140,6 +140,10 @@ export default function PhotoCardManager({ category, title }: PhotoCardManagerPr
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const itemsPerPage = 15;
+  
+  // 모달 관련 상태
+  const [selectedMaterial, setSelectedMaterial] = useState<Material | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const fetchMaterials = useCallback(async (page: number = currentPage) => {
     try {
@@ -474,7 +478,11 @@ export default function PhotoCardManager({ category, title }: PhotoCardManagerPr
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="group relative"
+                className="group relative cursor-pointer"
+                onClick={() => {
+                  setSelectedMaterial(material);
+                  setIsModalOpen(true);
+                }}
               >
                 <div className="bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-200 hover:border-blue-300 hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
                   {/* 4:5 비율 썸네일 */}
@@ -505,8 +513,11 @@ export default function PhotoCardManager({ category, title }: PhotoCardManagerPr
                     {/* 삭제 버튼 (로그인 사용자, 호버시 표시) */}
                     {canEdit && (
                       <button
-                        onClick={() => handleDelete(material.id)}
-                        className="absolute top-2 right-2 w-8 h-8 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-lg"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(material.id);
+                        }}
+                        className="absolute top-2 right-2 w-8 h-8 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-lg z-10"
                         title="삭제"
                       >
                         ×
@@ -621,6 +632,124 @@ export default function PhotoCardManager({ category, title }: PhotoCardManagerPr
           </motion.div>
         )}
       </div>
+
+      {/* 모달 컴포넌트 */}
+      {isModalOpen && selectedMaterial && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-6xl w-full max-h-[95vh] overflow-hidden">
+            {/* 모달 헤더 */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <h2 className="text-xl font-bold text-gray-800 line-clamp-1">
+                {selectedMaterial.title}
+              </h2>
+              <button
+                onClick={() => {
+                  setIsModalOpen(false);
+                  setSelectedMaterial(null);
+                }}
+                className="w-8 h-8 bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-gray-800 rounded-full flex items-center justify-center transition-all duration-300"
+              >
+                ×
+              </button>
+            </div>
+            
+            {/* 모달 컨텐츠 */}
+            <div className="p-6 overflow-y-auto max-h-[calc(95vh-140px)]">
+              {selectedMaterial.attachments.length > 0 && (
+                <div className="space-y-4">
+                  {selectedMaterial.attachments.map((attachment, index) => (
+                    <div key={attachment.id} className="border border-gray-200 rounded-lg overflow-hidden">
+                      {attachment.mimeType.startsWith('image/') && !imageErrors.has(attachment.id) ? (
+                        <div className="relative w-full flex items-center justify-center bg-gray-50">
+                          <Image
+                            src={attachment.filePath}
+                            alt={`${selectedMaterial.title} - ${index + 1}`}
+                            width={1200}
+                            height={800}
+                            className="max-w-full max-h-[70vh] w-auto h-auto object-contain"
+                            unoptimized={true}
+                            onError={() => {
+                              setImageErrors(prev => new Set([...prev, attachment.id]));
+                            }}
+                          />
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-center h-32 bg-gray-100">
+                          <div className="text-center">
+                            <div className="text-4xl mb-2">
+                              {getFileIcon(attachment.mimeType)}
+                            </div>
+                            <p className="text-sm text-gray-600 font-medium">
+                              {attachment.filename}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              {formatFileSize(attachment.fileSize)}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* 파일 정보 및 다운로드 */}
+                      <div className="p-3 bg-gray-50 border-t">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm font-medium text-gray-800">
+                              {attachment.filename}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              {formatFileSize(attachment.fileSize)}
+                            </p>
+                          </div>
+                          <a
+                            href={attachment.filePath}
+                            download={attachment.filename}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-xs font-medium rounded transition-colors"
+                          >
+                            다운로드
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              
+              {/* 컨텐츠 */}
+              {selectedMaterial.content && (
+                <div className="mt-6 pt-6 border-t border-gray-200">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-3">설명</h3>
+                  <div className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+                    {selectedMaterial.content}
+                  </div>
+                </div>
+              )}
+              
+              {/* 메타정보 */}
+              <div className="mt-6 pt-6 border-t border-gray-200">
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span className="font-medium text-gray-600">업로드 날짜:</span>
+                    <p className="text-gray-800">
+                      {new Date(selectedMaterial.uploadedAt).toLocaleDateString('ko-KR', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        weekday: 'long'
+                      })}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="font-medium text-gray-600">업로더:</span>
+                    <p className="text-gray-800">{selectedMaterial.uploader}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

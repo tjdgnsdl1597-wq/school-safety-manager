@@ -267,34 +267,64 @@ export default function Navbar() {
             </div>
           </div>
 
-          {/* 모바일 햄버거 메뉴 - 로그인하지 않은 사용자만 표시 */}
-          <div className={`md:hidden flex items-center space-x-2 ${isLoggedIn ? 'hidden' : ''}`}>
-            {user && (
-              <div className="flex items-center space-x-1 px-2 py-1 bg-white/10 rounded-full">
-                <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                <span className="text-gray-300 text-xs">
-                  {getUserDisplayName(user) || '고객'}
-                </span>
-              </div>
+          {/* 모바일 메뉴 - 로그인 상태에 따라 다르게 표시 */}
+          <div className="md:hidden flex items-center space-x-2">
+            {/* 로그인한 경우: 사용자 정보 + 로그아웃 버튼 + 햄버거 메뉴 */}
+            {isLoggedIn ? (
+              <>
+                <div className="flex items-center space-x-1 px-2 py-1 bg-white/10 rounded-full">
+                  <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                  <span className="text-gray-300 text-xs">
+                    {getUserDisplayName(user) || '고객'}
+                  </span>
+                </div>
+                <button
+                  onClick={logout}
+                  className="px-2 py-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white text-xs font-medium rounded transition-all duration-300"
+                  title="로그아웃"
+                >
+                  로그아웃
+                </button>
+                <button
+                  onClick={() => {
+                    setIsMenuOpen(!isMenuOpen);
+                    // 햄버거 메뉴를 닫을 때 드롭다운도 함께 닫기
+                    if (isMenuOpen) {
+                      setIsDataCenterOpen(false);
+                    }
+                  }}
+                  className="text-white p-2 rounded-lg hover:bg-white/10 transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    {isMenuOpen ? (
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    ) : (
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                    )}
+                  </svg>
+                </button>
+              </>
+            ) : (
+              /* 로그인하지 않은 경우: 기존 로직 */
+              <button
+                onClick={() => {
+                  setIsMenuOpen(!isMenuOpen);
+                  // 햄버거 메뉴를 닫을 때 드롭다운도 함께 닫기
+                  if (isMenuOpen) {
+                    setIsDataCenterOpen(false);
+                  }
+                }}
+                className="text-white p-2 rounded-lg hover:bg-white/10 transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  {isMenuOpen ? (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  ) : (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  )}
+                </svg>
+              </button>
             )}
-            <button
-              onClick={() => {
-                setIsMenuOpen(!isMenuOpen);
-                // 햄버거 메뉴를 닫을 때 드롭다운도 함께 닫기
-                if (isMenuOpen) {
-                  setIsDataCenterOpen(false);
-                }
-              }}
-              className="text-white p-2 rounded-lg hover:bg-white/10 transition-colors"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                {isMenuOpen ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                )}
-              </svg>
-            </button>
           </div>
         </div>
 
@@ -361,18 +391,9 @@ export default function Navbar() {
                 );
               })}
               
-              <div className="border-t border-white/10 pt-4 mt-4">
-                {user ? (
-                  <button
-                    onClick={() => {
-                      setIsMenuOpen(false);
-                      logout();
-                    }}
-                    className="w-full px-4 py-3 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white text-sm font-medium rounded-lg transition-all duration-300 shadow-lg shadow-red-500/25 hover:shadow-red-500/40"
-                  >
-                    로그아웃
-                  </button>
-                ) : (
+              {/* 로그인하지 않은 사용자만 로그인 버튼 표시 */}
+              {!user && (
+                <div className="border-t border-white/10 pt-4 mt-4">
                   <Link
                     href="/auth/signin"
                     onClick={() => setIsMenuOpen(false)}
@@ -380,8 +401,8 @@ export default function Navbar() {
                   >
                     로그인
                   </Link>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           </div>
         )}
