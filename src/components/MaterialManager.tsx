@@ -253,13 +253,13 @@ export default function MaterialManager({ category, title }: MaterialManagerProp
   const handleFileSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     console.log('handleFileSubmit 호출됨:', { category, isEditing });
     
-    // 교육자료인 경우 직접 GCS 업로드 사용
-    if (category === '교육자료' && !isEditing) {
-      console.log('직접 GCS 업로드 사용');
+    // 편집 모드가 아닌 경우 모든 카테고리에서 직접 GCS 업로드 사용
+    if (!isEditing) {
+      console.log('직접 GCS 업로드 사용 (50MB 제한)');
       return handleDirectGCSUpload(e);
     }
     
-    console.log('기존 Vercel 방식 사용 (산업재해 또는 편집 모드)');
+    console.log('기존 Vercel 방식 사용 (편집 모드만)');
 
     e.preventDefault();
     
