@@ -1,7 +1,7 @@
 {
-  "name": "KSH58 학교 안전관리시스템",
-  "short_name": "KSH58 안전관리",
-  "description": "KSH58이 개발한 학교 안전보건 관리 시스템 (개인 운영 무료 서비스)",
+  "name": "SSIA 학교관리시스템",
+  "short_name": "SSIA 학교관리",
+  "description": "SSIA 학교 안전보건 종합 관리 시스템",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
