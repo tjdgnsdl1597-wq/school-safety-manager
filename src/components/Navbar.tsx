@@ -315,10 +315,6 @@ export default function Navbar() {
                             <Link
                               key={subItem.href}
                               href={subItem.href}
-                              onClick={() => {
-                                setIsMenuOpen(false);
-                                setIsDataCenterOpen(false);
-                              }}
                               className={`flex items-center space-x-2 px-4 py-2 rounded text-sm ${
                                 pathname === subItem.href
                                   ? 'bg-blue-500 text-white'
