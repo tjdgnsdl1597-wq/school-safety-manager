@@ -101,6 +101,17 @@ export async function POST(request: Request) {
       }, { status: 400 });
     }
 
+    // 한글 카테고리명을 영문으로 변환
+    const categoryMapping: Record<string, string> = {
+      '교육자료': 'education',
+      '산업재해': 'industrial-accidents',
+      '안전보건표지': 'safety-signs',
+      '안전서류양식': 'safety-forms',
+      '교육청배포물': 'education-notices'
+    };
+    
+    const englishCategory = categoryMapping[category] || 'materials';
+    
     // GCS 파일 경로 생성
     const timestamp = Date.now();
     // 파일명을 더 안전하게 정리 - 한글/특수문자 제거 후 길이 제한
@@ -109,7 +120,7 @@ export async function POST(request: Request) {
       .replace(/_{2,}/g, '_')           // 연속된 언더스코어를 하나로 줄임  
       .substring(0, 50);                // 파일명 길이 제한
     const safeFilename = cleanFilename || 'file'; // 빈 문자열 방지
-    const filePath = `${category}/${timestamp}_${safeFilename}`;
+    const filePath = `${englishCategory}/${timestamp}_${safeFilename}`;
     console.log('원본 파일명:', filename);
     console.log('정리된 파일명:', safeFilename);
     console.log('최종 파일 경로:', filePath);
