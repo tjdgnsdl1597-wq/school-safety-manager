@@ -200,6 +200,7 @@ export default function Navbar() {
                             onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
+                              console.log('데스크톱 클릭: 이동 시도 ->', subItem.href);
                               setIsDataCenterOpen(false);
                               router.push(subItem.href);
                             }}
@@ -347,6 +348,7 @@ export default function Navbar() {
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
+                                console.log('모바일 클릭: 이동 시도 ->', subItem.href);
                                 setIsMenuOpen(false);
                                 setIsDataCenterOpen(false);
                                 router.push(subItem.href);
@@ -355,6 +357,7 @@ export default function Navbar() {
                               onTouchEnd={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
+                                console.log('모바일 터치: 이동 시도 ->', subItem.href);
                                 setIsMenuOpen(false);
                                 setIsDataCenterOpen(false);
                                 router.push(subItem.href);
