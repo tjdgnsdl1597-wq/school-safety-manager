@@ -311,7 +311,8 @@ export default function Navbar() {
                         style={{ 
                           touchAction: 'manipulation',
                           position: 'relative',
-                          zIndex: 1
+                          zIndex: 1,
+                          pointerEvents: isDataCenterOpen ? 'none' : 'auto'
                         }}
                       >
                         <span>{renderMenuText(item.name)}</span>
@@ -332,9 +333,13 @@ export default function Navbar() {
                           className="mt-2 ml-4 space-y-1 animate-in slide-in-from-top-2 duration-200"
                           style={{ 
                             position: 'relative',
-                            zIndex: 10,
-                            pointerEvents: 'auto'
+                            zIndex: 1000,
+                            pointerEvents: 'auto',
+                            isolation: 'isolate'
                           }}
+                          onTouchStart={(e) => e.stopPropagation()}
+                          onTouchEnd={(e) => e.stopPropagation()}
+                          onClick={(e) => e.stopPropagation()}
                         >
                           {dataCenterItems.map((subItem) => (
                             <button
@@ -361,8 +366,17 @@ export default function Navbar() {
                               style={{ 
                                 touchAction: 'manipulation',
                                 position: 'relative',
-                                zIndex: 11,
-                                pointerEvents: 'auto'
+                                zIndex: 1001,
+                                pointerEvents: 'auto',
+                                isolation: 'isolate'
+                              }}
+                              onTouchStart={(e) => e.stopPropagation()}
+                              onTouchEnd={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setIsMenuOpen(false);
+                                setIsDataCenterOpen(false);
+                                router.push(subItem.href);
                               }}
                             >
                               <div className="flex items-center space-x-2">
