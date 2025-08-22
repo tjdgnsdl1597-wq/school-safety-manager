@@ -327,15 +327,22 @@ export default function Navbar() {
                                 setIsMenuOpen(false);
                                 setIsDataCenterOpen(false);
                               }}
-                              onTouchEnd={() => {
+                              onTouchStart={() => {
+                                // 터치 시작시 즉시 반응
                                 setIsMenuOpen(false);
                                 setIsDataCenterOpen(false);
                               }}
-                              className={`block px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
+                              onTouchEnd={() => {
+                                // 터치 종료시에도 처리
+                                setIsMenuOpen(false);
+                                setIsDataCenterOpen(false);
+                              }}
+                              className={`block px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 touch-manipulation ${
                                 pathname === subItem.href
                                   ? 'bg-blue-500 text-white shadow-md'
                                   : 'text-gray-400 hover:text-white hover:bg-white/10'
                               }`}
+                              style={{ touchAction: 'manipulation' }}
                             >
                               <div className="flex items-center space-x-2">
                                 <span className="text-base">{subItem.icon}</span>
