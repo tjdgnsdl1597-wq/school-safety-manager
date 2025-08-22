@@ -146,11 +146,20 @@ export async function POST(request: Request) {
         'video/mp4',
         'video/webm',
         'text/plain',
+        // 한글 파일 형식 지원
+        'application/haansofthwp',
+        'application/x-hwp',
+        'application/vnd.hancom.hwp',
+        'application/hwp',
+        'application/vnd.hancom.hwpx',
+        'application/hwpx',
+        // 압축 파일
         'application/zip',
         'application/x-zip-compressed',
         'application/x-rar-compressed',
         'application/vnd.rar',
-        'application/x-7z-compressed'
+        'application/x-7z-compressed',
+        'application/octet-stream'
       ];
 
       for (let i = 0; i < files.length; i++) {
@@ -314,11 +323,20 @@ export async function PUT(request: Request) {
         'video/mp4',
         'video/webm',
         'text/plain',
+        // 한글 파일 형식 지원
+        'application/haansofthwp',
+        'application/x-hwp',
+        'application/vnd.hancom.hwp',
+        'application/hwp',
+        'application/vnd.hancom.hwpx',
+        'application/hwpx',
+        // 압축 파일
         'application/zip',
         'application/x-zip-compressed',
         'application/x-rar-compressed',
         'application/vnd.rar',
-        'application/x-7z-compressed'
+        'application/x-7z-compressed',
+        'application/octet-stream'
       ];
 
       // 기존 파일들 삭제

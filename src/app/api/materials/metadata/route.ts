@@ -1,7 +1,20 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '../../../../generated/prisma';
+import { Storage } from '@google-cloud/storage';
 
 const prisma = new PrismaClient();
+
+// Google Cloud Storage 클라이언트 초기화
+const createStorageClient = () => {
+  const credentials = process.env.GOOGLE_CLOUD_CREDENTIALS 
+    ? JSON.parse(process.env.GOOGLE_CLOUD_CREDENTIALS)
+    : undefined;
+    
+  return new Storage({
+    projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
+    ...(credentials ? { credentials } : {})
+  });
+};
 
 export async function POST(request: Request) {
   try {
@@ -9,6 +22,40 @@ export async function POST(request: Request) {
 
     if (!title || !category) {
       return NextResponse.json({ error: 'Title and category are required' }, { status: 400 });
+    }
+
+    // GCS 파일들을 공개로 설정
+    if (attachments && attachments.length > 0) {
+      try {
+        const storage = createStorageClient();
+        const bucketName = process.env.GOOGLE_CLOUD_BUCKET_NAME!;
+        const bucket = storage.bucket(bucketName);
+
+        for (const attachment of attachments) {
+          // filePath에서 파일 경로 추출
+          const filePath = attachment.filePath; // 예: "education-notices/1755877897650_test.pdf"
+          const file = bucket.file(filePath);
+
+          try {
+            await file.makePublic();
+            console.log(`파일 공개 설정 완료: ${filePath}`);
+          } catch (publicError) {
+            console.warn(`파일 공개 설정 실패, ACL 방식 시도: ${filePath}`, publicError);
+            try {
+              await file.acl.add({
+                entity: 'allUsers',
+                role: 'READER'
+              });
+              console.log(`파일 ACL 공개 설정 완료: ${filePath}`);
+            } catch (aclError) {
+              console.error(`파일 공개 설정 완전 실패: ${filePath}`, aclError);
+            }
+          }
+        }
+      } catch (storageError) {
+        console.error('GCS 공개 설정 중 오류:', storageError);
+        // 공개 설정이 실패해도 메타데이터는 저장
+      }
     }
 
     // 데이터베이스에 게시글 저장

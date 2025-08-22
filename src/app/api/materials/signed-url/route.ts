@@ -78,11 +78,18 @@ export async function POST(request: Request) {
       'video/mp4',
       'video/webm',
       'text/plain',
+      // 한글 파일 형식 지원
+      'application/haansofthwp',           // HWP 파일 공식 MIME 타입
+      'application/x-hwp',                 // HWP 파일 대체 MIME 타입
+      'application/vnd.hancom.hwp',        // HWP 파일 또 다른 MIME 타입
+      'application/hwp',                   // HWP 간단 형식
+      'application/vnd.hancom.hwpx',       // HWPX 파일
+      'application/hwpx',                  // HWPX 간단 형식
       // 압축 파일 타입들 - 다양한 MIME 타입 지원
       'application/zip',
       'application/x-zip',
       'application/x-zip-compressed',
-      'application/octet-stream', // 알집이 이 타입으로 인식되는 경우가 많음
+      'application/octet-stream', // 알집이나 일부 파일이 이 타입으로 인식되는 경우가 많음
       'application/x-rar-compressed',
       'application/x-rar',
       'application/x-7z-compressed',
