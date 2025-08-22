@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
@@ -110,15 +111,21 @@ export default function BottomNavigation() {
     <>
       {/* 하단 네비게이션 바 */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 pb-safe z-40">
-        <div className="flex justify-around py-1">
-          {navItems.map((item) => {
+        <div className="flex py-1">
+          {navItems.map((item, index) => (
+            <React.Fragment key={item.name}>
+              {/* 첫 번째가 아닌 경우 구분선 추가 */}
+              {index > 0 && (
+                <div className="w-px bg-gray-200 my-2"></div>
+              )}
+              
+              <div className="flex-1">{(() => {
             if (item.isSpecial) {
               // 자료마당 특별 처리
               return (
                 <button
-                  key={item.name}
                   onClick={() => setShowDataCenterModal(true)}
-                  className={`flex flex-col items-center py-2 px-1 min-w-0 transition-colors ${
+                  className={`w-full flex flex-col items-center py-2 px-1 min-w-0 transition-colors ${
                     item.isActive
                       ? 'text-blue-600'
                       : 'text-gray-600'
@@ -132,9 +139,8 @@ export default function BottomNavigation() {
 
             return (
               <Link
-                key={item.name}
                 href={item.href}
-                className={`flex flex-col items-center py-2 px-1 min-w-0 transition-colors ${
+                className={`w-full flex flex-col items-center py-2 px-1 min-w-0 transition-colors ${
                   item.isActive
                     ? 'text-blue-600'
                     : 'text-gray-600'
@@ -144,7 +150,9 @@ export default function BottomNavigation() {
                 <span className="text-xs font-medium truncate">{item.name}</span>
               </Link>
             );
-          })}
+          })()}</div>
+            </React.Fragment>
+          ))}
         </div>
       </div>
 
