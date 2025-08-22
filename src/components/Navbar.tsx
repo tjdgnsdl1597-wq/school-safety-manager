@@ -61,10 +61,11 @@ export default function Navbar() {
     { name: '📢 교육청 배포물', href: '/data-center/notices', icon: '📢' },
   ];
 
-  // 슈퍼관리자용 네비게이션 메뉴 (사용자 관리 + 이용약관 + 자료마당 + 중대재해 알리미) - 대시보드 제거
+  // 슈퍼관리자용 네비게이션 메뉴 (사용자 관리 + 이용약관 + 이동시간 + 자료마당 + 중대재해 알리미) - 대시보드 제거
   const adminNavItems = [
     { name: '사용자 관리', href: '/admin/users' },
     { name: '이용약관', href: '/terms' },
+    { name: '이동시간', href: '/travel-time' },
     { name: '자료마당', href: '/data-center/education', isDropdown: true },
     { name: '중대재해 알리미', href: '/industrial-accidents' },
   ];
@@ -107,12 +108,11 @@ export default function Navbar() {
     return menuName;
   };
 
-  // 일반 사용자용 네비게이션 메뉴 (대시보드, 학교정보, 일정관리, 이동시간, 자료마당, 중대재해)
+  // 일반 사용자용 네비게이션 메뉴 (대시보드, 학교정보, 일정관리, 자료마당, 중대재해) - 이동시간 제거
   const userNavItems = [
     { name: '대시보드', href: '/dashboard' },
     { name: '학교 정보', href: '/schools' },
     { name: '일정 관리', href: '/schedules' },
-    { name: '이동시간', href: '/travel-time' },
     { name: '자료마당', href: '/data-center/education', isDropdown: true },
     { name: '중대재해 알리미', href: '/industrial-accidents' },
   ];
@@ -324,6 +324,10 @@ export default function Navbar() {
                               key={subItem.href}
                               href={subItem.href}
                               onClick={() => {
+                                setIsMenuOpen(false);
+                                setIsDataCenterOpen(false);
+                              }}
+                              onTouchEnd={() => {
                                 setIsMenuOpen(false);
                                 setIsDataCenterOpen(false);
                               }}
