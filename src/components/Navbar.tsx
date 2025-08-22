@@ -195,16 +195,11 @@ export default function Navbar() {
                     {isDataCenterOpen && (
                       <div className="absolute top-full left-0 mt-2 w-64 bg-white/95 backdrop-blur-sm border border-gray-200 rounded-lg shadow-xl shadow-black/10 overflow-hidden z-50 animate-in slide-in-from-top-2 duration-200">
                         {dataCenterItems.map((subItem) => (
-                          <button
+                          <Link
                             key={subItem.href}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              console.log('데스크톱 클릭: 이동 시도 ->', subItem.href);
-                              setIsDataCenterOpen(false);
-                              router.push(subItem.href);
-                            }}
-                            className={`w-full text-left block px-4 py-3 text-sm font-medium transition-all duration-200 ${
+                            href={subItem.href}
+                            onClick={() => setIsDataCenterOpen(false)}
+                            className={`block px-4 py-3 text-sm font-medium transition-all duration-200 ${
                               pathname === subItem.href
                                 ? 'bg-blue-50 text-blue-600 border-l-4 border-blue-500'
                                 : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
@@ -214,7 +209,7 @@ export default function Navbar() {
                               <span className="text-lg">{subItem.icon}</span>
                               <span>{subItem.name.replace(subItem.icon + ' ', '')}</span>
                             </div>
-                          </button>
+                          </Link>
                         ))}
                       </div>
                     )}
@@ -343,43 +338,24 @@ export default function Navbar() {
                           onClick={(e) => e.stopPropagation()}
                         >
                           {dataCenterItems.map((subItem) => (
-                            <button
+                            <Link
                               key={subItem.href}
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                console.log('모바일 클릭: 이동 시도 ->', subItem.href);
+                              href={subItem.href}
+                              onClick={() => {
                                 setIsMenuOpen(false);
                                 setIsDataCenterOpen(false);
-                                router.push(subItem.href);
                               }}
-                              onTouchStart={(e) => e.stopPropagation()}
-                              onTouchEnd={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                console.log('모바일 터치: 이동 시도 ->', subItem.href);
-                                setIsMenuOpen(false);
-                                setIsDataCenterOpen(false);
-                                router.push(subItem.href);
-                              }}
-                              className={`w-full text-left block px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 touch-manipulation ${
+                              className={`block px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
                                 pathname === subItem.href
                                   ? 'bg-blue-500 text-white shadow-md'
                                   : 'text-gray-400 hover:text-white hover:bg-white/10'
                               }`}
-                              style={{ 
-                                touchAction: 'manipulation',
-                                position: 'relative',
-                                zIndex: 1001,
-                                pointerEvents: 'auto',
-                                isolation: 'isolate'
-                              }}
                             >
                               <div className="flex items-center space-x-2">
                                 <span className="text-base">{subItem.icon}</span>
                                 <span>{subItem.name.replace(subItem.icon + ' ', '')}</span>
                               </div>
-                            </button>
+                            </Link>
                           ))}
                         </div>
                       )}
