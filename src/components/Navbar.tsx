@@ -14,21 +14,21 @@ export default function Navbar() {
   const [isDataCenterOpen, setIsDataCenterOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // 드롭다운 외부 클릭/터치 감지 (모바일 대응)
+  // 드롭다운 외부 클릭 감지 (데스크톱만)
   useEffect(() => {
-    function handleOutsideClick(event: MouseEvent | TouchEvent) {
+    function handleOutsideClick(event: MouseEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsDataCenterOpen(false);
       }
     }
 
-    // 마우스 및 터치 이벤트 모두 처리
-    document.addEventListener('mousedown', handleOutsideClick);
-    document.addEventListener('touchstart', handleOutsideClick);
+    // 터치 디바이스가 아닐 때만 마우스 이벤트 처리
+    if (!isTouchDevice()) {
+      document.addEventListener('mousedown', handleOutsideClick);
+    }
     
     return () => {
       document.removeEventListener('mousedown', handleOutsideClick);
-      document.removeEventListener('touchstart', handleOutsideClick);
     };
   }, []);
 
@@ -270,7 +270,13 @@ export default function Navbar() {
               </div>
             )}
             <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              onClick={() => {
+                setIsMenuOpen(!isMenuOpen);
+                // 햄버거 메뉴를 닫을 때 드롭다운도 함께 닫기
+                if (isMenuOpen) {
+                  setIsDataCenterOpen(false);
+                }
+              }}
               className="text-white p-2 rounded-lg hover:bg-white/10 transition-colors"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
