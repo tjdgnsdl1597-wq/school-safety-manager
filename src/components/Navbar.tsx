@@ -1,13 +1,14 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/simpleAuth';
 import { isSuperAdmin, getUserDisplayName } from '@/lib/authUtils';
 import { useState, useRef, useEffect } from 'react';
 
 export default function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
   const { user, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDataCenterOpen, setIsDataCenterOpen] = useState(false);
@@ -320,24 +321,23 @@ export default function Navbar() {
                       {isDataCenterOpen && (
                         <div className="mt-2 ml-4 space-y-1 animate-in slide-in-from-top-2 duration-200">
                           {dataCenterItems.map((subItem) => (
-                            <Link
+                            <button
                               key={subItem.href}
-                              href={subItem.href}
-                              onClick={() => {
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
                                 setIsMenuOpen(false);
                                 setIsDataCenterOpen(false);
+                                router.push(subItem.href);
                               }}
-                              onTouchStart={() => {
-                                // 터치 시작시 즉시 반응
+                              onTouchEnd={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
                                 setIsMenuOpen(false);
                                 setIsDataCenterOpen(false);
+                                router.push(subItem.href);
                               }}
-                              onTouchEnd={() => {
-                                // 터치 종료시에도 처리
-                                setIsMenuOpen(false);
-                                setIsDataCenterOpen(false);
-                              }}
-                              className={`block px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 touch-manipulation ${
+                              className={`w-full text-left block px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 touch-manipulation ${
                                 pathname === subItem.href
                                   ? 'bg-blue-500 text-white shadow-md'
                                   : 'text-gray-400 hover:text-white hover:bg-white/10'
@@ -348,7 +348,7 @@ export default function Navbar() {
                                 <span className="text-base">{subItem.icon}</span>
                                 <span>{subItem.name.replace(subItem.icon + ' ', '')}</span>
                               </div>
-                            </Link>
+                            </button>
                           ))}
                         </div>
                       )}
