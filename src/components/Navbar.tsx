@@ -304,6 +304,11 @@ export default function Navbar() {
                             ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/25' 
                             : 'text-gray-300 hover:text-white hover:bg-white/10'
                         }`}
+                        style={{ 
+                          touchAction: 'manipulation',
+                          position: 'relative',
+                          zIndex: 1
+                        }}
                       >
                         <span>{renderMenuText(item.name)}</span>
                         <svg 
@@ -319,7 +324,14 @@ export default function Navbar() {
 
                       {/* 모바일 서브메뉴 - 애니메이션 효과 개선 */}
                       {isDataCenterOpen && (
-                        <div className="mt-2 ml-4 space-y-1 animate-in slide-in-from-top-2 duration-200">
+                        <div 
+                          className="mt-2 ml-4 space-y-1 animate-in slide-in-from-top-2 duration-200"
+                          style={{ 
+                            position: 'relative',
+                            zIndex: 10,
+                            pointerEvents: 'auto'
+                          }}
+                        >
                           {dataCenterItems.map((subItem) => (
                             <button
                               key={subItem.href}
@@ -342,7 +354,12 @@ export default function Navbar() {
                                   ? 'bg-blue-500 text-white shadow-md'
                                   : 'text-gray-400 hover:text-white hover:bg-white/10'
                               }`}
-                              style={{ touchAction: 'manipulation' }}
+                              style={{ 
+                                touchAction: 'manipulation',
+                                position: 'relative',
+                                zIndex: 11,
+                                pointerEvents: 'auto'
+                              }}
                             >
                               <div className="flex items-center space-x-2">
                                 <span className="text-base">{subItem.icon}</span>
