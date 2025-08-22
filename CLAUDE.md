@@ -654,3 +654,122 @@ onClick={() => setIsDataCenterOpen(true)}
 - **No Travel Times Displayed**: Check if today's schedules exist and TravelTime records are created via auto-update API
 - **Inconsistent Times**: Mock data includes realistic variance; real API provides accurate route-based calculations
 - **Missing Addresses**: User home/office addresses must be set via travel-time page for calculations to work
+
+## 2025년 8월 22일 주요 업데이트 (완료된 기능들)
+
+### 🎯 포토카드 모달 미리보기 시스템
+**위치**: `src/components/PhotoCardManager.tsx`
+
+- **기능**: 중대재해 알리미 포토카드 클릭 시 대형 모달로 이미지 미리보기
+- **모달 설계**: 전체화면 오버레이 (`max-w-6xl`, `max-h-[95vh]`)
+- **이미지 표시**: `max-h-[70vh]` + `object-contain`으로 잘림 없는 전체 이미지 표시
+- **다중 파일 지원**: 하나의 자료에 여러 첨부파일이 있을 때 모두 미리보기 가능
+- **다운로드 기능**: 모달 내에서 직접 파일 다운로드 버튼 제공
+- **메타데이터 표시**: 업로드 날짜, 업로더, 파일 정보 등 상세 정보 표시
+
+```typescript
+// 모달 트리거
+onClick={() => {
+  setSelectedMaterial(material);
+  setIsModalOpen(true);
+}}
+
+// 이미지 최적화 표시
+<Image
+  className="max-w-full max-h-[70vh] w-auto h-auto object-contain"
+  unoptimized={true}
+/>
+```
+
+### 📱 모바일 로그아웃 버튼 개선
+**위치**: `src/components/Navbar.tsx`
+
+- **배치**: 모바일 상단 네비바 우측 (사용자명 + 로그아웃 + 햄버거 순서)
+- **디자인**: 작은 빨간 그라데이션 버튼 (`px-2 py-1`, `text-xs`)
+- **반응형**: `md:hidden`으로 모바일에서만 표시
+- **중복 제거**: 모바일 드롭다운 메뉴에서 기존 로그아웃 버튼 제거
+- **접근성**: 로그인한 사용자만 표시, 방문자는 기존 레이아웃 유지
+
+```typescript
+{isLoggedIn ? (
+  <>
+    <div className="flex items-center space-x-1 px-2 py-1 bg-white/10 rounded-full">
+      <span className="text-gray-300 text-xs">{getUserDisplayName(user)}</span>
+    </div>
+    <button onClick={logout} className="px-2 py-1 bg-gradient-to-r from-red-500...">
+      로그아웃
+    </button>
+  </>
+) : (/* 기존 햄버거 메뉴 */)}
+```
+
+### 🔐 GCS Access Denied 오류 완전 해결
+**문제**: 기존 업로드 파일들이 Google Cloud Storage에서 비공개 상태로 "Access denied" 오류 발생
+
+**해결책 1**: 메타데이터 API 개선 (`src/app/api/materials/metadata/route.ts`)
+```typescript
+// publicUrl에서 버킷 내 파일 경로 정확히 추출
+const bucketPath = attachment.filePath || attachment.publicUrl.replace(`https://storage.googleapis.com/${bucketName}/`, '');
+const file = bucket.file(bucketPath);
+
+// makePublic() + ACL 폴백 방식으로 확실한 공개 설정
+try {
+  await file.makePublic();
+} catch (publicError) {
+  await file.acl.add({ entity: 'allUsers', role: 'READER' });
+}
+```
+
+**해결책 2**: 기존 파일 일괄 공개 API (`src/app/api/materials/make-public/route.ts`)
+- **용도**: 기존 업로드된 모든 파일을 한 번에 공개로 설정
+- **결과**: 26개 파일 성공적으로 공개 설정 완료
+- **안전장치**: 각 파일별 성공/실패 개수와 오류 상세 정보 제공
+
+**해결책 3**: 관리자용 UI 페이지 (`src/app/admin/fix-files/page.tsx`)
+- **접근**: `/admin/fix-files` (관리자 전용)
+- **기능**: "기존 파일들 공개로 설정하기" 버튼 클릭으로 간편 실행
+- **UI**: 경고 메시지, 진행 상황, 실행 결과를 사용자 친화적으로 표시
+- **보안**: `isSuperAdmin()` 체크로 관리자만 접근 가능
+
+### 🚀 배포 및 테스트 결과
+- **최종 배포 URL**: https://school-safety-manager-pgsbicaab-ksh9958s-projects.vercel.app
+- **테스트 완료**: 
+  - ✅ 포토카드 모달 이미지 전체 표시 (잘림 현상 해결)
+  - ✅ 모바일 로그아웃 버튼 정상 작동
+  - ✅ 기존 26개 파일 다운로드 정상 작동 (Access Denied 오류 해결)
+  - ✅ 새 파일 업로드 시 자동 공개 설정 적용
+
+### 🛠 기술적 주요 개선사항
+
+**1. 모달 이미지 표시 최적화**
+- 모달 크기: `max-w-4xl` → `max-w-6xl` (화면 활용도 증대)
+- 이미지 컨테이너: `flex items-center justify-center` (중앙 정렬)
+- 이미지 크기: `max-h-[60vh]` → `max-h-[70vh]` (더 큰 미리보기)
+- 비율 유지: `object-contain` + `w-auto h-auto` (잘림 방지)
+
+**2. GCS 파일 권한 관리 시스템**
+- 업로드 시점 자동 공개 설정 (metadata API)
+- 기존 파일 일괄 공개 처리 (make-public API)
+- 이중 안전장치: `makePublic()` 실패 시 ACL 방식 폴백
+
+**3. 모바일 UX 개선**
+- 상단 네비바에 로그아웃 접근성 향상
+- 화면 공간 효율적 사용 (작은 버튼 디자인)
+- 중복 UI 요소 제거로 깔끔한 인터페이스
+
+### 📋 운영 관리 가이드
+
+**파일 다운로드 문제 발생 시**:
+1. 관리자 로그인 후 `/admin/fix-files` 페이지 접속
+2. "기존 파일들 공개로 설정하기" 버튼 클릭
+3. 결과 확인 후 사용자에게 재시도 안내
+
+**새로운 기능 테스트 방법**:
+1. 포토카드 모달: 중대재해 알리미 → 카드 클릭 → 이미지 전체 표시 확인
+2. 모바일 로그아웃: 모바일 화면에서 상단 우측 로그아웃 버튼 확인
+3. 파일 다운로드: 기존 자료들 다운로드가 정상 작동하는지 확인
+
+**향후 유지보수 포인트**:
+- 새로운 파일 업로드 시 자동 공개 설정이 정상 작동하는지 모니터링
+- GCS 버킷 권한 정책 변경 시 make-public API 재실행 필요할 수 있음
+- 모달 이미지 표시가 다양한 해상도에서 올바르게 작동하는지 주기적 확인
