@@ -14,6 +14,14 @@ export default function Navbar() {
   const [isDataCenterOpen, setIsDataCenterOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  // 페이지 변경시 모바일 햄버거 메뉴 닫기
+  useEffect(() => {
+    if (isTouchDevice()) {
+      setIsMenuOpen(false);
+      setIsDataCenterOpen(false);
+    }
+  }, [pathname]);
+
   // 드롭다운 외부 클릭 감지 (데스크톱만)
   useEffect(() => {
     function handleOutsideClick(event: MouseEvent) {
